@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useCursor } from "../../contexts/CursorContext";
 import s from "./CustomCursor.module.scss";
 
-const CustomCursor: React.FC = () => {
+export const CustomCursor: React.FC = () => {
   const { cursor } = useCursor();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
@@ -40,7 +40,7 @@ const CustomCursor: React.FC = () => {
     };
   }, []);
 
-  //   if (!isVisible) return null;
+  if (!isVisible) return null;
 
   return (
     <div
@@ -52,5 +52,3 @@ const CustomCursor: React.FC = () => {
     />
   );
 };
-
-export default CustomCursor;
