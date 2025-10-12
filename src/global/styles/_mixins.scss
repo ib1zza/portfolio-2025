@@ -1,0 +1,16 @@
+@mixin gridColumns($columns, $gap: 16px) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+}
+
+@mixin textMain($font-size: 16px, $line-height: 12px) {
+  font-family: "FindersKeepers", Arial, sans-serif;
+  font-size: $font-size;
+  line-height: $line-height;
+}
+
+@mixin textTitle($font-size: 12px, $line-height: 32px) {
+  font-family: "ChiKareGo2", Arial, sans-serif;
+  font-size: $font-size;
+  line-height: $line-height;
+}
