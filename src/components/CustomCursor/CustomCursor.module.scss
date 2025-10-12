@@ -1,0 +1,77 @@
+.cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  width: 32px;
+  height: 32px;
+  transform: scale(0.5) translate(-50%, -50%);
+}
+
+// Устанавливаем arrow как курсор по умолчанию
+.default {
+  background-image: url("/cursors/arrow.svg");
+}
+
+// Custom cursors
+.arrow {
+  background-image: url("/cursors/arrow.svg");
+}
+
+.background {
+  background-image: url("/cursors/background.svg");
+}
+
+.beam {
+  background-image: url("/cursors/beam.svg");
+}
+
+.busy {
+  background-image: url("/cursors/busy.svg");
+}
+
+.grab {
+  background-image: url("/cursors/grab.svg");
+}
+
+.grab_02 {
+  background-image: url("/cursors/grab_02.svg");
+}
+
+.hand {
+  background-image: url("/cursors/hand.svg");
+}
+
+.pencil {
+  background-image: url("/cursors/pencil.svg");
+}
+
+.precision {
+  background-image: url("/cursors/precision.svg");
+}
+
+.resize {
+  background-image: url("/cursors/resize.svg");
+}
+
+.resize_02 {
+  background-image: url("/cursors/resize_02.svg");
+}
+
+.watch {
+  background-image: url("/cursors/watch.svg");
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

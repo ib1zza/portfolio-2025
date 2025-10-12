@@ -3,6 +3,9 @@
 @use "fonts";
 @import "mixins";
 
+* {
+  cursor: none !important;
+}
 body {
   @include textMain(16px, 24px);
 }

@@ -1,3 +1,4 @@
+import { useCustomCursor } from "../../hooks/useCustomCursor";
 import s from "./Topbar.module.scss";
 import { useState, useRef, useEffect, useCallback } from "react";
 
@@ -185,11 +186,14 @@ export function Topbar() {
     submenuRef.current = el;
   }, []);
 
+  const { setCursor, resetCursor, withCursor } = useCustomCursor();
+
   return (
     <div className={s.topbar}>
       {tabs.map((tab, index) => (
         <div key={index} className={s.tab} ref={setTabRef(index)}>
           <div
+            {...withCursor("hand")}
             className={`${s.tabTitle} ${
               activeMenuIndex === index ? s.active : ""
             }`}
