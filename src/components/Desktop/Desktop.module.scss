@@ -1,30 +1,7 @@
 // Desktop.module.scss
 .desktop {
   // Grid size variable - easily change this to adjust the pattern scale
-  --grid-size: 1px;
-  // --pixel-color: #808080;
-  // --bg-color: #c0c0c0;
-  width: 100%;
-  height: 100%;
-  --bg-color: #000;
-  --pixel-color: #fff;
-
-  // Classic Mac OS 7 gray background color
-  background-color: var(--bg-color);
-
-  // Pixel pattern using background-image with variables
-  background-image: linear-gradient(
-      45deg,
-      var(--pixel-color) 25%,
-      transparent 25%
-    ),
-    linear-gradient(-45deg, var(--pixel-color) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--pixel-color) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--pixel-color) 75%);
-
-  background-size: calc(var(--grid-size) * 2) calc(var(--grid-size) * 2);
-  background-position: 0 0, 0 var(--grid-size),
-    var(--grid-size) calc(var(--grid-size) * -1), calc(var(--grid-size) * -1) 0;
+  @include pattern;
 
   // Optional: Add some noise texture for authenticity
   &::before {

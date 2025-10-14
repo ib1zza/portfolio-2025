@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useCustomCursor } from "../../hooks/useCustomCursor";
 import s from "./Topbar.module.scss";
 import { useState, useRef, useEffect, useCallback } from "react";
@@ -6,6 +7,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 interface SubmenuItemData {
   title: string;
   action: () => void;
+  disabled?: boolean;
 }
 
 interface TabData {
@@ -31,14 +33,17 @@ const SubmenuContent = ({
     return <div className={s.submenuSeparator} />;
   }
   return (
-    <div className={s.submenuItem} onMouseUp={() => onClick(item.action)}>
+    <div
+      className={clsx(s.submenuItem, { [s.disabled]: item.disabled })}
+      onMouseUp={() => onClick(item.action)}
+    >
       {item.title}
     </div>
   );
 };
 
 // Отдельный компонент для подменю
-const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => {
+const Submenu = ({ items, onItemClick, setRef, disabled }: SubmenuProps) => {
   return (
     <div className={s.submenu} ref={setRef}>
       {items.map((item, index) => (
@@ -89,6 +94,7 @@ export function Topbar() {
         {
           title: "Open",
           action: () => console.log("Open clicked"),
+          disabled: true,
         },
       ],
     },
@@ -186,7 +192,7 @@ export function Topbar() {
     submenuRef.current = el;
   }, []);
 
-  const { setCursor, resetCursor, withCursor } = useCustomCursor();
+  const { withCursor } = useCustomCursor();
 
   return (
     <div className={s.topbar}>
