@@ -10,9 +10,16 @@ interface FolderProps {
   name: string;
   position: { x: number; y: number };
   parentWindowId?: string;
+  icon?: string; // icon name
 }
 
-export function Folder({ id, name, position, parentWindowId }: FolderProps) {
+export function Folder({
+  id,
+  name,
+  position,
+  parentWindowId,
+  icon = "folder",
+}: FolderProps) {
   const { openWindow, focusWindow, unfocusAll } = useWindowManager();
   const { setActive, activeItemId } = useFileSystem();
   const folderIcon = (
@@ -46,6 +53,32 @@ export function Folder({ id, name, position, parentWindowId }: FolderProps) {
     </svg>
   );
 
+  const fileIcon = (
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M21 1H4V31H27V7H21V1Z" fill="white" />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M22 0V1H23V2H22V6H26V5H27V6H28V32H3V0H22ZM4 31H27V7H21V1H4V31Z"
+        fill="black"
+      />
+      <path d="M25 4H26V5H25V4Z" fill="black" />
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M24 3V2H23V3H24ZM24 3H25V4H24V3Z"
+        fill="black"
+      />
+      <path d="M23 2H22V6H26V5H25V4H24V3H23V2Z" fill="white" />
+    </svg>
+  );
+
   const handleDoubleClick = () => {
     openWindow(id, name, id);
   };
@@ -62,6 +95,16 @@ export function Folder({ id, name, position, parentWindowId }: FolderProps) {
     // focusWindowFromFolder(id);
   };
 
+  const getIcon = () => {
+    switch (icon) {
+      case "file":
+        return fileIcon;
+      case "folder":
+      default:
+        return folderIcon;
+    }
+  };
+
   return (
     <motion.div
       className={clsx(s.folder, { [s.active]: activeItemId === id })}
@@ -71,7 +114,7 @@ export function Folder({ id, name, position, parentWindowId }: FolderProps) {
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
     >
-      <div className={s.folderIcon}>{folderIcon}</div>
+      <div className={s.folderIcon}>{getIcon()}</div>
       <div className={s.folderName}>{name}</div>
     </motion.div>
   );

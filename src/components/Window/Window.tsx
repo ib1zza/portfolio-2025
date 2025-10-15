@@ -16,7 +16,7 @@ interface WindowProps {
 export function Window({ data }: WindowProps) {
   const { focusWindow, moveWindow, closeWindow, focusedWindowId } =
     useWindowManager();
-  const { getChildren, setActive } = useFileSystem();
+  const { getChildren, setActive, getItemById } = useFileSystem();
   const { id, position, title, zIndex, fileId, parentId } = data;
 
   const [isDraggingProxy, setIsDraggingProxy] = useState(false);
@@ -27,6 +27,8 @@ export function Window({ data }: WindowProps) {
     width: 0,
     height: 0,
   });
+
+  const isFile = fileId ? getItemById(fileId)?.type === "file" : false;
 
   useEffect(() => {
     if (windowRef.current) {
@@ -64,12 +66,23 @@ export function Window({ data }: WindowProps) {
 
   const renderChildren = () => {
     if (fileId) {
+      const item = getItemById(fileId);
+
+      if (item?.type === "file") {
+        return <div className={s.contentText}>{item.content}</div>;
+      }
+
       const children = getChildren(fileId);
       const nextPosition = { x: 20, y: 20 };
-      const step = 20;
+      const step = 60;
       const maxInRow = 3;
 
-      const arrToRender = children.map((child) => {
+      const arrToRender = children.map((child, i) => {
+        if (i > 0) nextPosition.x += step;
+        if (nextPosition.x >= step * maxInRow) {
+          nextPosition.x = 0;
+          nextPosition.y += step;
+        }
         if (child.type === "folder") {
           return (
             <Folder
@@ -84,11 +97,22 @@ export function Window({ data }: WindowProps) {
             />
           );
         }
-        nextPosition.x += step;
-        if (nextPosition.x >= step * maxInRow) {
-          nextPosition.x = 0;
-          nextPosition.y += step;
+        if (child.type === "file") {
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={{
+                x: nextPosition.x,
+                y: nextPosition.y,
+              }}
+              parentWindowId={id}
+              icon="file"
+            />
+          );
         }
+
         return null;
       });
       return arrToRender;
@@ -96,7 +120,7 @@ export function Window({ data }: WindowProps) {
   };
 
   const finderData = {
-    files: 9,
+    files: fileId ? getChildren(fileId).length : 0,
     inDisk: "64 MB",
     available: "128 MB",
   };
@@ -176,6 +200,19 @@ export function Window({ data }: WindowProps) {
             </button>
           </div>
         </div>
+
+        {!isFile && finderData && (
+          <div className={s.finderData}>
+            <div className={s.finderItemsCount}>
+              {finderData.files} item
+              {finderData.files > 1 && "s"}
+            </div>
+            <div className={s.finderInDisk}>{finderData.inDisk} in disk</div>
+            <div className={s.finderAvailable}>
+              {finderData.available} available
+            </div>
+          </div>
+        )}
 
         <div className={s.content}>
           <div

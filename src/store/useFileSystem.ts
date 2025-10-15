@@ -20,7 +20,12 @@ export interface FolderItem extends BaseItem {
   children: string[];
 }
 
-export type FileSystemItem = FolderItem | BaseItem;
+export interface FileItem extends BaseItem {
+  type: "file";
+  content: string;
+}
+
+export type FileSystemItem = FolderItem | FileItem;
 
 interface FileSystemStore {
   items: Record<string, FileSystemItem>;
@@ -28,6 +33,7 @@ interface FileSystemStore {
   getChildren: (parentId: string | null) => FileSystemItem[];
   setActive: (id: string) => void;
   removeActive: () => void;
+  getItemById: (id: string) => FileSystemItem | undefined;
 }
 
 export const useFileSystem = create<FileSystemStore>((set, get) => ({
@@ -55,10 +61,29 @@ export const useFileSystem = create<FileSystemStore>((set, get) => ({
       position: { x: 200, y: 140 },
       children: [],
     },
+
+    kanbanReadme: {
+      id: "file1",
+      name: "Readme",
+      type: "file",
+      parentId: "folder1",
+      content: "This is a readme file for the Kanban project.",
+    },
+    folderOther: {
+      id: "folder2",
+      name: "Test project",
+      type: "folder",
+      parentId: "projects",
+      position: { x: 200, y: 140 },
+      children: [],
+    },
   },
   activeItemId: null,
   getChildren: (parentId) =>
     Object.values(get().items).filter((i) => i.parentId === parentId),
+
+  getItemById: (id: string) =>
+    Object.values(get().items).find((i) => i.id === id),
 
   setActive: (id: string) => {
     set(() => ({

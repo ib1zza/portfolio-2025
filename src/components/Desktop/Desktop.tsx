@@ -19,8 +19,6 @@ export function Desktop() {
     }
   };
 
-  console.log(windows);
-
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
       <Topbar />
@@ -33,7 +31,6 @@ export function Desktop() {
             id={item.id}
             name={item.name}
             position={item.position!}
-            active={!!item.active}
           />
         ) : null
       )}
