@@ -77,6 +77,8 @@
   height: var(--content-height);
   background: $white;
   display: flex;
+  position: relative;
+  z-index: 2;
 }
 
 .windowTopButton {
@@ -294,4 +296,53 @@
     left: 2px;
     background: $white;
   }
+}
+
+.windowProxy {
+  // Старый border-image (закомментирован или удален)
+  // border-image: linear-gradient(
+  //         to right,
+  //         #000,
+  //         #000 1px,
+  //         transparent 1px,
+  //         transparent 2px
+  //       )
+  //       1,
+  //     linear-gradient(to bottom, #000, #000 1px, transparent 1px, transparent 2px)
+  //       1;
+  // border-width: 1px;
+  // border-style: solid;
+
+  // Новый border-image с SVG-паттерном
+  // border-image: url('data:image/svg+xml;charset=utf8,<svg width="2px" height="2px" viewBox="0 0 2 2" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><pattern id="pattern" patternUnits="userSpaceOnUse" width="2" height="2"><rect x="0" y="0" width="1" height="2" fill="black" /></pattern></defs><rect x="0" y="0" width="100%" height="100%" fill="url(%23pattern)" /></svg>')
+  //   1 repeat;
+
+  // background-image: url("data:image/svg+xml,%3Csvg width='4' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='black'/%3E%3Crect x='2' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
+
+  border-width: 1px; /* Важно указать ширину border */
+  border-style: solid; /* Или любое другое, border-image заменяет его вид */
+  background-color: transparent;
+  pointer-events: none;
+
+  border: 1px dotted $black;
+}
+
+.dragHandle {
+  // Этот элемент будет невидимым, но будет реагировать на перетаскивание
+  // Его стили определяют область, за которую можно перетаскивать окно
+  // По умолчанию он находится внутри .windowTop, поэтому его размер будет размером заголовка
+  background-color: transparent;
+  // border: 1px solid red; // Для отладки, чтобы видеть область перетаскивания
+}
+
+.windowTop {
+  position: relative; /* Важно для позиционирования .dragHandle внутри него */
+  // ... остальные стили
+}
+
+.dragHandle {
+  background-color: transparent;
+  // border: 1px solid rgba(255,0,0,0.5); // Для отладки: видно, где находится перетаскиватель
+  // pointer-events: auto; // Убедитесь, что он перехватывает события
+  z-index: 1; // Убедитесь, что он поверх других элементов заголовка, если есть
 }
