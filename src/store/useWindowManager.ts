@@ -10,11 +10,11 @@ export interface WindowInstance {
   position: Position;
   size: { width: number; height: number };
   zIndex: number;
-  isFocused: boolean;
 }
 
 interface WindowManagerStore {
   windows: Record<string, WindowInstance>;
+  focusedWindowId?: string;
   openWindow: (
     id: string,
     title: string,
@@ -24,7 +24,7 @@ interface WindowManagerStore {
   focusWindow: (id: string) => void;
   moveWindow: (id: string, position: Position) => void;
   closeWindow: (id: string) => void;
-  unfocusAll: () => void;
+  unfocusAll: (id?: string) => void;
 }
 
 export const useWindowManager = create<WindowManagerStore>((set, get) => ({
@@ -42,24 +42,15 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
           position,
           size: { width: 400, height: 300 },
           zIndex,
-          isFocused: true,
         },
       },
+      focusedWindowId: id,
     }));
   },
   focusWindow: (id) => {
-    const zIndex = Object.keys(get().windows).length + 1;
-    set((state) => ({
-      windows: Object.fromEntries(
-        Object.entries(state.windows).map(([key, win]) => [
-          key,
-          {
-            ...win,
-            isFocused: key === id,
-            zIndex: key === id ? zIndex : win.zIndex,
-          },
-        ])
-      ),
+    // const zIndex = Object.keys(get().windows).length + 1;
+    set(() => ({
+      focusedWindowId: id,
     }));
   },
   moveWindow: (id, position) =>
@@ -75,16 +66,13 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
       delete newWindows[id];
       return { windows: newWindows };
     }),
-  unfocusAll: () =>
-    set((state) => ({
-      windows: Object.fromEntries(
-        Object.entries(state.windows).map(([key, win]) => [
-          key,
-          {
-            ...win,
-            isFocused: false,
-          },
-        ])
-      ),
-    })),
+  unfocusAll: (triggerId?: string) =>
+    set((state) => {
+      if (!triggerId) return { focusedWindowId: undefined };
+      const focusedWindow = state.windows[state.focusedWindowId || ""];
+      if (!focusedWindow) return { focusedWindowId: undefined };
+      if (focusedWindow.parentId === triggerId) return {};
+
+      return { focusedWindowId: undefined };
+    }),
 }));

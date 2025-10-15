@@ -1,32 +1,73 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import s from "./Window.module.scss";
-import { useWindowManager } from "../../store/useWindowManager";
+import {
+  useWindowManager,
+  type WindowInstance,
+} from "../../store/useWindowManager";
+import { useFileSystem } from "../../store/useFileSystem";
+import Folder from "../Folder";
 
 interface WindowProps {
-  id: string;
-  title: string;
-  position: { x: number; y: number };
-  zIndex: number;
-  focused: boolean;
-  children?: React.ReactNode;
+  data: WindowInstance;
 }
 
-export function Window({
-  id,
-  title,
-  position,
-  zIndex,
-  focused,
-  children,
-}: WindowProps) {
-  const { focusWindow, moveWindow, closeWindow } = useWindowManager();
+export function Window({ data }: WindowProps) {
+  const { focusWindow, moveWindow, closeWindow, focusedWindowId } =
+    useWindowManager();
+  const { getChildren, setActive } = useFileSystem();
+  const { id, position, size, title, zIndex, fileId, parentId } = data;
 
+  const isFocused = focusedWindowId === id;
   const handleDragEnd = (_: any, info: any) => {
     moveWindow(id, { x: info.point.x, y: info.point.y });
   };
 
-  console.log(focused);
+  const handleWindowClick = () => {
+    focusWindow(id);
+    console.log("focusWindow", data);
+    if (parentId) setActive(parentId);
+  };
+
+  const renderChildren = () => {
+    if (fileId) {
+      const children = getChildren(fileId);
+
+      const nextPosition = { x: 20, y: 20 };
+
+      const step = 20;
+
+      const maxInRow = 3;
+
+      const arrToRender = children.map((child) => {
+        if (child.type === "folder") {
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={{
+                x: nextPosition.x,
+                y: nextPosition.y,
+              }}
+              parentWindowId={id}
+            />
+          );
+        }
+
+        nextPosition.x += step;
+        if (nextPosition.x >= step * maxInRow) {
+          nextPosition.x = 0;
+          nextPosition.y += step;
+        }
+
+        return null;
+      });
+
+      console.log(children);
+      return arrToRender;
+    }
+  };
 
   // TODO: make props
   // const inActive = !isActive;
@@ -63,20 +104,15 @@ export function Window({
 
   return (
     <motion.div
-      className={clsx(s.window, { [s.inactive]: !focused })}
+      className={clsx(s.window, { [s.inactive]: !isFocused })}
       style={{
-        // top: position.y,
-        // left: position.x,
-        zIndex,
+        zIndex: isFocused ? 100 : zIndex,
         position: "absolute",
       }}
       drag
       dragMomentum={false}
       onDragEnd={handleDragEnd}
-      onMouseDown={() => focusWindow(id)}
-      // initial={{ opacity: 0, scale: 0.9 }}
-      // animate={{ opacity: 1, scale: 1 }}
-      // transition={{ duration: 0.2 }}
+      onMouseDown={handleWindowClick}
     >
       <div className={s.windowTop}>
         <div className={s.buttonContainer}>
@@ -102,7 +138,8 @@ export function Window({
             [s.needToScrollVertical]: isNeedToScrollVertical,
           })}
         >
-          {children}
+          {renderChildren()}
+          {/* {children} */}
         </div>
         <div className={s.verticalScroll}>
           <button className={clsx(s.navigationButton, s.navigationButtonUp)}>

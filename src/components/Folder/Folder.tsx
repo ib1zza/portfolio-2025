@@ -9,12 +9,12 @@ interface FolderProps {
   id: string;
   name: string;
   position: { x: number; y: number };
-  active: boolean;
+  parentWindowId?: string;
 }
 
-export function Folder({ id, name, position, active }: FolderProps) {
-  const { openWindow } = useWindowManager();
-  const { setActive } = useFileSystem();
+export function Folder({ id, name, position, parentWindowId }: FolderProps) {
+  const { openWindow, focusWindow, unfocusAll } = useWindowManager();
+  const { setActive, activeItemId } = useFileSystem();
   const folderIcon = (
     <svg
       width="32"
@@ -47,20 +47,27 @@ export function Folder({ id, name, position, active }: FolderProps) {
   );
 
   const handleDoubleClick = () => {
-    openWindow(id, name);
+    openWindow(id, name, id);
   };
 
-  const handleClick = () => {
+  const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    e.stopPropagation();
     setActive(id);
+    if (parentWindowId) {
+      focusWindow(parentWindowId);
+    } else {
+      unfocusAll();
+    }
+    // TODO: связать папки и окна
+    // focusWindowFromFolder(id);
   };
 
   return (
     <motion.div
-      className={clsx(s.folder, { [s.active]: active })}
+      className={clsx(s.folder, { [s.active]: activeItemId === id })}
       drag
       dragMomentum={false}
       style={{ top: position.y, left: position.x, position: "absolute" }}
-      //   whileTap={{ scale: 0.95 }}
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
     >

@@ -24,6 +24,7 @@ export type FileSystemItem = FolderItem | BaseItem;
 
 interface FileSystemStore {
   items: Record<string, FileSystemItem>;
+  activeItemId: string | null;
   getChildren: (parentId: string | null) => FileSystemItem[];
   setActive: (id: string) => void;
   removeActive: () => void;
@@ -38,42 +39,35 @@ export const useFileSystem = create<FileSystemStore>((set, get) => ({
       parentId: null,
       children: ["folder1"],
     },
-    folder1: {
-      id: "folder1",
-      name: "My Folder",
+    projects: {
+      id: "projects",
+      name: "Projects",
       type: "folder",
       parentId: "root",
       position: { x: 100, y: 140 },
       children: [],
     },
+    folderKanban: {
+      id: "folder1",
+      name: "Kanban",
+      type: "folder",
+      parentId: "projects",
+      position: { x: 200, y: 140 },
+      children: [],
+    },
   },
+  activeItemId: null,
   getChildren: (parentId) =>
     Object.values(get().items).filter((i) => i.parentId === parentId),
 
   setActive: (id: string) => {
-    set((state) => ({
-      items: Object.fromEntries(
-        Object.entries(state.items).map(([key, item]) => [
-          key,
-          {
-            ...item,
-            active: key === id,
-          },
-        ])
-      ),
+    set(() => ({
+      activeItemId: id,
     }));
   },
   removeActive: () => {
-    set((state) => ({
-      items: Object.fromEntries(
-        Object.entries(state.items).map(([key, item]) => [
-          key,
-          {
-            ...item,
-            active: false,
-          },
-        ])
-      ),
+    set(() => ({
+      activeItemId: null,
     }));
   },
 }));

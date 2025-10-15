@@ -19,6 +19,8 @@ export function Desktop() {
     }
   };
 
+  console.log(windows);
+
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
       <Topbar />
@@ -38,14 +40,7 @@ export function Desktop() {
 
       {/* Окна */}
       {Object.values(windows).map((win) => (
-        <Window
-          focused={win.isFocused}
-          key={win.id}
-          id={win.id}
-          title={win.title}
-          position={win.position}
-          zIndex={win.zIndex}
-        />
+        <Window key={win.id} data={win} />
       ))}
     </div>
   );
