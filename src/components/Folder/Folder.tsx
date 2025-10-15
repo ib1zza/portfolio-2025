@@ -1,11 +1,20 @@
 import clsx from "clsx";
+import { motion } from "framer-motion";
+
 import s from "./Folder.module.scss";
+import { useWindowManager } from "../../store/useWindowManager";
+import { useFileSystem } from "../../store/useFileSystem";
 
 interface FolderProps {
+  id: string;
   name: string;
+  position: { x: number; y: number };
+  active: boolean;
 }
-// TODO: add custom icon support
-export function Folder({ name }: FolderProps) {
+
+export function Folder({ id, name, position, active }: FolderProps) {
+  const { openWindow } = useWindowManager();
+  const { setActive } = useFileSystem();
   const folderIcon = (
     <svg
       width="32"
@@ -36,11 +45,27 @@ export function Folder({ name }: FolderProps) {
       </defs>
     </svg>
   );
-  const isActive = false; // TODO: make props
+
+  const handleDoubleClick = () => {
+    openWindow(id, name);
+  };
+
+  const handleClick = () => {
+    setActive(id);
+  };
+
   return (
-    <div className={clsx(s.folder, { [s.active]: isActive })}>
+    <motion.div
+      className={clsx(s.folder, { [s.active]: active })}
+      drag
+      dragMomentum={false}
+      style={{ top: position.y, left: position.x, position: "absolute" }}
+      //   whileTap={{ scale: 0.95 }}
+      onDoubleClick={handleDoubleClick}
+      onClick={handleClick}
+    >
       <div className={s.folderIcon}>{folderIcon}</div>
       <div className={s.folderName}>{name}</div>
-    </div>
+    </motion.div>
   );
 }

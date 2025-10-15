@@ -1,17 +1,35 @@
 import clsx from "clsx";
+import { motion } from "framer-motion";
 import s from "./Window.module.scss";
+import { useWindowManager } from "../../store/useWindowManager";
 
 interface WindowProps {
-  children: React.ReactNode;
-  isActive?: boolean;
+  id: string;
+  title: string;
+  position: { x: number; y: number };
+  zIndex: number;
+  focused: boolean;
+  children?: React.ReactNode;
 }
 
-export function Window({ children, isActive }: WindowProps) {
+export function Window({
+  id,
+  title,
+  position,
+  zIndex,
+  focused,
+  children,
+}: WindowProps) {
+  const { focusWindow, moveWindow, closeWindow } = useWindowManager();
+
+  const handleDragEnd = (_: any, info: any) => {
+    moveWindow(id, { x: info.point.x, y: info.point.y });
+  };
+
+  console.log(focused);
+
   // TODO: make props
   // const inActive = !isActive;
-  const inActive = false;
-
-  const title = "Title text";
 
   // TODO: make props
 
@@ -42,30 +60,40 @@ export function Window({ children, isActive }: WindowProps) {
   // TODO: make dynamic
   const isNeedToScrollHorizontal = true;
   const isNeedToScrollVertical = true;
+
   return (
-    <div className={clsx(s.window, { [s.inActive]: inActive })}>
+    <motion.div
+      className={clsx(s.window, { [s.inactive]: !focused })}
+      style={{
+        // top: position.y,
+        // left: position.x,
+        zIndex,
+        position: "absolute",
+      }}
+      drag
+      dragMomentum={false}
+      onDragEnd={handleDragEnd}
+      onMouseDown={() => focusWindow(id)}
+      // initial={{ opacity: 0, scale: 0.9 }}
+      // animate={{ opacity: 1, scale: 1 }}
+      // transition={{ duration: 0.2 }}
+    >
       <div className={s.windowTop}>
         <div className={s.buttonContainer}>
-          <button className={s.windowTopButton}>
+          <button className={s.windowTopButton} onClick={() => closeWindow(id)}>
             <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
           </button>
         </div>
         <div className={s.title}>{title}</div>
         <div className={s.buttonContainer}>
-          <button className={clsx(s.windowTopButton, s.windowTopButtonClose)}>
+          <button
+            className={clsx(s.windowTopButton, s.windowTopButtonClose)}
+            onClick={() => closeWindow(id)}
+          >
             <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
           </button>
         </div>
       </div>
-      {finderData && (
-        <div className={s.finderData}>
-          <div className={s.finderItemsCount}>{finderData.files} items</div>
-          <div className={s.finderInDisk}>{finderData.inDisk} in disk</div>
-          <div className={s.finderAvailable}>
-            {finderData.available} available
-          </div>
-        </div>
-      )}
 
       <div className={s.content}>
         <div
@@ -104,6 +132,6 @@ export function Window({ children, isActive }: WindowProps) {
         </div>
         <button className={s.windowResize}></button>
       </div>
-    </div>
+    </motion.div>
   );
 }
