@@ -315,3 +315,7 @@
   background-color: transparent;
   z-index: 1; // Убедитесь, что он поверх других элементов заголовка, если есть
 }
+
+.contentText {
+  padding-inline: 8px;
+}
