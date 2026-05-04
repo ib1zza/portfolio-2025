@@ -1,5 +1,4 @@
 .window {
-  min-width: 530px;
   border: 1px solid $black;
   position: absolute;
   // TODO: make dynamic
@@ -8,6 +7,8 @@
   background: $white;
   isolation: isolate;
   user-select: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .windowTop {
@@ -138,6 +139,7 @@
   & > * {
     width: 30%;
     line-height: 18px;
+    white-space: nowrap;
   }
 
   & :nth-child(1) {
@@ -159,6 +161,7 @@
   // 1px for border
   grid-template-columns: auto calc(1px + var(--controls-size));
   grid-template-rows: auto calc(1px + var(--controls-size));
+  flex-grow: 1;
 }
 
 .contentWindow {
@@ -168,7 +171,7 @@
   overflow: hidden;
   position: relative;
   //
-  min-height: 200px;
+  // min-height: 200px;
 }
 
 .verticalScroll {

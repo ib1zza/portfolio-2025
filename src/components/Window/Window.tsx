@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import s from "./Window.module.scss";
 import {
@@ -20,13 +20,18 @@ export function Window({ data }: WindowProps) {
   const { id, position, title, zIndex, fileId, parentId } = data;
 
   const [isDraggingProxy, setIsDraggingProxy] = useState(false);
-  const [currentDragOffset, setCurrentDragOffset] = useState({ x: 0, y: 0 }); // Отслеживает текущее смещение во время drag
+  const [currentDragOffset, setCurrentDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
 
   const [windowDimensions, setWindowDimensions] = useState({
     width: 0,
     height: 0,
   });
+
+  // --- 🔧 Добавлено: состояние для ресайза
+  const [isResizing, setIsResizing] = useState(false);
+  const startMouse = useRef({ x: 0, y: 0 });
+  const startSize = useRef({ width: 0, height: 0 });
 
   const isFile = fileId ? getItemById(fileId)?.type === "file" : false;
 
@@ -35,17 +40,16 @@ export function Window({ data }: WindowProps) {
       const rect = windowRef.current.getBoundingClientRect();
       setWindowDimensions({ width: rect.width, height: rect.height });
     }
-  }, [windowRef.current, position.x, position.y]); // Добавили windowRef.current в зависимости
+  }, [windowRef.current, position.x, position.y]);
 
   const isFocused = focusedWindowId === id;
 
   const handleDragStartProxy = () => {
     setIsDraggingProxy(true);
-    setCurrentDragOffset({ x: 0, y: 0 }); // Сбросить начальное смещение
+    setCurrentDragOffset({ x: 0, y: 0 });
   };
 
   const handleDragProxy = (_: any, info: any) => {
-    // info.offset.x и info.offset.y - это текущее смещение от начала drag
     setCurrentDragOffset({ x: info.offset.x, y: info.offset.y });
   };
 
@@ -55,7 +59,7 @@ export function Window({ data }: WindowProps) {
       x: position.x + info.offset.x,
       y: position.y + info.offset.y,
     });
-    setCurrentDragOffset({ x: 0, y: 0 }); // Сбросить смещение
+    setCurrentDragOffset({ x: 0, y: 0 });
     handleWindowClick();
   };
 
@@ -63,6 +67,45 @@ export function Window({ data }: WindowProps) {
     focusWindow(id);
     if (parentId) setActive(parentId);
   };
+
+  // --- 🔧 Добавлено: обработчики ресайза ---
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsResizing(true);
+    startMouse.current = { x: e.clientX, y: e.clientY };
+    startSize.current = { ...windowDimensions };
+  };
+
+  const MIN_WIDTH = 300;
+  const MIN_HEIGHT = 200;
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const dx = e.clientX - startMouse.current.x;
+      const dy = e.clientY - startMouse.current.y;
+
+      // обновляем размеры, не трогая левый верхний угол
+      setWindowDimensions((prev) => ({
+        width: Math.max(MIN_WIDTH, startSize.current.width + dx),
+        height: Math.max(MIN_HEIGHT, startSize.current.height + dy),
+      }));
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
+  // --- 🔧 конец добавленного блока ---
 
   const renderChildren = () => {
     if (fileId) {
@@ -157,11 +200,14 @@ export function Window({ data }: WindowProps) {
           position: "absolute",
           left: position.x,
           top: position.y,
+          width: windowDimensions.width || "auto",
+          height: windowDimensions.height || "auto",
+          minHeight: MIN_HEIGHT,
+          minWidth: MIN_WIDTH,
         }}
         onMouseDown={handleWindowClick}
       >
         <div className={s.windowTop}>
-          {/* Невидимый перетаскиватель для инициации перемещения контура */}
           <motion.div
             className={s.dragHandle}
             drag
@@ -169,13 +215,12 @@ export function Window({ data }: WindowProps) {
             onDragStart={handleDragStartProxy}
             onDrag={handleDragProxy}
             onDragEnd={handleDragEndProxy}
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }} // Ограничиваем, чтобы сам dragHandle не двигался
+            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0}
             style={{
               position: "absolute",
               width: "100%",
               height: "100%",
-              // TODO: think about cursor
               cursor: "grab",
               left: 0,
               top: 0,
@@ -255,11 +300,16 @@ export function Window({ data }: WindowProps) {
               {arrowIcon}
             </button>
           </div>
-          <button className={s.windowResize}></button>
+
+          {/* 👇 теперь ресайз работает */}
+          <button
+            className={s.windowResize}
+            onMouseDown={handleResizeMouseDown}
+          ></button>
         </div>
       </motion.div>
 
-      {/* Прокси-элемент для отображения контура */}
+      {/* Прокси-элемент */}
       {isDraggingProxy &&
         windowDimensions.width > 0 &&
         windowDimensions.height > 0 && (
