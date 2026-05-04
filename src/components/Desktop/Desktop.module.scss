@@ -2,6 +2,8 @@
 .desktop {
   // Grid size variable - easily change this to adjust the pattern scale
   @include pattern;
+  position: relative;
+  overflow: hidden;
 
   // Optional: Add some noise texture for authenticity
   &::before {

@@ -1,10 +1,6 @@
 import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type {
-  MouseEventHandler,
-  PointerEventHandler,
-  RefObject,
-} from "react";
+import type { MouseEventHandler, PointerEventHandler, RefObject } from "react";
 
 import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
@@ -39,12 +35,17 @@ export function Folder({
   constraintRef,
   icon = "folder",
 }: FolderProps) {
-  const { openWindow, focusWindow, unfocusAll } = useWindowManager();
+  const { openWindow, focusWindow, unfocusAll, windows } = useWindowManager();
   const { setActive, activeItemId, moveItem } = useFileSystem();
   const folderRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<DragState | null>(null);
   const didDragRef = useRef(false);
   const [draftPosition, setDraftPosition] = useState(position);
+  const isActive = activeItemId === id;
+  const isOpened = Object.values(windows).some((window) => window.fileId === id);
+  const isOpenedInactive = isOpened && !isActive;
+  const patternId = `opened-pattern-${id}`;
+  const folderClipId = `folder-clip-${id}`;
 
   useEffect(() => {
     setDraftPosition(position);
@@ -65,39 +66,45 @@ export function Folder({
     const minY = parentWindowId ? scrollTop : desktopMinY;
     const maxX = Math.max(
       minX,
-      scrollLeft + container.clientWidth - folder.offsetWidth
+      scrollLeft + container.clientWidth - folder.offsetWidth,
     );
     const maxY = Math.max(
       minY,
-      scrollTop + container.clientHeight - folder.offsetHeight
+      scrollTop + container.clientHeight - folder.offsetHeight,
     );
 
     return { minX, minY, maxX, maxY };
   }, [constraintRef, parentWindowId]);
 
-  const getClampedPosition = useCallback((nextPosition: { x: number; y: number }) => {
-    const bounds = getBounds();
+  const getClampedPosition = useCallback(
+    (nextPosition: { x: number; y: number }) => {
+      const bounds = getBounds();
 
-    return {
-      x: clamp(nextPosition.x, bounds.minX, bounds.maxX),
-      y: clamp(nextPosition.y, bounds.minY, bounds.maxY),
-    };
-  }, [getBounds]);
+      return {
+        x: clamp(nextPosition.x, bounds.minX, bounds.maxX),
+        y: clamp(nextPosition.y, bounds.minY, bounds.maxY),
+      };
+    },
+    [getBounds],
+  );
 
-  const getPositionFromPointer = useCallback((clientX: number, clientY: number) => {
-    const state = dragStateRef.current;
-    const container = constraintRef?.current;
+  const getPositionFromPointer = useCallback(
+    (clientX: number, clientY: number) => {
+      const state = dragStateRef.current;
+      const container = constraintRef?.current;
 
-    if (!state || !container) return draftPosition;
+      if (!state || !container) return draftPosition;
 
-    const scrollLeft = parentWindowId ? container.scrollLeft : 0;
-    const scrollTop = parentWindowId ? container.scrollTop : 0;
+      const scrollLeft = parentWindowId ? container.scrollLeft : 0;
+      const scrollTop = parentWindowId ? container.scrollTop : 0;
 
-    return getClampedPosition({
-      x: clientX - state.containerRect.left + scrollLeft - state.grabOffset.x,
-      y: clientY - state.containerRect.top + scrollTop - state.grabOffset.y,
-    });
-  }, [constraintRef, draftPosition, getClampedPosition, parentWindowId]);
+      return getClampedPosition({
+        x: clientX - state.containerRect.left + scrollLeft - state.grabOffset.x,
+        y: clientY - state.containerRect.top + scrollTop - state.grabOffset.y,
+      });
+    },
+    [constraintRef, draftPosition, getClampedPosition, parentWindowId],
+  );
   const folderIcon = (
     <svg
       width="32"
@@ -105,11 +112,12 @@ export function Folder({
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      shapeRendering="crispEdges"
     >
-      <g clipPath="url(#clip0_1_1969)">
+      <g clipPath={`url(#${folderClipId})`}>
         <path
           d="M11 8H5V9H4V10H3V11H2V12H1V31H30V12H14V11H13V10H12V9H11V8Z"
-          fill="white"
+          fill={isOpenedInactive ? `url(#${patternId})` : "white"}
         />
         <path d="M5 7H11V8H5V7Z" fill="black" />
         <path d="M4 9V8H5V9H4Z" fill="black" />
@@ -122,7 +130,17 @@ export function Folder({
         />
       </g>
       <defs>
-        <clipPath id="clip0_1_1969">
+        <pattern
+          id={patternId}
+          width="4"
+          height="2"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect width="4" height="2" fill="white" />
+          <rect x="0" y="0" width="1" height="1" fill="black" />
+          <rect x="2" y="1" width="1" height="1" fill="black" />
+        </pattern>
+        <clipPath id={folderClipId}>
           <rect width="32" height="32" fill="white" />
         </clipPath>
       </defs>
@@ -136,8 +154,12 @@ export function Folder({
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      shapeRendering="crispEdges"
     >
-      <path d="M21 1H4V31H27V7H21V1Z" fill="white" />
+      <path
+        d="M21 1H4V31H27V7H21V1Z"
+        fill={isOpenedInactive ? `url(#${patternId})` : "white"}
+      />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -151,7 +173,22 @@ export function Folder({
         d="M24 3V2H23V3H24ZM24 3H25V4H24V3Z"
         fill="black"
       />
-      <path d="M23 2H22V6H26V5H25V4H24V3H23V2Z" fill="white" />
+      <path
+        d="M23 2H22V6H26V5H25V4H24V3H23V2Z"
+        fill={isOpenedInactive ? `url(#${patternId})` : "white"}
+      />
+      <defs>
+        <pattern
+          id={patternId}
+          width="4"
+          height="2"
+          patternUnits="userSpaceOnUse"
+        >
+          <rect width="4" height="2" fill="white" />
+          <rect x="0" y="0" width="1" height="1" fill="black" />
+          <rect x="2" y="1" width="1" height="1" fill="black" />
+        </pattern>
+      </defs>
     </svg>
   );
 
@@ -212,7 +249,10 @@ export function Folder({
       const distanceX = Math.abs(nextPosition.x - state.startPosition.x);
       const distanceY = Math.abs(nextPosition.y - state.startPosition.y);
 
-      if (distanceX > DRAG_CLICK_THRESHOLD || distanceY > DRAG_CLICK_THRESHOLD) {
+      if (
+        distanceX > DRAG_CLICK_THRESHOLD ||
+        distanceY > DRAG_CLICK_THRESHOLD
+      ) {
         didDragRef.current = true;
       }
 
@@ -253,7 +293,10 @@ export function Folder({
   return (
     <div
       ref={folderRef}
-      className={clsx(s.folder, { [s.active]: activeItemId === id })}
+      className={clsx(s.folder, {
+        [s.active]: isActive,
+        [s.opened]: isOpenedInactive,
+      })}
       style={{
         top: draftPosition.y,
         left: draftPosition.x,
