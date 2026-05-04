@@ -31,6 +31,7 @@ export function Desktop() {
             id={item.id}
             name={item.name}
             position={item.position!}
+            constraintRef={desktopRef}
           />
         ) : null
       )}

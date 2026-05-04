@@ -115,6 +115,7 @@ interface FileSystemStore {
   getChildren: (parentId: string | null) => FileSystemItem[];
   setActive: (id: string) => void;
   removeActive: () => void;
+  moveItem: (id: string, position: Position) => void;
   getItemById: (id: string) => FileSystemItem | undefined;
 }
 
@@ -197,6 +198,17 @@ export const useFileSystem = create<FileSystemStore>((set, get) => ({
   removeActive: () => {
     set(() => ({
       activeItemId: null,
+    }));
+  },
+  moveItem: (id, position) => {
+    set((state) => ({
+      items: {
+        ...state.items,
+        [id]: {
+          ...state.items[id],
+          position,
+        },
+      },
     }));
   },
 }));

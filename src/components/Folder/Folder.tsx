@@ -1,6 +1,10 @@
 import clsx from "clsx";
-import { motion } from "framer-motion";
-import type { MouseEventHandler } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type {
+  MouseEventHandler,
+  PointerEventHandler,
+  RefObject,
+} from "react";
 
 import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
@@ -11,18 +15,89 @@ interface FolderProps {
   name: string;
   position: { x: number; y: number };
   parentWindowId?: string;
+  constraintRef?: RefObject<HTMLElement | null>;
   icon?: string; // icon name
 }
+
+interface DragState {
+  pointerId: number;
+  containerRect: DOMRect;
+  grabOffset: { x: number; y: number };
+  startPosition: { x: number; y: number };
+}
+
+const DRAG_CLICK_THRESHOLD = 3;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 export function Folder({
   id,
   name,
   position,
   parentWindowId,
+  constraintRef,
   icon = "folder",
 }: FolderProps) {
   const { openWindow, focusWindow, unfocusAll } = useWindowManager();
-  const { setActive, activeItemId } = useFileSystem();
+  const { setActive, activeItemId, moveItem } = useFileSystem();
+  const folderRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef<DragState | null>(null);
+  const didDragRef = useRef(false);
+  const [draftPosition, setDraftPosition] = useState(position);
+
+  useEffect(() => {
+    setDraftPosition(position);
+  }, [position]);
+
+  const getBounds = useCallback(() => {
+    const container = constraintRef?.current;
+    const folder = folderRef.current;
+    const desktopMinY = parentWindowId ? 0 : 21;
+
+    if (!container || !folder) {
+      return { minX: 0, minY: desktopMinY, maxX: Infinity, maxY: Infinity };
+    }
+
+    const scrollLeft = parentWindowId ? container.scrollLeft : 0;
+    const scrollTop = parentWindowId ? container.scrollTop : 0;
+    const minX = scrollLeft;
+    const minY = parentWindowId ? scrollTop : desktopMinY;
+    const maxX = Math.max(
+      minX,
+      scrollLeft + container.clientWidth - folder.offsetWidth
+    );
+    const maxY = Math.max(
+      minY,
+      scrollTop + container.clientHeight - folder.offsetHeight
+    );
+
+    return { minX, minY, maxX, maxY };
+  }, [constraintRef, parentWindowId]);
+
+  const getClampedPosition = useCallback((nextPosition: { x: number; y: number }) => {
+    const bounds = getBounds();
+
+    return {
+      x: clamp(nextPosition.x, bounds.minX, bounds.maxX),
+      y: clamp(nextPosition.y, bounds.minY, bounds.maxY),
+    };
+  }, [getBounds]);
+
+  const getPositionFromPointer = useCallback((clientX: number, clientY: number) => {
+    const state = dragStateRef.current;
+    const container = constraintRef?.current;
+
+    if (!state || !container) return draftPosition;
+
+    const scrollLeft = parentWindowId ? container.scrollLeft : 0;
+    const scrollTop = parentWindowId ? container.scrollTop : 0;
+
+    return getClampedPosition({
+      x: clientX - state.containerRect.left + scrollLeft - state.grabOffset.x,
+      y: clientY - state.containerRect.top + scrollTop - state.grabOffset.y,
+    });
+  }, [constraintRef, draftPosition, getClampedPosition, parentWindowId]);
   const folderIcon = (
     <svg
       width="32"
@@ -81,11 +156,18 @@ export function Folder({
   );
 
   const handleDoubleClick = () => {
+    if (didDragRef.current) return;
     openWindow(id, name, id);
   };
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation();
+
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+
     setActive(id);
     if (parentWindowId) {
       focusWindow(parentWindowId);
@@ -95,6 +177,68 @@ export function Folder({
     // TODO: связать папки и окна
     // focusWindowFromFolder(id);
   };
+
+  const handlePointerDown: PointerEventHandler<HTMLDivElement> = (e) => {
+    if (e.button !== 0) return;
+
+    const container = constraintRef?.current;
+    const folder = folderRef.current;
+    if (!container || !folder) return;
+
+    const folderRect = folder.getBoundingClientRect();
+
+    folder.setPointerCapture(e.pointerId);
+    didDragRef.current = false;
+    dragStateRef.current = {
+      pointerId: e.pointerId,
+      containerRect: container.getBoundingClientRect(),
+      grabOffset: {
+        x: e.clientX - folderRect.left,
+        y: e.clientY - folderRect.top,
+      },
+      startPosition: draftPosition,
+    };
+
+    setActive(id);
+    if (parentWindowId) focusWindow(parentWindowId);
+  };
+
+  useEffect(() => {
+    const handlePointerMove = (e: PointerEvent) => {
+      const state = dragStateRef.current;
+      if (!state || e.pointerId !== state.pointerId) return;
+
+      const nextPosition = getPositionFromPointer(e.clientX, e.clientY);
+      const distanceX = Math.abs(nextPosition.x - state.startPosition.x);
+      const distanceY = Math.abs(nextPosition.y - state.startPosition.y);
+
+      if (distanceX > DRAG_CLICK_THRESHOLD || distanceY > DRAG_CLICK_THRESHOLD) {
+        didDragRef.current = true;
+      }
+
+      setDraftPosition(nextPosition);
+    };
+
+    const handlePointerUp = (e: PointerEvent) => {
+      const state = dragStateRef.current;
+      if (!state || e.pointerId !== state.pointerId) return;
+
+      const nextPosition = getPositionFromPointer(e.clientX, e.clientY);
+      dragStateRef.current = null;
+      setDraftPosition(nextPosition);
+      moveItem(id, nextPosition);
+    };
+
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [getPositionFromPointer, id, moveItem]);
 
   const getIcon = () => {
     switch (icon) {
@@ -107,16 +251,20 @@ export function Folder({
   };
 
   return (
-    <motion.div
+    <div
+      ref={folderRef}
       className={clsx(s.folder, { [s.active]: activeItemId === id })}
-      drag
-      dragMomentum={false}
-      style={{ top: position.y, left: position.x, position: "absolute" }}
+      style={{
+        top: draftPosition.y,
+        left: draftPosition.x,
+        position: "absolute",
+      }}
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
+      onPointerDown={handlePointerDown}
     >
       <div className={s.folderIcon}>{getIcon()}</div>
       <div className={s.folderName}>{name}</div>
-    </motion.div>
+    </div>
   );
 }

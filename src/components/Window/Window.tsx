@@ -211,6 +211,10 @@ export function Window({ data }: WindowProps) {
 
     const handleMouseUp = () => {
       setIsResizing(false);
+      updateWindowBounds(id, {
+        position,
+        size: windowDimensions,
+      });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
@@ -220,7 +224,7 @@ export function Window({ data }: WindowProps) {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing]);
+  }, [id, isResizing, position, updateWindowBounds, windowDimensions]);
   // --- 🔧 конец добавленного блока ---
 
   const renderDocument = (content: string | DocumentBlock[]) => {
@@ -286,27 +290,23 @@ export function Window({ data }: WindowProps) {
       }
 
       const children = getChildren(fileId);
-      const nextPosition = { x: 20, y: 20 };
-      const step = 60;
-      const maxInRow = 3;
+      const getDefaultPosition = (index: number) => ({
+        x: 20 + (index % 3) * 130,
+        y: 20 + Math.floor(index / 3) * 70,
+      });
 
       const arrToRender = children.map((child, i) => {
-        if (i > 0) nextPosition.x += step;
-        if (nextPosition.x >= step * maxInRow) {
-          nextPosition.x = 0;
-          nextPosition.y += step;
-        }
+        const itemPosition = child.position ?? getDefaultPosition(i);
+
         if (child.type === "folder") {
           return (
             <Folder
               key={child.id}
               id={child.id}
               name={child.name}
-              position={{
-                x: nextPosition.x,
-                y: nextPosition.y,
-              }}
+              position={itemPosition}
               parentWindowId={id}
+              constraintRef={contentRef}
             />
           );
         }
@@ -316,11 +316,9 @@ export function Window({ data }: WindowProps) {
               key={child.id}
               id={child.id}
               name={child.name}
-              position={{
-                x: nextPosition.x,
-                y: nextPosition.y,
-              }}
+              position={itemPosition}
               parentWindowId={id}
+              constraintRef={contentRef}
               icon="file"
             />
           );

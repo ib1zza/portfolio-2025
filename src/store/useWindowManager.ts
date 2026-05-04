@@ -14,6 +14,10 @@ export interface WindowInstance {
 
 interface WindowManagerStore {
   windows: Record<string, WindowInstance>;
+  windowHistory: Record<
+    string,
+    Pick<WindowInstance, "position" | "size">
+  >;
   focusedWindowId?: string;
   openWindow: (
     id: string,
@@ -33,8 +37,10 @@ interface WindowManagerStore {
 
 export const useWindowManager = create<WindowManagerStore>((set, get) => ({
   windows: {},
+  windowHistory: {},
   openWindow: (id, title, parentId = null, position = { x: 200, y: 100 }) => {
     const zIndex = Object.keys(get().windows).length + 1;
+    const savedBounds = get().windowHistory[id];
     set((state) => ({
       windows: {
         ...state.windows,
@@ -43,8 +49,8 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
           title,
           parentId,
           fileId: id,
-          position,
-          size: { width: 400, height: 300 },
+          position: savedBounds?.position ?? position,
+          size: savedBounds?.size ?? { width: 400, height: 300 },
           zIndex,
         },
       },
@@ -63,14 +69,32 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
         ...state.windows,
         [id]: { ...state.windows[id], position },
       },
-    })),
-  updateWindowBounds: (id, bounds) =>
-    set((state) => ({
-      windows: {
-        ...state.windows,
-        [id]: { ...state.windows[id], ...bounds },
+      windowHistory: {
+        ...state.windowHistory,
+        [id]: {
+          position,
+          size: state.windows[id].size,
+        },
       },
     })),
+  updateWindowBounds: (id, bounds) =>
+    set((state) => {
+      const nextWindow = { ...state.windows[id], ...bounds };
+
+      return {
+        windows: {
+          ...state.windows,
+          [id]: nextWindow,
+        },
+        windowHistory: {
+          ...state.windowHistory,
+          [id]: {
+            position: nextWindow.position,
+            size: nextWindow.size,
+          },
+        },
+      };
+    }),
   closeWindow: (id) =>
     set((state) => {
       const newWindows = { ...state.windows };
