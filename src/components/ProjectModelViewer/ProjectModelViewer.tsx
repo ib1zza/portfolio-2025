@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useLoader } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import type { PointerEvent } from "react";
 import { Box3, MeshBasicMaterial, Vector3 } from "three";
 import type { Group, Mesh, Object3D } from "three";
@@ -15,7 +15,21 @@ interface ProjectModelViewerProps {
 
 interface ModelSceneProps {
   model: ProjectModel;
-  rotation: { x: number; y: number };
+  rotationRef: RotationRef;
+  isDraggingRef: BooleanRef;
+}
+
+interface RotationState {
+  x: number;
+  y: number;
+}
+
+interface RotationRef {
+  current: RotationState;
+}
+
+interface BooleanRef {
+  current: boolean;
 }
 
 type ModelLogo = NonNullable<ProjectModel["logo"]>;
@@ -36,7 +50,7 @@ const prepareModelClone = (
   scene: Object3D,
   material: MeshBasicMaterial,
   targetScale: number,
-  wireframeScale = 1
+  wireframeScale = 1,
 ) => {
   const object = scene.clone(true);
 
@@ -110,10 +124,26 @@ function Shape({
 function ToothModel() {
   return (
     <group>
-      <Shape type="sphere" position={[-0.45, 0.35, 0]} scale={[0.65, 0.5, 0.55]} />
-      <Shape type="sphere" position={[0.45, 0.35, 0]} scale={[0.65, 0.5, 0.55]} />
-      <Shape type="cone" position={[-0.32, -0.55, 0]} scale={[0.34, 0.8, 0.34]} />
-      <Shape type="cone" position={[0.32, -0.55, 0]} scale={[0.34, 0.8, 0.34]} />
+      <Shape
+        type="sphere"
+        position={[-0.45, 0.35, 0]}
+        scale={[0.65, 0.5, 0.55]}
+      />
+      <Shape
+        type="sphere"
+        position={[0.45, 0.35, 0]}
+        scale={[0.65, 0.5, 0.55]}
+      />
+      <Shape
+        type="cone"
+        position={[-0.32, -0.55, 0]}
+        scale={[0.34, 0.8, 0.34]}
+      />
+      <Shape
+        type="cone"
+        position={[0.32, -0.55, 0]}
+        scale={[0.34, 0.8, 0.34]}
+      />
     </group>
   );
 }
@@ -145,7 +175,11 @@ function ChatModel() {
   return (
     <group>
       <Block position={[0, 0.12, 0]} scale={[1.45, 0.82, 0.22]} />
-      <Shape type="cone" position={[-0.45, -0.55, 0]} scale={[0.32, 0.45, 0.22]} />
+      <Shape
+        type="cone"
+        position={[-0.45, -0.55, 0]}
+        scale={[0.32, 0.45, 0.22]}
+      />
       <Block position={[-0.42, 0.18, 0.25]} scale={[0.16, 0.16, 0.08]} />
       <Block position={[0, 0.18, 0.25]} scale={[0.16, 0.16, 0.08]} />
       <Block position={[0.42, 0.18, 0.25]} scale={[0.16, 0.16, 0.08]} />
@@ -190,11 +224,11 @@ function DownloadedObject({
   const gltf = useLoader(GLTFLoader, src);
   const solidModel = useMemo(
     () => prepareModelClone(gltf.scene, modelSolidMaterial, scale),
-    [gltf.scene, scale]
+    [gltf.scene, scale],
   );
   const wireModel = useMemo(
     () => prepareModelClone(gltf.scene, modelWireMaterial, scale, 1.015),
-    [gltf.scene, scale]
+    [gltf.scene, scale],
   );
 
   return (
@@ -245,21 +279,31 @@ function RotatingLogo({ logo }: { logo: ModelLogo }) {
   );
 }
 
-function ModelScene({ model, rotation }: ModelSceneProps) {
+function ModelScene({ model, rotationRef, isDraggingRef }: ModelSceneProps) {
   const groupRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
 
-    groupRef.current.rotation.x = rotation.x;
-    groupRef.current.rotation.y += delta * 0.25;
+    const targetRotation = rotationRef.current;
+    const easing = isDraggingRef.current ? 0.45 : 0.12;
+
+    if (!isDraggingRef.current) {
+      targetRotation.y += delta * 0.15;
+    }
+
     groupRef.current.rotation.y +=
-      (rotation.y - groupRef.current.rotation.y) * 0.08;
+      (targetRotation.y - groupRef.current.rotation.y) * easing;
+    groupRef.current.rotation.x +=
+      (targetRotation.x - groupRef.current.rotation.x) * easing;
   });
 
   return (
     <>
-      <group ref={groupRef} rotation={[rotation.x, rotation.y, 0]}>
+      <group
+        ref={groupRef}
+        rotation={[rotationRef.current.x, rotationRef.current.y, 0]}
+      >
         {model.src ? (
           <DownloadedModel model={model} />
         ) : (
@@ -275,19 +319,21 @@ function ModelScene({ model, rotation }: ModelSceneProps) {
 }
 
 export function ProjectModelViewer({ model }: ProjectModelViewerProps) {
-  const [rotation, setRotation] = useState({ x: -0.15, y: 0.45 });
+  const rotationRef = useRef<RotationState>({ x: -0.15, y: 0.45 });
+  const isDraggingRef = useRef(false);
   const dragStartRef = useRef<{
     x: number;
     y: number;
-    rotation: typeof rotation;
+    rotation: RotationState;
   } | null>(null);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId);
+    isDraggingRef.current = true;
     dragStartRef.current = {
       x: event.clientX,
       y: event.clientY,
-      rotation,
+      rotation: { ...rotationRef.current },
     };
   };
 
@@ -295,14 +341,15 @@ export function ProjectModelViewer({ model }: ProjectModelViewerProps) {
     const start = dragStartRef.current;
     if (!start) return;
 
-    setRotation({
+    rotationRef.current = {
       x: start.rotation.x + (event.clientY - start.y) * 0.01,
       y: start.rotation.y + (event.clientX - start.x) * 0.01,
-    });
+    };
   };
 
   const handlePointerUp = () => {
     dragStartRef.current = null;
+    isDraggingRef.current = false;
   };
 
   return (
@@ -320,7 +367,11 @@ export function ProjectModelViewer({ model }: ProjectModelViewerProps) {
         gl={{ antialias: false }}
       >
         <color attach="background" args={[white]} />
-        <ModelScene model={model} rotation={rotation} />
+        <ModelScene
+          model={model}
+          rotationRef={rotationRef}
+          isDraggingRef={isDraggingRef}
+        />
       </Canvas>
       <div className={s.caption}>{model.label}</div>
     </div>

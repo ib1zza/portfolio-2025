@@ -27,6 +27,122 @@ interface WindowProps {
   data: WindowInstance;
 }
 
+interface ScrollMetrics {
+  scrollLeft: number;
+  scrollTop: number;
+  scrollWidth: number;
+  scrollHeight: number;
+  clientWidth: number;
+  clientHeight: number;
+  verticalTrackHeight: number;
+  horizontalTrackWidth: number;
+}
+
+const MIN_WIDTH = 300;
+const MIN_HEIGHT = 200;
+
+const INITIAL_SCROLL_METRICS: ScrollMetrics = {
+  scrollLeft: 0,
+  scrollTop: 0,
+  scrollWidth: 0,
+  scrollHeight: 0,
+  clientWidth: 0,
+  clientHeight: 0,
+  verticalTrackHeight: 0,
+  horizontalTrackWidth: 0,
+};
+
+const areSizesEqual = (
+  a: { width: number; height: number },
+  b: { width: number; height: number }
+) => a.width === b.width && a.height === b.height;
+
+const arePositionsEqual = (
+  a: { x: number; y: number },
+  b: { x: number; y: number }
+) => a.x === b.x && a.y === b.y;
+
+const areScrollMetricsEqual = (a: ScrollMetrics, b: ScrollMetrics) =>
+  a.scrollLeft === b.scrollLeft &&
+  a.scrollTop === b.scrollTop &&
+  a.scrollWidth === b.scrollWidth &&
+  a.scrollHeight === b.scrollHeight &&
+  a.clientWidth === b.clientWidth &&
+  a.clientHeight === b.clientHeight &&
+  a.verticalTrackHeight === b.verticalTrackHeight &&
+  a.horizontalTrackWidth === b.horizontalTrackWidth;
+
+const getNumericStyleValue = (style: CSSStyleDeclaration, property: string) =>
+  parseFloat(style.getPropertyValue(property)) || 0;
+
+const getArticleContentSize = (article: HTMLElement) => {
+  const articleRect = article.getBoundingClientRect();
+  const articleStyle = window.getComputedStyle(article);
+  const paddingRight = getNumericStyleValue(articleStyle, "padding-right");
+  const paddingBottom = getNumericStyleValue(articleStyle, "padding-bottom");
+  let width = 0;
+  let height = 0;
+
+  Array.from(article.children).forEach((child) => {
+    const element = child as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    const marginRight = getNumericStyleValue(style, "margin-right");
+    const marginBottom = getNumericStyleValue(style, "margin-bottom");
+
+    width = Math.max(
+      width,
+      rect.right - articleRect.left + marginRight + paddingRight
+    );
+    height = Math.max(
+      height,
+      rect.bottom - articleRect.top + marginBottom + paddingBottom
+    );
+  });
+
+  return {
+    width: Math.ceil(width || article.scrollWidth),
+    height: Math.ceil(height || article.scrollHeight),
+  };
+};
+
+const getContentSize = (node: HTMLElement) => {
+  const children = Array.from(node.children) as HTMLElement[];
+
+  if (!children.length) {
+    return { width: node.scrollWidth, height: node.scrollHeight };
+  }
+
+  if (children.length === 1 && children[0].tagName === "ARTICLE") {
+    return getArticleContentSize(children[0]);
+  }
+
+  const nodeRect = node.getBoundingClientRect();
+  let width = 0;
+  let height = 0;
+
+  children.forEach((child) => {
+    const rect = child.getBoundingClientRect();
+    const style = window.getComputedStyle(child);
+    const marginRight = getNumericStyleValue(style, "margin-right");
+    const marginBottom = getNumericStyleValue(style, "margin-bottom");
+
+    width = Math.max(
+      width,
+      rect.right - nodeRect.left + node.scrollLeft + marginRight
+    );
+    height = Math.max(
+      height,
+      rect.bottom - nodeRect.top + node.scrollTop + marginBottom
+    );
+  });
+
+  return {
+    width: Math.ceil(width || node.scrollWidth),
+    height: Math.ceil(height || node.scrollHeight),
+  };
+};
+
 export function Window({ data }: WindowProps) {
   const {
     focusWindow,
@@ -45,6 +161,10 @@ export function Window({ data }: WindowProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const verticalTrackRef = useRef<HTMLDivElement>(null);
   const horizontalTrackRef = useRef<HTMLDivElement>(null);
+  const dragFrameRef = useRef<number | null>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+  const resizeFrameRef = useRef<number | null>(null);
+  const scrollMetricsFrameRef = useRef<number | null>(null);
   const scrollDragRef = useRef<{
     axis: "x" | "y";
     pointerStart: number;
@@ -57,16 +177,11 @@ export function Window({ data }: WindowProps) {
     width: size.width,
     height: size.height,
   });
-  const [scrollMetrics, setScrollMetrics] = useState({
-    scrollLeft: 0,
-    scrollTop: 0,
-    scrollWidth: 0,
-    scrollHeight: 0,
-    clientWidth: 0,
-    clientHeight: 0,
-    verticalTrackHeight: 0,
-    horizontalTrackWidth: 0,
-  });
+  const windowDimensionsRef = useRef(windowDimensions);
+  const resizeDraftSizeRef = useRef(windowDimensions);
+  const positionRef = useRef(position);
+  const [scrollMetrics, setScrollMetrics] = useState(INITIAL_SCROLL_METRICS);
+  const scrollMetricsRef = useRef(INITIAL_SCROLL_METRICS);
 
   // --- 🔧 Добавлено: состояние для ресайза
   const [isResizing, setIsResizing] = useState(false);
@@ -81,11 +196,45 @@ export function Window({ data }: WindowProps) {
   const hasHorizontalScroll =
     scrollMetrics.scrollWidth > scrollMetrics.clientWidth + 1;
 
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
+
+  useEffect(() => {
+    windowDimensionsRef.current = windowDimensions;
+  }, [windowDimensions]);
+
+  const commitWindowDimensions = useCallback(
+    (nextSize: { width: number; height: number }) => {
+      windowDimensionsRef.current = nextSize;
+      resizeDraftSizeRef.current = nextSize;
+      setWindowDimensions((currentSize) =>
+        areSizesEqual(currentSize, nextSize) ? currentSize : nextSize
+      );
+    },
+    []
+  );
+
+  const scheduleWindowDimensions = useCallback(
+    (nextSize: { width: number; height: number }) => {
+      windowDimensionsRef.current = nextSize;
+      resizeDraftSizeRef.current = nextSize;
+
+      if (resizeFrameRef.current !== null) return;
+
+      resizeFrameRef.current = window.requestAnimationFrame(() => {
+        resizeFrameRef.current = null;
+        commitWindowDimensions(resizeDraftSizeRef.current);
+      });
+    },
+    [commitWindowDimensions]
+  );
+
   const updateScrollMetrics = useCallback(() => {
     const node = contentRef.current;
     if (!node) return;
 
-    setScrollMetrics({
+    const nextMetrics = {
       scrollLeft: node.scrollLeft,
       scrollTop: node.scrollTop,
       scrollWidth: node.scrollWidth,
@@ -94,8 +243,37 @@ export function Window({ data }: WindowProps) {
       clientHeight: node.clientHeight,
       verticalTrackHeight: verticalTrackRef.current?.clientHeight ?? 0,
       horizontalTrackWidth: horizontalTrackRef.current?.clientWidth ?? 0,
-    });
+    };
+
+    if (areScrollMetricsEqual(scrollMetricsRef.current, nextMetrics)) return;
+
+    scrollMetricsRef.current = nextMetrics;
+    setScrollMetrics(nextMetrics);
   }, []);
+
+  const scheduleScrollMetricsUpdate = useCallback(() => {
+    if (scrollMetricsFrameRef.current !== null) return;
+
+    scrollMetricsFrameRef.current = window.requestAnimationFrame(() => {
+      scrollMetricsFrameRef.current = null;
+      updateScrollMetrics();
+    });
+  }, [updateScrollMetrics]);
+
+  useEffect(
+    () => () => {
+      if (dragFrameRef.current !== null) {
+        window.cancelAnimationFrame(dragFrameRef.current);
+      }
+      if (resizeFrameRef.current !== null) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+      }
+      if (scrollMetricsFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollMetricsFrameRef.current);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     updateScrollMetrics();
@@ -105,12 +283,12 @@ export function Window({ data }: WindowProps) {
     const node = contentRef.current;
     if (!node) return;
 
-    const resizeObserver = new ResizeObserver(updateScrollMetrics);
+    const resizeObserver = new ResizeObserver(scheduleScrollMetricsUpdate);
     resizeObserver.observe(node);
     if (node.firstElementChild) resizeObserver.observe(node.firstElementChild);
 
     return () => resizeObserver.disconnect();
-  }, [fileId, updateScrollMetrics]);
+  }, [fileId, scheduleScrollMetricsUpdate]);
 
   const scrollContent = (deltaLeft: number, deltaTop: number) => {
     contentRef.current?.scrollBy({
@@ -185,7 +363,7 @@ export function Window({ data }: WindowProps) {
         node.scrollLeft = nextScroll;
       }
 
-      updateScrollMetrics();
+      scheduleScrollMetricsUpdate();
     };
 
     const handlePointerUp = () => {
@@ -201,10 +379,26 @@ export function Window({ data }: WindowProps) {
       document.removeEventListener("pointerup", handlePointerUp);
       document.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [updateScrollMetrics]);
+  }, [scheduleScrollMetricsUpdate]);
+
+  const scheduleDragOffset = useCallback((offset: { x: number; y: number }) => {
+    dragOffsetRef.current = offset;
+
+    if (dragFrameRef.current !== null) return;
+
+    dragFrameRef.current = window.requestAnimationFrame(() => {
+      dragFrameRef.current = null;
+      setCurrentDragOffset((currentOffset) =>
+        arePositionsEqual(currentOffset, dragOffsetRef.current)
+          ? currentOffset
+          : dragOffsetRef.current
+      );
+    });
+  }, []);
 
   const handleDragStartProxy = () => {
     setIsDraggingProxy(true);
+    dragOffsetRef.current = { x: 0, y: 0 };
     setCurrentDragOffset({ x: 0, y: 0 });
   };
 
@@ -212,13 +406,18 @@ export function Window({ data }: WindowProps) {
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo
   ) => {
-    setCurrentDragOffset({ x: info.offset.x, y: info.offset.y });
+    scheduleDragOffset({ x: info.offset.x, y: info.offset.y });
   };
 
   const handleDragEndProxy = (
     _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo
   ) => {
+    if (dragFrameRef.current !== null) {
+      window.cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
     setIsDraggingProxy(false);
     moveWindow(id, {
       x: position.x + info.offset.x,
@@ -238,6 +437,7 @@ export function Window({ data }: WindowProps) {
     const node = contentRef.current;
     if (!node) return;
 
+    const contentSize = getContentSize(node);
     const topbarHeight = 21;
     const chromeWidth = windowDimensions.width - node.clientWidth;
     const chromeHeight = windowDimensions.height - node.clientHeight;
@@ -245,11 +445,11 @@ export function Window({ data }: WindowProps) {
     const maxHeight = window.innerHeight - topbarHeight;
     const nextWidth = Math.min(
       maxWidth,
-      Math.max(MIN_WIDTH, node.scrollWidth + chromeWidth)
+      Math.max(MIN_WIDTH, contentSize.width + chromeWidth)
     );
     const nextHeight = Math.min(
       maxHeight,
-      Math.max(MIN_HEIGHT, node.scrollHeight + chromeHeight)
+      Math.max(MIN_HEIGHT, contentSize.height + chromeHeight)
     );
     const nextPosition = {
       x: Math.min(position.x, Math.max(0, window.innerWidth - nextWidth)),
@@ -259,7 +459,7 @@ export function Window({ data }: WindowProps) {
       ),
     };
 
-    setWindowDimensions({ width: nextWidth, height: nextHeight });
+    commitWindowDimensions({ width: nextWidth, height: nextHeight });
     updateWindowBounds(id, {
       position: nextPosition,
       size: { width: nextWidth, height: nextHeight },
@@ -271,11 +471,9 @@ export function Window({ data }: WindowProps) {
     e.stopPropagation();
     setIsResizing(true);
     startMouse.current = { x: e.clientX, y: e.clientY };
-    startSize.current = { ...windowDimensions };
+    startSize.current = { ...windowDimensionsRef.current };
+    resizeDraftSizeRef.current = { ...windowDimensionsRef.current };
   };
-
-  const MIN_WIDTH = 300;
-  const MIN_HEIGHT = 200;
 
   useEffect(() => {
     if (!isResizing) return;
@@ -285,17 +483,25 @@ export function Window({ data }: WindowProps) {
       const dy = e.clientY - startMouse.current.y;
 
       // обновляем размеры, не трогая левый верхний угол
-      setWindowDimensions({
+      scheduleWindowDimensions({
         width: Math.max(MIN_WIDTH, startSize.current.width + dx),
         height: Math.max(MIN_HEIGHT, startSize.current.height + dy),
       });
     };
 
     const handleMouseUp = () => {
+      if (resizeFrameRef.current !== null) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
+
+      const nextSize = resizeDraftSizeRef.current;
+
+      commitWindowDimensions(nextSize);
       setIsResizing(false);
       updateWindowBounds(id, {
-        position,
-        size: windowDimensions,
+        position: positionRef.current,
+        size: nextSize,
       });
     };
 
@@ -306,7 +512,13 @@ export function Window({ data }: WindowProps) {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [id, isResizing, position, updateWindowBounds, windowDimensions]);
+  }, [
+    commitWindowDimensions,
+    id,
+    isResizing,
+    scheduleWindowDimensions,
+    updateWindowBounds,
+  ]);
   // --- 🔧 конец добавленного блока ---
 
   const renderDocument = (content: string | DocumentBlock[]) => {

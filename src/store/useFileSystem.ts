@@ -342,14 +342,14 @@ export const useFileSystem = create<FileSystemStore>()(
     Object.values(get().items).find((i) => i.id === id),
 
   setActive: (id: string) => {
-    set(() => ({
-      activeItemId: id,
-    }));
+    set((state) =>
+      state.activeItemId === id ? state : { activeItemId: id }
+    );
   },
   removeActive: () => {
-    set(() => ({
-      activeItemId: null,
-    }));
+    set((state) =>
+      state.activeItemId === null ? state : { activeItemId: null }
+    );
   },
   moveItem: (id, position) => {
     set((state) => ({

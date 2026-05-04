@@ -42,6 +42,14 @@ interface WindowManagerStore {
 
 const getDefaultWindowSize = () => ({ width: 400, height: 300 });
 
+const arePositionsEqual = (a: Position, b: Position) =>
+  a.x === b.x && a.y === b.y;
+
+const areSizesEqual = (
+  a: WindowInstance["size"],
+  b: WindowInstance["size"]
+) => a.width === b.width && a.height === b.height;
+
 export const useWindowManager = create<WindowManagerStore>()(
   persist(
     (set, get) => ({
@@ -72,29 +80,48 @@ export const useWindowManager = create<WindowManagerStore>()(
       focusedWindowId: id,
     }));
   },
-  focusWindow: (id) => {
-    // const zIndex = Object.keys(get().windows).length + 1;
-    set(() => ({
-      focusedWindowId: id,
-    }));
-  },
+  focusWindow: (id) =>
+    set((state) =>
+      state.focusedWindowId === id ? state : { focusedWindowId: id }
+    ),
   moveWindow: (id, position) =>
-    set((state) => ({
-      windows: {
-        ...state.windows,
-        [id]: { ...state.windows[id], position },
-      },
-      windowHistory: {
-        ...state.windowHistory,
-        [id]: {
-          position,
-          size: state.windows[id].size,
+    set((state) => {
+      const currentWindow = state.windows[id];
+
+      if (!currentWindow || arePositionsEqual(currentWindow.position, position)) {
+        return state;
+      }
+
+      return {
+        windows: {
+          ...state.windows,
+          [id]: { ...currentWindow, position },
         },
-      },
-    })),
+        windowHistory: {
+          ...state.windowHistory,
+          [id]: {
+            position,
+            size: currentWindow.size,
+          },
+        },
+      };
+    }),
   updateWindowBounds: (id, bounds) =>
     set((state) => {
-      const nextWindow = { ...state.windows[id], ...bounds };
+      const currentWindow = state.windows[id];
+      if (!currentWindow) return state;
+
+      const nextPosition = bounds.position ?? currentWindow.position;
+      const nextSize = bounds.size ?? currentWindow.size;
+      const hasSamePosition = arePositionsEqual(
+        currentWindow.position,
+        nextPosition
+      );
+      const hasSameSize = areSizesEqual(currentWindow.size, nextSize);
+
+      if (hasSamePosition && hasSameSize) return state;
+
+      const nextWindow = { ...currentWindow, ...bounds };
 
       return {
         windows: {
@@ -142,10 +169,14 @@ export const useWindowManager = create<WindowManagerStore>()(
     })),
   unfocusAll: (triggerId?: string) =>
     set((state) => {
-      if (!triggerId) return { focusedWindowId: undefined };
+      if (!triggerId) {
+        return state.focusedWindowId ? { focusedWindowId: undefined } : state;
+      }
       const focusedWindow = state.windows[state.focusedWindowId || ""];
-      if (!focusedWindow) return { focusedWindowId: undefined };
-      if (focusedWindow.parentId === triggerId) return {};
+      if (!focusedWindow) {
+        return state.focusedWindowId ? { focusedWindowId: undefined } : state;
+      }
+      if (focusedWindow.parentId === triggerId) return state;
 
       return { focusedWindowId: undefined };
     }),
