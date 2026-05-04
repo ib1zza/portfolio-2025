@@ -1,13 +1,16 @@
 import clsx from "clsx";
 import { motion, type PanInfo } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import s from "./Window.module.scss";
 import {
   useWindowManager,
   type WindowInstance,
 } from "../../store/useWindowManager";
-import { useFileSystem } from "../../store/useFileSystem";
+import {
+  useFileSystem,
+  type DocumentBlock,
+} from "../../store/useFileSystem";
 import Folder from "../Folder";
 
 interface WindowProps {
@@ -15,18 +18,37 @@ interface WindowProps {
 }
 
 export function Window({ data }: WindowProps) {
-  const { focusWindow, moveWindow, closeWindow, focusedWindowId } =
+  const {
+    focusWindow,
+    moveWindow,
+    updateWindowBounds,
+    closeWindow,
+    focusedWindowId,
+  } =
     useWindowManager();
   const { getChildren, setActive, getItemById } = useFileSystem();
-  const { id, position, title, zIndex, fileId, parentId } = data;
+  const { id, position, title, zIndex, fileId, parentId, size } = data;
 
   const [isDraggingProxy, setIsDraggingProxy] = useState(false);
   const [currentDragOffset, setCurrentDragOffset] = useState({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const verticalTrackRef = useRef<HTMLDivElement>(null);
+  const horizontalTrackRef = useRef<HTMLDivElement>(null);
 
   const [windowDimensions, setWindowDimensions] = useState({
-    width: 0,
-    height: 0,
+    width: size.width,
+    height: size.height,
+  });
+  const [scrollMetrics, setScrollMetrics] = useState({
+    scrollLeft: 0,
+    scrollTop: 0,
+    scrollWidth: 0,
+    scrollHeight: 0,
+    clientWidth: 0,
+    clientHeight: 0,
+    verticalTrackHeight: 0,
+    horizontalTrackWidth: 0,
   });
 
   // --- 🔧 Добавлено: состояние для ресайза
@@ -36,14 +58,68 @@ export function Window({ data }: WindowProps) {
 
   const isFile = fileId ? getItemById(fileId)?.type === "file" : false;
 
-  useEffect(() => {
-    if (windowRef.current) {
-      const rect = windowRef.current.getBoundingClientRect();
-      setWindowDimensions({ width: rect.width, height: rect.height });
-    }
-  }, [position.x, position.y]);
-
   const isFocused = focusedWindowId === id;
+  const hasVerticalScroll =
+    scrollMetrics.scrollHeight > scrollMetrics.clientHeight + 1;
+  const hasHorizontalScroll =
+    scrollMetrics.scrollWidth > scrollMetrics.clientWidth + 1;
+
+  const updateScrollMetrics = useCallback(() => {
+    const node = contentRef.current;
+    if (!node) return;
+
+    setScrollMetrics({
+      scrollLeft: node.scrollLeft,
+      scrollTop: node.scrollTop,
+      scrollWidth: node.scrollWidth,
+      scrollHeight: node.scrollHeight,
+      clientWidth: node.clientWidth,
+      clientHeight: node.clientHeight,
+      verticalTrackHeight: verticalTrackRef.current?.clientHeight ?? 0,
+      horizontalTrackWidth: horizontalTrackRef.current?.clientWidth ?? 0,
+    });
+  }, []);
+
+  useEffect(() => {
+    updateScrollMetrics();
+  }, [fileId, windowDimensions.width, windowDimensions.height, updateScrollMetrics]);
+
+  useEffect(() => {
+    const node = contentRef.current;
+    if (!node) return;
+
+    const resizeObserver = new ResizeObserver(updateScrollMetrics);
+    resizeObserver.observe(node);
+    if (node.firstElementChild) resizeObserver.observe(node.firstElementChild);
+
+    return () => resizeObserver.disconnect();
+  }, [fileId, updateScrollMetrics]);
+
+  const scrollContent = (deltaLeft: number, deltaTop: number) => {
+    contentRef.current?.scrollBy({
+      left: deltaLeft,
+      top: deltaTop,
+      behavior: "smooth",
+    });
+  };
+
+  const getThumbStyle = (axis: "x" | "y") => {
+    const isY = axis === "y";
+    const client = isY ? scrollMetrics.clientHeight : scrollMetrics.clientWidth;
+    const track = isY
+      ? scrollMetrics.verticalTrackHeight
+      : scrollMetrics.horizontalTrackWidth;
+    const scroll = isY ? scrollMetrics.scrollHeight : scrollMetrics.scrollWidth;
+    const offset = isY ? scrollMetrics.scrollTop : scrollMetrics.scrollLeft;
+    const size = scroll ? Math.max(16, (client / scroll) * track) : 16;
+    const maxOffset = Math.max(1, scroll - client);
+    const maxThumbOffset = Math.max(0, track - size);
+    const position = (offset / maxOffset) * maxThumbOffset;
+
+    return isY
+      ? { height: size, transform: `translateY(${position}px)` }
+      : { width: size, transform: `translateX(${position}px)` };
+  };
 
   const handleDragStartProxy = () => {
     setIsDraggingProxy(true);
@@ -73,6 +149,39 @@ export function Window({ data }: WindowProps) {
   const handleWindowClick = () => {
     focusWindow(id);
     if (parentId) setActive(parentId);
+  };
+
+  const handleZoomToFit = (e: ReactMouseEvent) => {
+    e.stopPropagation();
+    const node = contentRef.current;
+    if (!node) return;
+
+    const topbarHeight = 21;
+    const chromeWidth = windowDimensions.width - node.clientWidth;
+    const chromeHeight = windowDimensions.height - node.clientHeight;
+    const maxWidth = window.innerWidth;
+    const maxHeight = window.innerHeight - topbarHeight;
+    const nextWidth = Math.min(
+      maxWidth,
+      Math.max(MIN_WIDTH, node.scrollWidth + chromeWidth)
+    );
+    const nextHeight = Math.min(
+      maxHeight,
+      Math.max(MIN_HEIGHT, node.scrollHeight + chromeHeight)
+    );
+    const nextPosition = {
+      x: Math.min(position.x, Math.max(0, window.innerWidth - nextWidth)),
+      y: Math.min(
+        Math.max(topbarHeight, position.y),
+        Math.max(topbarHeight, window.innerHeight - nextHeight)
+      ),
+    };
+
+    setWindowDimensions({ width: nextWidth, height: nextHeight });
+    updateWindowBounds(id, {
+      position: nextPosition,
+      size: { width: nextWidth, height: nextHeight },
+    });
   };
 
   // --- 🔧 Добавлено: обработчики ресайза ---
@@ -114,12 +223,66 @@ export function Window({ data }: WindowProps) {
   }, [isResizing]);
   // --- 🔧 конец добавленного блока ---
 
+  const renderDocument = (content: string | DocumentBlock[]) => {
+    if (typeof content === "string") {
+      return <div className={s.contentText}>{content}</div>;
+    }
+
+    return (
+      <article className={s.document}>
+        {content.map((block, index) => {
+          switch (block.type) {
+            case "title":
+              return <h1 key={index}>{block.text}</h1>;
+            case "heading":
+              return <h2 key={index}>{block.text}</h2>;
+            case "paragraph":
+              return <p key={index}>{block.text}</p>;
+            case "meta":
+              return (
+                <p key={index} className={s.documentMeta}>
+                  <span>{block.label}:</span> {block.value}
+                </p>
+              );
+            case "list":
+              return (
+                <ul key={index}>
+                  {block.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              );
+            case "links":
+              return (
+                <ul key={index} className={s.documentLinks}>
+                  {block.items.map((item) => (
+                    <li key={item.href}>
+                      <a href={item.href} target="_blank" rel="noreferrer">
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              );
+            case "image":
+              return (
+                <figure key={index}>
+                  <img src={block.src} alt={block.alt} onLoad={updateScrollMetrics} />
+                  {block.caption && <figcaption>{block.caption}</figcaption>}
+                </figure>
+              );
+          }
+        })}
+      </article>
+    );
+  };
+
   const renderChildren = () => {
     if (fileId) {
       const item = getItemById(fileId);
 
       if (item?.type === "file") {
-        return <div className={s.contentText}>{item.content}</div>;
+        return renderDocument(item.content);
       }
 
       const children = getChildren(fileId);
@@ -193,9 +356,6 @@ export function Window({ data }: WindowProps) {
     </svg>
   );
 
-  const isNeedToScrollHorizontal = true;
-  const isNeedToScrollVertical = true;
-
   return (
     <>
       {/* Основное окно */}
@@ -246,7 +406,7 @@ export function Window({ data }: WindowProps) {
           <div className={s.buttonContainer}>
             <button
               className={clsx(s.windowTopButton, s.windowTopButtonClose)}
-              onClick={() => closeWindow(id)}
+              onClick={handleZoomToFit}
             >
               <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
             </button>
@@ -268,24 +428,37 @@ export function Window({ data }: WindowProps) {
 
         <div className={s.content}>
           <div
+            ref={contentRef}
+            onScroll={updateScrollMetrics}
             className={clsx(s.contentWindow, {
-              [s.needToScrollHorizontal]: isNeedToScrollHorizontal,
-              [s.needToScrollVertical]: isNeedToScrollVertical,
+              [s.needToScrollHorizontal]: hasHorizontalScroll,
+              [s.needToScrollVertical]: hasVerticalScroll,
             })}
           >
             {renderChildren()}
           </div>
           <div className={s.verticalScroll}>
-            <button className={clsx(s.navigationButton, s.navigationButtonUp)}>
+            <button
+              className={clsx(s.navigationButton, s.navigationButtonUp)}
+              onClick={() => scrollContent(0, -48)}
+              disabled={!hasVerticalScroll}
+            >
               {arrowIcon}
             </button>
-            {isNeedToScrollVertical && (
-              <div className={s.verticalScrollBar}>
-                <div className={s.scrollThumb} />
-              </div>
-            )}
+            <div
+              ref={verticalTrackRef}
+              className={clsx(s.verticalScrollBar, {
+                [s.emptyScrollBar]: !hasVerticalScroll,
+              })}
+            >
+              {hasVerticalScroll && (
+                <div className={s.scrollThumb} style={getThumbStyle("y")} />
+              )}
+            </div>
             <button
               className={clsx(s.navigationButton, s.navigationButtonDown)}
+              onClick={() => scrollContent(0, 48)}
+              disabled={!hasVerticalScroll}
             >
               {arrowIcon}
             </button>
@@ -293,16 +466,25 @@ export function Window({ data }: WindowProps) {
           <div className={s.horizontalScroll}>
             <button
               className={clsx(s.navigationButton, s.navigationButtonLeft)}
+              onClick={() => scrollContent(-48, 0)}
+              disabled={!hasHorizontalScroll}
             >
               {arrowIcon}
             </button>
-            {isNeedToScrollHorizontal && (
-              <div className={s.horizontalScrollBar}>
-                <div className={s.scrollThumb} />
-              </div>
-            )}
+            <div
+              ref={horizontalTrackRef}
+              className={clsx(s.horizontalScrollBar, {
+                [s.emptyScrollBar]: !hasHorizontalScroll,
+              })}
+            >
+              {hasHorizontalScroll && (
+                <div className={s.scrollThumb} style={getThumbStyle("x")} />
+              )}
+            </div>
             <button
               className={clsx(s.navigationButton, s.navigationButtonRight)}
+              onClick={() => scrollContent(48, 0)}
+              disabled={!hasHorizontalScroll}
             >
               {arrowIcon}
             </button>

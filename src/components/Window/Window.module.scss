@@ -158,20 +158,25 @@
 .content {
   --controls-size: 14px;
   display: grid;
-  // 1px for border
-  grid-template-columns: auto calc(1px + var(--controls-size));
-  grid-template-rows: auto calc(1px + var(--controls-size));
+  grid-template-columns: minmax(0, 1fr) calc(1px + var(--controls-size));
+  grid-template-rows: minmax(0, 1fr) calc(1px + var(--controls-size));
   flex-grow: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .contentWindow {
   grid-column: 1 / 2;
   grid-row: 1 / 2;
-  // TODO: mb cause problems
-  overflow: hidden;
+  overflow: auto;
   position: relative;
-  //
-  // min-height: 200px;
+  min-width: 0;
+  min-height: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .verticalScroll {
@@ -196,8 +201,7 @@
 .horizontalScrollBar {
   flex-basis: 100%;
   flex-grow: 1;
-  display: flex;
-  flex-direction: inherit;
+  position: relative;
 
   @include pattern-scroll;
 }
@@ -206,10 +210,19 @@
   background-position-x: 1px;
 }
 
+.emptyScrollBar {
+  background: $white;
+}
+
 .scrollThumb {
+  position: absolute;
+  top: 0;
+  left: 0;
   background: $white;
   border: $border;
-  flex: 0 0 16px;
+  min-width: 16px;
+  min-height: 16px;
+  will-change: transform;
 }
 
 // .verticalScrollBarThumb {
@@ -227,6 +240,10 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  &:disabled {
+    color: $black;
+  }
 
   &:active {
     svg {
@@ -321,4 +338,71 @@
 
 .contentText {
   padding-inline: 8px;
+  white-space: pre-wrap;
+  user-select: text;
+}
+
+.document {
+  width: max-content;
+  min-width: 100%;
+  padding: 10px 12px 18px;
+  user-select: text;
+
+  h1,
+  h2,
+  p,
+  ul,
+  figure {
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    @include textTitle(18px, 20px);
+  }
+
+  h2 {
+    @include textTitle(14px, 16px);
+    padding-top: 4px;
+  }
+
+  p,
+  li,
+  figcaption {
+    @include textMain(16px, 16px);
+    max-width: 520px;
+  }
+
+  ul {
+    padding-left: 16px;
+  }
+
+  a {
+    color: $black;
+    text-decoration: underline;
+  }
+
+  figure {
+    display: inline-block;
+    border: $border;
+    padding: 4px;
+    background: $white;
+  }
+
+  img {
+    display: block;
+    width: 420px;
+    max-width: none;
+    image-rendering: auto;
+    filter: grayscale(1) contrast(1.2);
+  }
+}
+
+.documentMeta {
+  span {
+    font-family: "ChiKareGo2", Arial, sans-serif;
+  }
+}
+
+.documentLinks {
+  list-style: square;
 }
