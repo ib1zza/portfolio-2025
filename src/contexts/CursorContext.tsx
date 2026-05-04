@@ -1,21 +1,10 @@
-// contexts/CursorContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { useState } from "react";
+import type { ReactNode } from "react";
 import type { CursorType } from "../types/cursor";
+import { CursorContext } from "./cursor";
 
-interface CursorContextType {
-  cursor: CursorType;
-  setCursor: (cursor: CursorType) => void;
-  resetCursor: () => void;
-}
-
-const CursorContext = createContext<CursorContextType | undefined>(undefined);
-
-export const CursorProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  // Устанавливаем arrow как курсор по умолчанию вместо default
+export function CursorProvider({ children }: { children: ReactNode }) {
   const [cursor, setCursor] = useState<CursorType>("arrow");
-
   const resetCursor = () => setCursor("arrow");
 
   return (
@@ -23,12 +12,4 @@ export const CursorProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </CursorContext.Provider>
   );
-};
-
-export const useCursor = () => {
-  const context = useContext(CursorContext);
-  if (context === undefined) {
-    throw new Error("useCursor must be used within a CursorProvider");
-  }
-  return context;
-};
+}

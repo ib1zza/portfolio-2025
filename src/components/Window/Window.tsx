@@ -1,6 +1,7 @@
 import clsx from "clsx";
-import { motion } from "framer-motion";
+import { motion, type PanInfo } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import s from "./Window.module.scss";
 import {
   useWindowManager,
@@ -40,7 +41,7 @@ export function Window({ data }: WindowProps) {
       const rect = windowRef.current.getBoundingClientRect();
       setWindowDimensions({ width: rect.width, height: rect.height });
     }
-  }, [windowRef.current, position.x, position.y]);
+  }, [position.x, position.y]);
 
   const isFocused = focusedWindowId === id;
 
@@ -49,11 +50,17 @@ export function Window({ data }: WindowProps) {
     setCurrentDragOffset({ x: 0, y: 0 });
   };
 
-  const handleDragProxy = (_: any, info: any) => {
+  const handleDragProxy = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
     setCurrentDragOffset({ x: info.offset.x, y: info.offset.y });
   };
 
-  const handleDragEndProxy = (_: any, info: any) => {
+  const handleDragEndProxy = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
     setIsDraggingProxy(false);
     moveWindow(id, {
       x: position.x + info.offset.x,
@@ -69,7 +76,7 @@ export function Window({ data }: WindowProps) {
   };
 
   // --- 🔧 Добавлено: обработчики ресайза ---
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+  const handleResizeMouseDown = (e: ReactMouseEvent) => {
     e.stopPropagation();
     setIsResizing(true);
     startMouse.current = { x: e.clientX, y: e.clientY };
@@ -87,10 +94,10 @@ export function Window({ data }: WindowProps) {
       const dy = e.clientY - startMouse.current.y;
 
       // обновляем размеры, не трогая левый верхний угол
-      setWindowDimensions((prev) => ({
+      setWindowDimensions({
         width: Math.max(MIN_WIDTH, startSize.current.width + dx),
         height: Math.max(MIN_HEIGHT, startSize.current.height + dy),
-      }));
+      });
     };
 
     const handleMouseUp = () => {

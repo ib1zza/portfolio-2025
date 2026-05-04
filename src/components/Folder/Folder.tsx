@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import type { MouseEventHandler } from "react";
 
 import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
@@ -30,7 +31,7 @@ export function Folder({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_1_1969)">
+      <g clipPath="url(#clip0_1_1969)">
         <path
           d="M11 8H5V9H4V10H3V11H2V12H1V31H30V12H14V11H13V10H12V9H11V8Z"
           fill="white"
@@ -39,8 +40,8 @@ export function Folder({
         <path d="M4 9V8H5V9H4Z" fill="black" />
         <path d="M3 10V9H4V10H3Z" fill="black" />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M3 11V10H2V11H1V12H0V32H31V12H30V11H14V10H13V9H12V8H11V9H12V10H13V11H3ZM1 12V31H30V12H1Z"
           fill="black"
         />
@@ -63,15 +64,15 @@ export function Folder({
     >
       <path d="M21 1H4V31H27V7H21V1Z" fill="white" />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M22 0V1H23V2H22V6H26V5H27V6H28V32H3V0H22ZM4 31H27V7H21V1H4V31Z"
         fill="black"
       />
       <path d="M25 4H26V5H25V4Z" fill="black" />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M24 3V2H23V3H24ZM24 3H25V4H24V3Z"
         fill="black"
       />
@@ -83,7 +84,7 @@ export function Folder({
     openWindow(id, name, id);
   };
 
-  const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
     e.stopPropagation();
     setActive(id);
     if (parentWindowId) {

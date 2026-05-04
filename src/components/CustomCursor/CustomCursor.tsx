@@ -1,6 +1,6 @@
 // components/CustomCursor.tsx
 import React, { useEffect, useState } from "react";
-import { useCursor } from "../../contexts/CursorContext";
+import { useCursor } from "../../contexts/cursor";
 import s from "./CustomCursor.module.scss";
 
 export const CustomCursor: React.FC = () => {

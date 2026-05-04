@@ -1,5 +1,4 @@
-// hooks/useCustomCursor.ts
-import { useCursor } from "../contexts/CursorContext";
+import { useCursor } from "../contexts/cursor";
 import type { CursorType } from "../types/cursor";
 
 export const useCustomCursor = () => {

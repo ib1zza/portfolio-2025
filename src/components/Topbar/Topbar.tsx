@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useCustomCursor } from "../../hooks/useCustomCursor";
 import s from "./Topbar.module.scss";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
 // Интерфейсы для лучшей читаемости и типизации
 interface SubmenuItemData {
@@ -35,7 +35,9 @@ const SubmenuContent = ({
   return (
     <div
       className={clsx(s.submenuItem, { [s.disabled]: item.disabled })}
-      onMouseUp={() => onClick(item.action)}
+      onMouseUp={() => {
+        if (!item.disabled) onClick(item.action);
+      }}
     >
       {item.title}
     </div>
@@ -43,7 +45,7 @@ const SubmenuContent = ({
 };
 
 // Отдельный компонент для подменю
-const Submenu = ({ items, onItemClick, setRef, disabled }: SubmenuProps) => {
+const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => {
   return (
     <div className={s.submenu} ref={setRef}>
       {items.map((item, index) => (
@@ -59,7 +61,8 @@ export function Topbar() {
   const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
   const submenuRef = useRef<HTMLDivElement | null>(null);
 
-  const tabs: TabData[] = [
+  const tabs: TabData[] = useMemo(
+    () => [
     {
       title: "¤",
       submenu: [
@@ -111,7 +114,9 @@ export function Topbar() {
         },
       ],
     },
-  ];
+    ],
+    []
+  );
 
   // Обработчик для клика по пункту подменю
   const handleSubmenuItemClick = useCallback((action: () => void) => {
@@ -161,7 +166,7 @@ export function Topbar() {
       }
       setIsMousePressed(false);
     },
-    [tabs] // Добавил tabs в зависимости
+    []
   );
 
   useEffect(() => {
