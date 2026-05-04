@@ -48,7 +48,7 @@ h4,
 button,
 input,
 label {
-  line-height: 1.1;
+  line-height: 1;
 }
 
 /* Balance text wrapping on headings */
@@ -89,4 +89,10 @@ textarea:not([rows]) {
 /* Anything that has been anchored to should have extra scroll margin */
 :target {
   scroll-margin-block: 5ex;
+}
+
+button {
+  border: none;
+  background: none;
+  outline: none;
 }

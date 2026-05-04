@@ -6,6 +6,7 @@ const LazyCursor = lazy(() => import("./components/CustomCursor"));
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
+  // TODO: make 2000
   const MIN_LOADER_DURATION_MS = 2000;
 
   useEffect(() => {

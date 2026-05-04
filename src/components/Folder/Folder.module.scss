@@ -1,0 +1,25 @@
+.folder {
+  // TODO: make dynamic
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &.active,
+  &:active {
+    filter: invert(1);
+  }
+}
+
+.folderIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.folderName {
+  height: 12px;
+  @include textMain(16px, 12px);
+  background: $white;
+  padding-inline: 3px;
+  user-select: none;
+}

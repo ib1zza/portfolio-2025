@@ -1,10 +1,44 @@
 import s from "./Desktop.module.scss";
 import { Topbar } from "../Topbar";
+import { useFileSystem } from "../../store/useFileSystem";
+import { useWindowManager } from "../../store/useWindowManager";
+import Folder from "../Folder";
+import Window from "../Window";
+import { useRef, type MouseEventHandler } from "react";
 
 export function Desktop() {
+  const { getChildren, removeActive } = useFileSystem();
+  const { windows, unfocusAll } = useWindowManager();
+  const desktopRef = useRef<HTMLDivElement | null>(null);
+  const desktopItems = getChildren("root");
+
+  const handleBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    if (e.target === desktopRef.current) {
+      removeActive();
+      unfocusAll();
+    }
+  };
+
   return (
-    <div className={s.desktop}>
+    <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
       <Topbar />
+
+      {/* Папки на рабочем столе */}
+      {desktopItems.map((item) =>
+        item.type === "folder" ? (
+          <Folder
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            position={item.position!}
+          />
+        ) : null
+      )}
+
+      {/* Окна */}
+      {Object.values(windows).map((win) => (
+        <Window key={win.id} data={win} />
+      ))}
     </div>
   );
 }

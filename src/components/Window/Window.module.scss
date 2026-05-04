@@ -1,0 +1,324 @@
+.window {
+  border: 1px solid $black;
+  position: absolute;
+  // TODO: make dynamic
+  top: 100px;
+  left: 100px;
+  background: $white;
+  isolation: isolate;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.windowTop {
+  --content-height: 11px;
+  --padding-block-pattern: 3px;
+  --paddin-inline-pattern: 1px;
+  width: 100%;
+  border-bottom: 1px solid $black;
+  padding-block: 3px;
+  padding-inline: 8px;
+  height: 17px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+
+  &::before {
+    position: absolute;
+    inset-inline: var(--paddin-inline-pattern);
+    inset-block: var(--padding-block-pattern);
+    content: "";
+
+    width: calc(100% - (var(--paddin-inline-pattern) * 2));
+    height: var(--content-height);
+
+    --pixel-color: #000;
+    --bg-color: #fff;
+
+    background-color: var(--bg-color);
+    background-image: linear-gradient(
+      to bottom,
+      var(--pixel-color) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    background-size: 100% 2px;
+    background-repeat: repeat-y;
+    z-index: -1;
+  }
+}
+
+.window.inactive {
+  .windowTop {
+    & .buttonContainer,
+    &::before {
+      visibility: hidden;
+    }
+  }
+
+  & .horizontalScrollBar,
+  & .verticalScrollBar {
+    visibility: hidden;
+  }
+  .navigationButton {
+    visibility: hidden;
+  }
+
+  .windowResize {
+    &::before,
+    &::after {
+      visibility: hidden;
+    }
+  }
+}
+
+.buttonContainer {
+  padding-inline: 1px;
+  height: var(--content-height);
+  background: $white;
+  display: flex;
+  position: relative;
+  z-index: 2;
+}
+
+.windowTopButton {
+  height: var(--content-height);
+  width: var(--content-height);
+  border: 1px solid $black;
+  position: relative;
+  img {
+    display: none;
+    inset: 0;
+    z-index: 2;
+    user-select: none;
+  }
+  &:active {
+    img {
+      display: block;
+      z-index: 2;
+    }
+  }
+}
+
+.windowTopButtonClose {
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 6px;
+    height: 6px;
+    border-right: 1px solid $black;
+    border-bottom: 1px solid $black;
+  }
+
+  &:active::before {
+    display: none;
+  }
+}
+
+.title {
+  height: var(--content-height);
+  vertical-align: middle;
+  text-align: center;
+
+  @include textTitle(14px, var(--content-height));
+  background: $white;
+  padding-inline: 10px;
+}
+
+.finderData {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 10px;
+  border-bottom: $border;
+
+  & > * {
+    width: 30%;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  & :nth-child(1) {
+    text-align: left;
+  }
+
+  & :nth-child(2) {
+    text-align: center;
+  }
+
+  & :nth-child(3) {
+    text-align: right;
+  }
+}
+
+.content {
+  --controls-size: 14px;
+  display: grid;
+  // 1px for border
+  grid-template-columns: auto calc(1px + var(--controls-size));
+  grid-template-rows: auto calc(1px + var(--controls-size));
+  flex-grow: 1;
+}
+
+.contentWindow {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  // TODO: mb cause problems
+  overflow: hidden;
+  position: relative;
+  //
+  // min-height: 200px;
+}
+
+.verticalScroll {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  border-left: $border;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.horizontalScroll {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  border-top: $border;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.verticalScrollBar,
+.horizontalScrollBar {
+  flex-basis: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: inherit;
+
+  @include pattern-scroll;
+}
+
+.horizontalScrollBar {
+  background-position-x: 1px;
+}
+
+.scrollThumb {
+  background: $white;
+  border: $border;
+  flex: 0 0 16px;
+}
+
+// .verticalScrollBarThumb {
+//   width: 100%;
+// }
+
+// .horizontalScrollBarThumb {
+//   height: 100%;
+// }
+
+.navigationButton {
+  width: var(--controls-size);
+  height: var(--controls-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:active {
+    svg {
+      fill: $black;
+    }
+  }
+  &Up {
+    // for border
+    height: calc(var(--controls-size) + 1px);
+
+    border-bottom: $border;
+    svg {
+      transform: rotate(0deg);
+    }
+  }
+
+  &Down {
+    // for border
+    height: calc(var(--controls-size) + 1px);
+    border-top: $border;
+
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  &Right {
+    width: calc(var(--controls-size) + 1px);
+    border-left: $border;
+    svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  &Left {
+    width: calc(var(--controls-size) + 1px);
+    border-right: $border;
+    svg {
+      transform: rotate(270deg);
+    }
+  }
+}
+
+.windowResize {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  border-top: $border;
+  border-left: $border;
+  position: relative;
+
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border: $border;
+    bottom: 1px;
+    right: 1px;
+  }
+
+  &::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border: $border;
+    top: 2px;
+    left: 2px;
+    background: $white;
+  }
+}
+
+.windowProxy {
+  border-width: 1px; /* Важно указать ширину border */
+  border-style: solid; /* Или любое другое, border-image заменяет его вид */
+  background-color: transparent;
+  pointer-events: none;
+  position: relative; /* Важно для позиционирования .dragHandle внутри него */
+
+  border: 1px dotted $black;
+}
+
+.dragHandle {
+  // Этот элемент будет невидимым, но будет реагировать на перетаскивание
+  // Его стили определяют область, за которую можно перетаскивать окно
+  // По умолчанию он находится внутри .windowTop, поэтому его размер будет размером заголовка
+  background-color: transparent;
+  z-index: 1; // Убедитесь, что он поверх других элементов заголовка, если есть
+}
+
+.contentText {
+  padding-inline: 8px;
+}
