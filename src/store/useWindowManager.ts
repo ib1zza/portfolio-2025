@@ -32,6 +32,9 @@ interface WindowManagerStore {
     bounds: Partial<Pick<WindowInstance, "position" | "size">>
   ) => void;
   closeWindow: (id: string) => void;
+  closeFocusedWindow: () => void;
+  closeAllWindows: () => void;
+  resetWindows: () => void;
   unfocusAll: (id?: string) => void;
 }
 
@@ -99,8 +102,32 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
     set((state) => {
       const newWindows = { ...state.windows };
       delete newWindows[id];
-      return { windows: newWindows };
+      return {
+        windows: newWindows,
+        focusedWindowId:
+          state.focusedWindowId === id ? undefined : state.focusedWindowId,
+      };
     }),
+  closeFocusedWindow: () =>
+    set((state) => {
+      if (!state.focusedWindowId) return {};
+
+      const newWindows = { ...state.windows };
+      delete newWindows[state.focusedWindowId];
+
+      return { windows: newWindows, focusedWindowId: undefined };
+    }),
+  closeAllWindows: () =>
+    set(() => ({
+      windows: {},
+      focusedWindowId: undefined,
+    })),
+  resetWindows: () =>
+    set(() => ({
+      windows: {},
+      windowHistory: {},
+      focusedWindowId: undefined,
+    })),
   unfocusAll: (triggerId?: string) =>
     set((state) => {
       if (!triggerId) return { focusedWindowId: undefined };

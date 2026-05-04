@@ -9,7 +9,7 @@
   align-items: stretch;
   padding-inline: 20px;
   position: relative;
-  z-index: 10000;
+  z-index: $z-topbar;
   user-select: none;
 }
 
@@ -36,7 +36,7 @@
   left: 0;
   background: $white;
   border: 1px solid $black;
-  z-index: 1000;
+  z-index: $z-submenu;
   min-width: 160px;
 }
 
@@ -62,4 +62,13 @@
   @include pattern;
   margin: 4px 0;
   height: 1px;
+}
+
+.clock {
+  margin-left: auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-inline: 10px;
+  background: $white;
 }

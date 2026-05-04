@@ -2,3 +2,9 @@ $white: #ffffff;
 $black: #000000;
 
 $border: 1px solid $black;
+
+$z-window-focused: 100;
+$z-window-proxy: 101;
+$z-topbar: 10000;
+$z-submenu: 10010;
+$z-cursor: 11000;

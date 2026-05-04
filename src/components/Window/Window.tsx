@@ -12,6 +12,7 @@ import {
   type DocumentBlock,
 } from "../../store/useFileSystem";
 import Folder from "../Folder";
+import { Z_INDEX } from "../../constants/zIndex";
 
 interface WindowProps {
   data: WindowInstance;
@@ -361,7 +362,7 @@ export function Window({ data }: WindowProps) {
         ref={windowRef}
         className={clsx(s.window, { [s.inactive]: !isFocused })}
         style={{
-          zIndex: isFocused ? 100 : zIndex,
+          zIndex: isFocused ? Z_INDEX.windowFocused : zIndex,
           position: "absolute",
           left: position.x,
           top: position.y,
@@ -503,7 +504,7 @@ export function Window({ data }: WindowProps) {
           <motion.div
             className={s.windowProxy}
             style={{
-              zIndex: isFocused ? 101 : zIndex + 1,
+              zIndex: isFocused ? Z_INDEX.windowProxy : zIndex + 1,
               position: "absolute",
               left: position.x + currentDragOffset.x,
               top: position.y + currentDragOffset.y,

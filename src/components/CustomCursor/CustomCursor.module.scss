@@ -1,7 +1,7 @@
 .cursor {
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
+  z-index: $z-cursor;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

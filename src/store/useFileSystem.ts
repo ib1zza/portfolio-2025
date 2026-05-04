@@ -109,6 +109,78 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
   {}
 );
 
+const createInitialItems = (): Record<string, FileSystemItem> => ({
+  root: {
+    id: "root",
+    name: "Desktop",
+    type: "folder",
+    parentId: null,
+    children: ["about", "projects", "education", "contact"],
+  },
+  projects: {
+    id: "projects",
+    name: "Projects",
+    type: "folder",
+    parentId: "root",
+    position: { x: 200, y: 140 },
+    children: portfolio.projects.map((project) => `project-${project.id}`),
+  },
+  about: {
+    id: "about",
+    name: "About Me",
+    type: "folder",
+    parentId: "root",
+    position: { x: 80, y: 140 },
+    children: ["aboutReadme"],
+  },
+  aboutReadme: {
+    id: "aboutReadme",
+    name: "Profile",
+    type: "file",
+    parentId: "about",
+    content: aboutContent,
+  },
+  education: {
+    id: "education",
+    name: "Education",
+    type: "folder",
+    parentId: "root",
+    position: { x: 320, y: 140 },
+    children: ["educationReadme"],
+  },
+  educationReadme: {
+    id: "educationReadme",
+    name: "Schools",
+    type: "file",
+    parentId: "education",
+    content: educationContent,
+  },
+  contact: {
+    id: "contact",
+    name: "Contact",
+    type: "folder",
+    parentId: "root",
+    position: { x: 460, y: 140 },
+    children: ["contactReadme"],
+  },
+  contactReadme: {
+    id: "contactReadme",
+    name: "Links",
+    type: "file",
+    parentId: "contact",
+    content: contactsContent,
+  },
+  ...projectItems,
+});
+
+const getCleanPosition = (parentId: string | null, index: number) =>
+  parentId === "root"
+    ? { x: 80 + index * 120, y: 140 }
+    : {
+        x: 20 + (index % 3) * 130,
+        y: 20 + Math.floor(index / 3) * 70,
+      };
+
 interface FileSystemStore {
   items: Record<string, FileSystemItem>;
   activeItemId: string | null;
@@ -116,73 +188,13 @@ interface FileSystemStore {
   setActive: (id: string) => void;
   removeActive: () => void;
   moveItem: (id: string, position: Position) => void;
+  cleanUpChildren: (parentId: string | null) => void;
+  resetLayout: () => void;
   getItemById: (id: string) => FileSystemItem | undefined;
 }
 
 export const useFileSystem = create<FileSystemStore>((set, get) => ({
-  items: {
-    root: {
-      id: "root",
-      name: "Desktop",
-      type: "folder",
-      parentId: null,
-      children: ["about", "projects", "education", "contact"],
-    },
-    projects: {
-      id: "projects",
-      name: "Projects",
-      type: "folder",
-      parentId: "root",
-      position: { x: 200, y: 140 },
-      children: portfolio.projects.map((project) => `project-${project.id}`),
-    },
-    about: {
-      id: "about",
-      name: "About Me",
-      type: "folder",
-      parentId: "root",
-      position: { x: 80, y: 140 },
-      children: ["aboutReadme"],
-    },
-    aboutReadme: {
-      id: "aboutReadme",
-      name: "Profile",
-      type: "file",
-      parentId: "about",
-      content: aboutContent,
-    },
-    education: {
-      id: "education",
-      name: "Education",
-      type: "folder",
-      parentId: "root",
-      position: { x: 320, y: 140 },
-      children: ["educationReadme"],
-    },
-    educationReadme: {
-      id: "educationReadme",
-      name: "Schools",
-      type: "file",
-      parentId: "education",
-      content: educationContent,
-    },
-    contact: {
-      id: "contact",
-      name: "Contact",
-      type: "folder",
-      parentId: "root",
-      position: { x: 460, y: 140 },
-      children: ["contactReadme"],
-    },
-    contactReadme: {
-      id: "contactReadme",
-      name: "Links",
-      type: "file",
-      parentId: "contact",
-      content: contactsContent,
-    },
-    ...projectItems,
-  },
+  items: createInitialItems(),
   activeItemId: null,
   getChildren: (parentId) =>
     Object.values(get().items).filter((i) => i.parentId === parentId),
@@ -209,6 +221,33 @@ export const useFileSystem = create<FileSystemStore>((set, get) => ({
           position,
         },
       },
+    }));
+  },
+  cleanUpChildren: (parentId) => {
+    set((state) => {
+      const parent = parentId ? state.items[parentId] : undefined;
+      const children =
+        parent?.type === "folder"
+          ? parent.children
+              .map((childId) => state.items[childId])
+              .filter(Boolean)
+          : Object.values(state.items).filter((item) => item.parentId === parentId);
+      const nextItems = { ...state.items };
+
+      children.forEach((item, index) => {
+        nextItems[item.id] = {
+          ...item,
+          position: getCleanPosition(parentId, index),
+        };
+      });
+
+      return { items: nextItems };
+    });
+  },
+  resetLayout: () => {
+    set(() => ({
+      items: createInitialItems(),
+      activeItemId: null,
     }));
   },
 }));

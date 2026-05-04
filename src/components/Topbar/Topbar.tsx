@@ -1,9 +1,11 @@
 import clsx from "clsx";
-import { useCustomCursor } from "../../hooks/useCustomCursor";
-import s from "./Topbar.module.scss";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 
-// Интерфейсы для лучшей читаемости и типизации
+import { useCustomCursor } from "../../hooks/useCustomCursor";
+import { useFileSystem } from "../../store/useFileSystem";
+import { useWindowManager } from "../../store/useWindowManager";
+import s from "./Topbar.module.scss";
+
 interface SubmenuItemData {
   title: string;
   action: () => void;
@@ -21,7 +23,12 @@ interface SubmenuProps {
   setRef: (el: HTMLDivElement | null) => void;
 }
 
-// Компонент для отдельного пункта подменю или разделителя
+const formatClock = () =>
+  new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date());
+
 const SubmenuContent = ({
   item,
   onClick,
@@ -29,9 +36,8 @@ const SubmenuContent = ({
   item: SubmenuItemData | null;
   onClick: (action: () => void) => void;
 }) => {
-  if (!item) {
-    return <div className={s.submenuSeparator} />;
-  }
+  if (!item) return <div className={s.submenuSeparator} />;
+
   return (
     <div
       className={clsx(s.submenuItem, { [s.disabled]: item.disabled })}
@@ -44,99 +50,151 @@ const SubmenuContent = ({
   );
 };
 
-// Отдельный компонент для подменю
-const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => {
-  return (
-    <div className={s.submenu} ref={setRef}>
-      {items.map((item, index) => (
-        <SubmenuContent key={index} item={item} onClick={onItemClick} />
-      ))}
-    </div>
-  );
-};
+const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => (
+  <div className={s.submenu} ref={setRef}>
+    {items.map((item, index) => (
+      <SubmenuContent key={index} item={item} onClick={onItemClick} />
+    ))}
+  </div>
+);
 
 export function Topbar() {
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [isMousePressed, setIsMousePressed] = useState(false);
+  const [clock, setClock] = useState(formatClock);
   const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
   const submenuRef = useRef<HTMLDivElement | null>(null);
+  const {
+    windows,
+    focusedWindowId,
+    openWindow,
+    closeFocusedWindow,
+    closeAllWindows,
+    resetWindows,
+  } = useWindowManager();
+  const { setActive, getItemById, cleanUpChildren, resetLayout } =
+    useFileSystem();
+
+  const hasWindows = Object.keys(windows).length > 0;
+  const focusedWindow = focusedWindowId ? windows[focusedWindowId] : undefined;
+  const focusedItem = focusedWindow?.fileId
+    ? getItemById(focusedWindow.fileId)
+    : undefined;
+  const cleanUpTarget =
+    focusedItem?.type === "folder"
+      ? focusedItem.id
+      : focusedItem?.parentId ?? "root";
+
+  useEffect(() => {
+    const timerId = window.setInterval(() => setClock(formatClock()), 1000);
+
+    return () => window.clearInterval(timerId);
+  }, []);
+
+  const openPortfolioWindow = useCallback(
+    (id: string, title: string) => {
+      openWindow(id, title, id);
+      setActive(id);
+    },
+    [openWindow, setActive]
+  );
 
   const tabs: TabData[] = useMemo(
     () => [
-    {
-      title: "¤",
-      submenu: [
-        {
-          title: "About this Website ...",
-          action: () => {
-            console.log("About this Website clicked");
+      {
+        title: "¤",
+        submenu: [
+          {
+            title: "About This Portfolio...",
+            action: () => openPortfolioWindow("about", "About Me"),
           },
-        },
-        null, // Разделитель
-        {
-          title: "Close Window",
-          action: () => {
-            console.log("Close Window clicked");
+          null,
+          {
+            title: "Close Window",
+            action: closeFocusedWindow,
+            disabled: !focusedWindowId,
           },
-        },
-        {
-          title: "Mock action",
-          action: () => {
-            console.log("Mock action clicked");
+          {
+            title: "Close All",
+            action: closeAllWindows,
+            disabled: !hasWindows,
           },
-        },
-      ],
-    },
-    {
-      title: "File",
-      submenu: [
-        {
-          title: "New",
-          action: () => console.log("New clicked"),
-        },
-        {
-          title: "Open",
-          action: () => console.log("Open clicked"),
-          disabled: true,
-        },
-      ],
-    },
-    {
-      title: "Edit",
-      submenu: [
-        {
-          title: "Undo",
-          action: () => console.log("Undo clicked"),
-        },
-        {
-          title: "Redo",
-          action: () => console.log("Redo clicked"),
-        },
-      ],
-    },
+        ],
+      },
+      {
+        title: "File",
+        submenu: [
+          {
+            title: "Open About",
+            action: () => openPortfolioWindow("about", "About Me"),
+          },
+          {
+            title: "Open Projects",
+            action: () => openPortfolioWindow("projects", "Projects"),
+          },
+          null,
+          {
+            title: "Close Window",
+            action: closeFocusedWindow,
+            disabled: !focusedWindowId,
+          },
+          {
+            title: "Close All",
+            action: closeAllWindows,
+            disabled: !hasWindows,
+          },
+        ],
+      },
+      {
+        title: "Edit",
+        submenu: [
+          {
+            title: "Clean Up Icons",
+            action: () => cleanUpChildren(cleanUpTarget),
+          },
+        ],
+      },
+      {
+        title: "Special",
+        submenu: [
+          {
+            title: "Restart Finder",
+            action: () => {
+              resetLayout();
+              resetWindows();
+            },
+          },
+        ],
+      },
     ],
-    []
+    [
+      cleanUpChildren,
+      cleanUpTarget,
+      closeAllWindows,
+      closeFocusedWindow,
+      focusedWindowId,
+      hasWindows,
+      openPortfolioWindow,
+      resetLayout,
+      resetWindows,
+    ]
   );
 
-  // Обработчик для клика по пункту подменю
   const handleSubmenuItemClick = useCallback((action: () => void) => {
     action();
     setActiveMenuIndex(null);
     setIsMousePressed(false);
-  }, []); // Зависимостей нет, т.к. action передается как аргумент
+  }, []);
 
-  // Обработчик наведения мыши при зажатой кнопке
   const handleMouseOver = useCallback(
     (event: MouseEvent) => {
       if (!isMousePressed) return;
 
       const target = event.target as Node;
-
       const hoveredTabIndex = tabRefs.current.findIndex(
         (tab) => tab && tab.contains(target)
       );
 
-      // Если навели на другой таб и он имеет подменю - переключаемся на него
       if (
         hoveredTabIndex !== -1 &&
         hoveredTabIndex !== activeMenuIndex &&
@@ -146,28 +204,22 @@ export function Topbar() {
       }
     },
     [isMousePressed, activeMenuIndex, tabs]
-  ); // Добавил tabs в зависимости, хотя он и статичен.
-
-  // Обработчик отпускания кнопки мыши (глобальный)
-  const handleGlobalMouseUp = useCallback(
-    (event: MouseEvent) => {
-      const target = event.target as Node;
-      const clickedOnSubmenu = submenuRef.current?.contains(target);
-      const clickedOnTabTitle = tabRefs.current.some((tab) => {
-        if (!tab) return false;
-        const tabTitle = tab.querySelector(`.${s.tabTitle}`);
-        return tabTitle && tabTitle.contains(target);
-      });
-
-      // Закрываем меню, если клик был вне подменю И не на заголовке таба
-      // ИЛИ если клик был на заголовке таба (даже активного)
-      if ((!clickedOnSubmenu && !clickedOnTabTitle) || clickedOnTabTitle) {
-        setActiveMenuIndex(null);
-      }
-      setIsMousePressed(false);
-    },
-    []
   );
+
+  const handleGlobalMouseUp = useCallback((event: MouseEvent) => {
+    const target = event.target as Node;
+    const clickedOnSubmenu = submenuRef.current?.contains(target);
+    const clickedOnTabTitle = tabRefs.current.some((tab) => {
+      if (!tab) return false;
+      const tabTitle = tab.querySelector(`.${s.tabTitle}`);
+      return tabTitle && tabTitle.contains(target);
+    });
+
+    if ((!clickedOnSubmenu && !clickedOnTabTitle) || clickedOnTabTitle) {
+      setActiveMenuIndex(null);
+    }
+    setIsMousePressed(false);
+  }, []);
 
   useEffect(() => {
     document.addEventListener("mouseover", handleMouseOver);
@@ -177,15 +229,13 @@ export function Topbar() {
       document.removeEventListener("mouseover", handleMouseOver);
       document.removeEventListener("mouseup", handleGlobalMouseUp);
     };
-  }, [handleMouseOver, handleGlobalMouseUp]); // Зависимости - сами обработчики
+  }, [handleMouseOver, handleGlobalMouseUp]);
 
   const handleMouseDownOnTab = useCallback((index: number) => {
     setIsMousePressed(true);
-    // При зажатии сразу показываем меню этого таба
     setActiveMenuIndex(index);
   }, []);
 
-  // Функции для сохранения рефов
   const setTabRef = useCallback(
     (index: number) => (el: HTMLDivElement | null) => {
       tabRefs.current[index] = el;
@@ -202,12 +252,12 @@ export function Topbar() {
   return (
     <div className={s.topbar}>
       {tabs.map((tab, index) => (
-        <div key={index} className={s.tab} ref={setTabRef(index)}>
+        <div key={tab.title} className={s.tab} ref={setTabRef(index)}>
           <div
             {...withCursor("hand")}
-            className={`${s.tabTitle} ${
-              activeMenuIndex === index ? s.active : ""
-            }`}
+            className={clsx(s.tabTitle, {
+              [s.active]: activeMenuIndex === index,
+            })}
             onMouseDown={() => handleMouseDownOnTab(index)}
           >
             {tab.title}
@@ -221,6 +271,7 @@ export function Topbar() {
           )}
         </div>
       ))}
+      <div className={s.clock}>{clock}</div>
     </div>
   );
 }
