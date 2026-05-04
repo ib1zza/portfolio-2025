@@ -9,7 +9,7 @@ export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleCursorMove = (e: MouseEvent | PointerEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
 
@@ -17,7 +17,8 @@ export const CustomCursor: React.FC = () => {
     const handleMouseLeave = () => setIsVisible(false);
 
     // Добавляем обработчики на весь документ
-    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousemove", handleCursorMove);
+    document.addEventListener("pointermove", handleCursorMove, true);
     document.addEventListener("mouseenter", handleMouseEnter);
     document.addEventListener("mouseleave", handleMouseLeave);
 
@@ -25,7 +26,8 @@ export const CustomCursor: React.FC = () => {
     setIsVisible(true);
 
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousemove", handleCursorMove);
+      document.removeEventListener("pointermove", handleCursorMove, true);
       document.removeEventListener("mouseenter", handleMouseEnter);
       document.removeEventListener("mouseleave", handleMouseLeave);
     };

@@ -1,7 +1,10 @@
 import clsx from "clsx";
 import { motion, type PanInfo } from "framer-motion";
-import { useCallback, useState, useRef, useEffect } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
+import { lazy, Suspense, useCallback, useState, useRef, useEffect } from "react";
+import type {
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+} from "react";
 import s from "./Window.module.scss";
 import {
   useWindowManager,
@@ -13,6 +16,12 @@ import {
 } from "../../store/useFileSystem";
 import Folder from "../Folder";
 import { Z_INDEX } from "../../constants/zIndex";
+
+const ProjectModelViewer = lazy(() =>
+  import("../ProjectModelViewer").then((module) => ({
+    default: module.ProjectModelViewer,
+  }))
+);
 
 interface WindowProps {
   data: WindowInstance;
@@ -36,6 +45,13 @@ export function Window({ data }: WindowProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const verticalTrackRef = useRef<HTMLDivElement>(null);
   const horizontalTrackRef = useRef<HTMLDivElement>(null);
+  const scrollDragRef = useRef<{
+    axis: "x" | "y";
+    pointerStart: number;
+    scrollStart: number;
+    maxScroll: number;
+    maxThumbOffset: number;
+  } | null>(null);
 
   const [windowDimensions, setWindowDimensions] = useState({
     width: size.width,
@@ -121,6 +137,71 @@ export function Window({ data }: WindowProps) {
       ? { height: size, transform: `translateY(${position}px)` }
       : { width: size, transform: `translateX(${position}px)` };
   };
+
+  const startThumbDrag = (
+    event: ReactPointerEvent<HTMLDivElement>,
+    axis: "x" | "y"
+  ) => {
+    const node = contentRef.current;
+    if (!node) return;
+
+    const isY = axis === "y";
+    const client = isY ? scrollMetrics.clientHeight : scrollMetrics.clientWidth;
+    const track = isY
+      ? scrollMetrics.verticalTrackHeight
+      : scrollMetrics.horizontalTrackWidth;
+    const scroll = isY ? scrollMetrics.scrollHeight : scrollMetrics.scrollWidth;
+    const maxScroll = Math.max(0, scroll - client);
+    const thumbSize = scroll ? Math.max(16, (client / scroll) * track) : 16;
+
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+
+    scrollDragRef.current = {
+      axis,
+      pointerStart: isY ? event.clientY : event.clientX,
+      scrollStart: isY ? node.scrollTop : node.scrollLeft,
+      maxScroll,
+      maxThumbOffset: Math.max(1, track - thumbSize),
+    };
+  };
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      const drag = scrollDragRef.current;
+      const node = contentRef.current;
+      if (!drag || !node) return;
+
+      const isY = drag.axis === "y";
+      const pointer = isY ? event.clientY : event.clientX;
+      const delta = pointer - drag.pointerStart;
+      const nextScroll =
+        drag.scrollStart + (delta / drag.maxThumbOffset) * drag.maxScroll;
+
+      if (isY) {
+        node.scrollTop = nextScroll;
+      } else {
+        node.scrollLeft = nextScroll;
+      }
+
+      updateScrollMetrics();
+    };
+
+    const handlePointerUp = () => {
+      scrollDragRef.current = null;
+    };
+
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
+    document.addEventListener("pointercancel", handlePointerUp);
+
+    return () => {
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
+      document.removeEventListener("pointercancel", handlePointerUp);
+    };
+  }, [updateScrollMetrics]);
 
   const handleDragStartProxy = () => {
     setIsDraggingProxy(true);
@@ -233,9 +314,13 @@ export function Window({ data }: WindowProps) {
       return <div className={s.contentText}>{content}</div>;
     }
 
+    const projectModel = content.find((block) => block.type === "projectModel");
+    const textBlocks = content.filter((block) => block.type !== "projectModel");
+
     return (
       <article className={s.document}>
-        {content.map((block, index) => {
+        <div className={s.documentText}>
+        {textBlocks.map((block, index) => {
           switch (block.type) {
             case "title":
               return <h1 key={index}>{block.text}</h1>;
@@ -278,6 +363,12 @@ export function Window({ data }: WindowProps) {
               );
           }
         })}
+        </div>
+        {projectModel?.type === "projectModel" && (
+          <Suspense fallback={<div className={s.modelFallback} />}>
+            <ProjectModelViewer model={projectModel.model} />
+          </Suspense>
+        )}
       </article>
     );
   };
@@ -451,7 +542,11 @@ export function Window({ data }: WindowProps) {
               })}
             >
               {hasVerticalScroll && (
-                <div className={s.scrollThumb} style={getThumbStyle("y")} />
+                <div
+                  className={s.scrollThumb}
+                  style={getThumbStyle("y")}
+                  onPointerDown={(event) => startThumbDrag(event, "y")}
+                />
               )}
             </div>
             <button
@@ -477,7 +572,11 @@ export function Window({ data }: WindowProps) {
               })}
             >
               {hasHorizontalScroll && (
-                <div className={s.scrollThumb} style={getThumbStyle("x")} />
+                <div
+                  className={s.scrollThumb}
+                  style={getThumbStyle("x")}
+                  onPointerDown={(event) => startThumbDrag(event, "x")}
+                />
               )}
             </div>
             <button

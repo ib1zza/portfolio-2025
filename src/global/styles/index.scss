@@ -7,6 +7,11 @@
   cursor: none !important;
 }
 
+::selection {
+  color: $white;
+  background: $black;
+}
+
 html,
 body,
 #root {

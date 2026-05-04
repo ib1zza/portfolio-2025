@@ -223,6 +223,7 @@
   min-width: 16px;
   min-height: 16px;
   will-change: transform;
+  touch-action: none;
 }
 
 // .verticalScrollBarThumb {
@@ -347,6 +348,9 @@
   min-width: 100%;
   padding: 10px 12px 18px;
   user-select: text;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
 
   h1,
   h2,
@@ -395,6 +399,18 @@
     image-rendering: auto;
     filter: grayscale(1) contrast(1.2);
   }
+}
+
+.documentText {
+  min-width: 520px;
+}
+
+.modelFallback {
+  width: 260px;
+  height: 220px;
+  border: $border;
+  background: $white;
+  flex-shrink: 0;
 }
 
 .documentMeta {

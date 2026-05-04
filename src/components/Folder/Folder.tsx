@@ -36,7 +36,7 @@ export function Folder({
   icon = "folder",
 }: FolderProps) {
   const { openWindow, focusWindow, unfocusAll, windows } = useWindowManager();
-  const { setActive, activeItemId, moveItem } = useFileSystem();
+  const { setActive, activeItemId, moveItem, getItemById } = useFileSystem();
   const folderRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<DragState | null>(null);
   const didDragRef = useRef(false);
@@ -194,7 +194,22 @@ export function Folder({
 
   const handleDoubleClick = () => {
     if (didDragRef.current) return;
-    openWindow(id, name, id);
+
+    const item = getItemById(id);
+    const hasProjectModel =
+      item?.type === "file" &&
+      Array.isArray(item.content) &&
+      item.content.some((block) => block.type === "projectModel");
+
+    openWindow(
+      id,
+      name,
+      id,
+      undefined,
+      hasProjectModel
+        ? { width: Math.min(900, window.innerWidth), height: 440 }
+        : undefined
+    );
   };
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {

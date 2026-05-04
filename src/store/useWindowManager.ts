@@ -1,5 +1,6 @@
 // src/store/useWindowManager.ts
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import type { Position } from "./useFileSystem";
 
 export interface WindowInstance {
@@ -23,7 +24,8 @@ interface WindowManagerStore {
     id: string,
     title: string,
     parentId?: string | null,
-    position?: Position
+    position?: Position,
+    preferredSize?: WindowInstance["size"]
   ) => void;
   focusWindow: (id: string) => void;
   moveWindow: (id: string, position: Position) => void;
@@ -38,10 +40,20 @@ interface WindowManagerStore {
   unfocusAll: (id?: string) => void;
 }
 
-export const useWindowManager = create<WindowManagerStore>((set, get) => ({
+const getDefaultWindowSize = () => ({ width: 400, height: 300 });
+
+export const useWindowManager = create<WindowManagerStore>()(
+  persist(
+    (set, get) => ({
   windows: {},
   windowHistory: {},
-  openWindow: (id, title, parentId = null, position = { x: 200, y: 100 }) => {
+  openWindow: (
+    id,
+    title,
+    parentId = null,
+    position = { x: 200, y: 100 },
+    preferredSize
+  ) => {
     const zIndex = Object.keys(get().windows).length + 1;
     const savedBounds = get().windowHistory[id];
     set((state) => ({
@@ -53,7 +65,7 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
           parentId,
           fileId: id,
           position: savedBounds?.position ?? position,
-          size: savedBounds?.size ?? { width: 400, height: 300 },
+          size: savedBounds?.size ?? preferredSize ?? getDefaultWindowSize(),
           zIndex,
         },
       },
@@ -137,4 +149,11 @@ export const useWindowManager = create<WindowManagerStore>((set, get) => ({
 
       return { focusedWindowId: undefined };
     }),
-}));
+}),
+    {
+      name: "portfolio-2025-window-manager",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ windowHistory: state.windowHistory }),
+    }
+  )
+);
