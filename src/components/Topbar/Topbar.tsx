@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useCustomCursor } from "../../hooks/useCustomCursor";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
+import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import s from "./Topbar.module.scss";
 
 interface SubmenuItemData {
@@ -74,11 +75,9 @@ export function Topbar() {
     (state) => Object.keys(state.windows).length > 0
   );
   const openWindow = useWindowManager((state) => state.openWindow);
-  const closeFocusedWindow = useWindowManager(
-    (state) => state.closeFocusedWindow
-  );
   const closeAllWindows = useWindowManager((state) => state.closeAllWindows);
   const resetWindows = useWindowManager((state) => state.resetWindows);
+  const { closeWindowAnimated } = useWindowOpenAnimation();
   const setActive = useFileSystem((state) => state.setActive);
   const focusedItem = useFileSystem((state) =>
     focusedFileId ? state.items[focusedFileId] : undefined
@@ -104,6 +103,10 @@ export function Topbar() {
     [openWindow, setActive]
   );
 
+  const closeFocusedWindowAnimated = useCallback(() => {
+    if (focusedWindowId) closeWindowAnimated(focusedWindowId);
+  }, [closeWindowAnimated, focusedWindowId]);
+
   const tabs: TabData[] = useMemo(
     () => [
       {
@@ -116,7 +119,7 @@ export function Topbar() {
           null,
           {
             title: "Close Window",
-            action: closeFocusedWindow,
+            action: closeFocusedWindowAnimated,
             disabled: !focusedWindowId,
           },
           {
@@ -140,7 +143,7 @@ export function Topbar() {
           null,
           {
             title: "Close Window",
-            action: closeFocusedWindow,
+            action: closeFocusedWindowAnimated,
             disabled: !focusedWindowId,
           },
           {
@@ -176,7 +179,7 @@ export function Topbar() {
       cleanUpChildren,
       cleanUpTarget,
       closeAllWindows,
-      closeFocusedWindow,
+      closeFocusedWindowAnimated,
       focusedWindowId,
       hasWindows,
       openPortfolioWindow,

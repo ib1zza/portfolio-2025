@@ -5,6 +5,7 @@ import type { MouseEventHandler, PointerEventHandler, RefObject } from "react";
 import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
 import { useFileSystem } from "../../store/useFileSystem";
+import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 
 interface FolderProps {
   id: string;
@@ -35,7 +36,7 @@ export const Folder = memo(function Folder({
   constraintRef,
   icon = "folder",
 }: FolderProps) {
-  const openWindow = useWindowManager((state) => state.openWindow);
+  const { openWindowAnimated } = useWindowOpenAnimation();
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
   const isOpened = useWindowManager((state) =>
@@ -207,16 +208,17 @@ export const Folder = memo(function Folder({
       Array.isArray(item.content) &&
       item.content.some((block) => block.type === "projectModel");
 
-    openWindow(
+    setActive(id);
+    openWindowAnimated({
       id,
-      name,
-      id,
-      undefined,
-      hasProjectModel
+      title: name,
+      parentId: id,
+      sourceRect: folderRef.current?.getBoundingClientRect(),
+      preferredSize: hasProjectModel
         ? { width: Math.min(900, window.innerWidth), height: 440 }
         : undefined,
-      parentWindowId
-    );
+      openerWindowId: parentWindowId,
+    });
   };
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -315,6 +317,7 @@ export const Folder = memo(function Folder({
   return (
     <div
       ref={folderRef}
+      data-finder-item-id={id}
       className={clsx(s.folder, {
         [s.active]: isActive,
         [s.opened]: isOpenedInactive,

@@ -6,6 +6,7 @@ import Folder from "../Folder";
 import Window from "../Window";
 import { useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -157,6 +158,7 @@ export function Desktop() {
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
+      <WindowOpenAnimationProvider>
       <Topbar />
 
       {/* Папки на рабочем столе */}
@@ -176,6 +178,7 @@ export function Desktop() {
       {windows.map((win) => (
         <Window key={win.id} data={win} />
       ))}
+      </WindowOpenAnimationProvider>
     </div>
   );
 }

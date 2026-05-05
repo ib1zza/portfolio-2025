@@ -25,6 +25,7 @@ import {
 } from "../../store/useFileSystem";
 import Folder from "../Folder";
 import { Z_INDEX } from "../../constants/zIndex";
+import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 
 const ProjectModelViewer = lazy(() =>
   import("../ProjectModelViewer").then((module) => ({
@@ -68,6 +69,7 @@ const MIN_WIDTH = 300;
 const MIN_HEIGHT = 132;
 const TOPBAR_HEIGHT = 21;
 const RESIZE_HANDLE_SIZE = 15;
+const TITLEBAR_BUTTON_SAFE_AREA = 30;
 
 const INITIAL_SCROLL_METRICS: ScrollMetrics = {
   scrollLeft: 0,
@@ -286,7 +288,7 @@ const WindowDragLayer = memo(function WindowDragLayer({
   };
 
   const handleZIndex = isFocused ? Z_INDEX.windowFocused : zIndex;
-  const handleWidth = Math.max(0, size.width - 36);
+  const handleWidth = Math.max(0, size.width - TITLEBAR_BUTTON_SAFE_AREA * 2);
 
   return (
     <>
@@ -302,7 +304,7 @@ const WindowDragLayer = memo(function WindowDragLayer({
         dragElastic={0}
         style={{
           position: "absolute",
-          left: position.x + 18,
+          left: position.x + TITLEBAR_BUTTON_SAFE_AREA,
           top: position.y,
           width: handleWidth,
           height: 17,
@@ -491,7 +493,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const updateWindowBounds = useWindowManager(
     (state) => state.updateWindowBounds
   );
-  const closeWindow = useWindowManager((state) => state.closeWindow);
+  const { closeWindowAnimated } = useWindowOpenAnimation();
   const isFocused = useWindowManager((state) => state.focusedWindowId === id);
   const setActive = useFileSystem((state) => state.setActive);
   const currentItem = useFileSystem((state) =>
@@ -884,7 +886,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
           <div className={s.buttonContainer}>
             <button
               className={s.windowTopButton}
-              onClick={() => closeWindow(id)}
+              onClick={() => closeWindowAnimated(id)}
             >
               <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
             </button>
