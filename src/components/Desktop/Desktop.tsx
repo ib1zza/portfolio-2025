@@ -5,12 +5,20 @@ import { useWindowManager } from "../../store/useWindowManager";
 import Folder from "../Folder";
 import Window from "../Window";
 import { useRef, type MouseEventHandler } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export function Desktop() {
-  const { getChildren, removeActive } = useFileSystem();
-  const { windows, unfocusAll } = useWindowManager();
+  const removeActive = useFileSystem((state) => state.removeActive);
+  const desktopItems = useFileSystem(
+    useShallow((state) =>
+      Object.values(state.items).filter((item) => item.parentId === "root")
+    )
+  );
+  const windows = useWindowManager(
+    useShallow((state) => Object.values(state.windows))
+  );
+  const unfocusAll = useWindowManager((state) => state.unfocusAll);
   const desktopRef = useRef<HTMLDivElement | null>(null);
-  const desktopItems = getChildren("root");
 
   const handleBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
     if (e.target === desktopRef.current) {
@@ -37,7 +45,7 @@ export function Desktop() {
       )}
 
       {/* Окна */}
-      {Object.values(windows).map((win) => (
+      {windows.map((win) => (
         <Window key={win.id} data={win} />
       ))}
     </div>

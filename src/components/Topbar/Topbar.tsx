@@ -64,22 +64,27 @@ export function Topbar() {
   const [clock, setClock] = useState(formatClock);
   const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
   const submenuRef = useRef<HTMLDivElement | null>(null);
-  const {
-    windows,
-    focusedWindowId,
-    openWindow,
-    closeFocusedWindow,
-    closeAllWindows,
-    resetWindows,
-  } = useWindowManager();
-  const { setActive, getItemById, cleanUpChildren, resetLayout } =
-    useFileSystem();
-
-  const hasWindows = Object.keys(windows).length > 0;
-  const focusedWindow = focusedWindowId ? windows[focusedWindowId] : undefined;
-  const focusedItem = focusedWindow?.fileId
-    ? getItemById(focusedWindow.fileId)
-    : undefined;
+  const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
+  const focusedFileId = useWindowManager((state) =>
+    state.focusedWindowId
+      ? state.windows[state.focusedWindowId]?.fileId
+      : undefined
+  );
+  const hasWindows = useWindowManager(
+    (state) => Object.keys(state.windows).length > 0
+  );
+  const openWindow = useWindowManager((state) => state.openWindow);
+  const closeFocusedWindow = useWindowManager(
+    (state) => state.closeFocusedWindow
+  );
+  const closeAllWindows = useWindowManager((state) => state.closeAllWindows);
+  const resetWindows = useWindowManager((state) => state.resetWindows);
+  const setActive = useFileSystem((state) => state.setActive);
+  const focusedItem = useFileSystem((state) =>
+    focusedFileId ? state.items[focusedFileId] : undefined
+  );
+  const cleanUpChildren = useFileSystem((state) => state.cleanUpChildren);
+  const resetLayout = useFileSystem((state) => state.resetLayout);
   const cleanUpTarget =
     focusedItem?.type === "folder"
       ? focusedItem.id

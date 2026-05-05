@@ -1,10 +1,19 @@
 import clsx from "clsx";
 import { motion, type PanInfo } from "framer-motion";
-import { lazy, Suspense, useCallback, useState, useRef, useEffect } from "react";
+import {
+  lazy,
+  memo,
+  Suspense,
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
+import { useShallow } from "zustand/react/shallow";
 import s from "./Window.module.scss";
 import {
   useWindowManager,
@@ -27,6 +36,15 @@ interface WindowProps {
   data: WindowInstance;
 }
 
+interface WindowDragLayerProps {
+  id: string;
+  parentId?: string | null;
+  position: WindowInstance["position"];
+  size: WindowInstance["size"];
+  zIndex: number;
+  isFocused: boolean;
+}
+
 interface ScrollMetrics {
   scrollLeft: number;
   scrollTop: number;
@@ -39,7 +57,7 @@ interface ScrollMetrics {
 }
 
 const MIN_WIDTH = 300;
-const MIN_HEIGHT = 200;
+const MIN_HEIGHT = 132;
 
 const INITIAL_SCROLL_METRICS: ScrollMetrics = {
   scrollLeft: 0,
@@ -143,26 +161,150 @@ const getContentSize = (node: HTMLElement) => {
   };
 };
 
-export function Window({ data }: WindowProps) {
-  const {
-    focusWindow,
-    moveWindow,
-    updateWindowBounds,
-    closeWindow,
-    focusedWindowId,
-  } =
-    useWindowManager();
-  const { getChildren, setActive, getItemById } = useFileSystem();
-  const { id, position, title, zIndex, fileId, parentId, size } = data;
-
+const WindowDragLayer = memo(function WindowDragLayer({
+  id,
+  parentId,
+  position,
+  size,
+  zIndex,
+  isFocused,
+}: WindowDragLayerProps) {
+  const focusWindow = useWindowManager((state) => state.focusWindow);
+  const moveWindow = useWindowManager((state) => state.moveWindow);
+  const setActive = useFileSystem((state) => state.setActive);
   const [isDraggingProxy, setIsDraggingProxy] = useState(false);
   const [currentDragOffset, setCurrentDragOffset] = useState({ x: 0, y: 0 });
+  const dragFrameRef = useRef<number | null>(null);
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+
+  const focusOwner = useCallback(() => {
+    focusWindow(id);
+    if (parentId) setActive(parentId);
+  }, [focusWindow, id, parentId, setActive]);
+
+  const scheduleDragOffset = useCallback((offset: { x: number; y: number }) => {
+    dragOffsetRef.current = offset;
+
+    if (dragFrameRef.current !== null) return;
+
+    dragFrameRef.current = window.requestAnimationFrame(() => {
+      dragFrameRef.current = null;
+      setCurrentDragOffset((currentOffset) =>
+        arePositionsEqual(currentOffset, dragOffsetRef.current)
+          ? currentOffset
+          : dragOffsetRef.current
+      );
+    });
+  }, []);
+
+  useEffect(
+    () => () => {
+      if (dragFrameRef.current !== null) {
+        window.cancelAnimationFrame(dragFrameRef.current);
+      }
+    },
+    []
+  );
+
+  const handleDragStartProxy = () => {
+    focusOwner();
+    dragOffsetRef.current = { x: 0, y: 0 };
+    setCurrentDragOffset({ x: 0, y: 0 });
+    setIsDraggingProxy(true);
+  };
+
+  const handleDragProxy = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    scheduleDragOffset({ x: info.offset.x, y: info.offset.y });
+  };
+
+  const handleDragEndProxy = (
+    _event: MouseEvent | TouchEvent | PointerEvent,
+    info: PanInfo
+  ) => {
+    if (dragFrameRef.current !== null) {
+      window.cancelAnimationFrame(dragFrameRef.current);
+      dragFrameRef.current = null;
+    }
+
+    setIsDraggingProxy(false);
+    setCurrentDragOffset({ x: 0, y: 0 });
+    moveWindow(id, {
+      x: position.x + info.offset.x,
+      y: position.y + info.offset.y,
+    });
+    focusOwner();
+  };
+
+  const handleZIndex = isFocused ? Z_INDEX.windowFocused : zIndex;
+  const handleWidth = Math.max(0, size.width - 36);
+
+  return (
+    <>
+      <motion.div
+        className={s.dragHandle}
+        drag
+        dragMomentum={false}
+        onPointerDown={focusOwner}
+        onDragStart={handleDragStartProxy}
+        onDrag={handleDragProxy}
+        onDragEnd={handleDragEndProxy}
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        dragElastic={0}
+        style={{
+          position: "absolute",
+          left: position.x + 18,
+          top: position.y,
+          width: handleWidth,
+          height: 17,
+          cursor: "grab",
+          zIndex: handleZIndex,
+        }}
+      />
+
+      {isDraggingProxy && size.width > 0 && size.height > 0 && (
+        <motion.div
+          className={s.windowProxy}
+          style={{
+            zIndex: isFocused ? Z_INDEX.windowProxy : zIndex + 1,
+            position: "absolute",
+            left: position.x + currentDragOffset.x,
+            top: position.y + currentDragOffset.y,
+            width: size.width,
+            height: size.height,
+          }}
+        />
+      )}
+    </>
+  );
+});
+
+export const Window = memo(function Window({ data }: WindowProps) {
+  const { id, position, title, zIndex, fileId, parentId, size } = data;
+  const focusWindow = useWindowManager((state) => state.focusWindow);
+  const updateWindowBounds = useWindowManager(
+    (state) => state.updateWindowBounds
+  );
+  const closeWindow = useWindowManager((state) => state.closeWindow);
+  const isFocused = useWindowManager((state) => state.focusedWindowId === id);
+  const setActive = useFileSystem((state) => state.setActive);
+  const currentItem = useFileSystem((state) =>
+    fileId ? state.items[fileId] : undefined
+  );
+  const childItems = useFileSystem(
+    useShallow((state) =>
+      fileId
+        ? Object.values(state.items).filter((item) => item.parentId === fileId)
+        : []
+    )
+  );
+
   const windowRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const verticalTrackRef = useRef<HTMLDivElement>(null);
   const horizontalTrackRef = useRef<HTMLDivElement>(null);
-  const dragFrameRef = useRef<number | null>(null);
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
   const resizeFrameRef = useRef<number | null>(null);
   const scrollMetricsFrameRef = useRef<number | null>(null);
   const scrollDragRef = useRef<{
@@ -188,9 +330,8 @@ export function Window({ data }: WindowProps) {
   const startMouse = useRef({ x: 0, y: 0 });
   const startSize = useRef({ width: 0, height: 0 });
 
-  const isFile = fileId ? getItemById(fileId)?.type === "file" : false;
+  const isFile = currentItem?.type === "file";
 
-  const isFocused = focusedWindowId === id;
   const hasVerticalScroll =
     scrollMetrics.scrollHeight > scrollMetrics.clientHeight + 1;
   const hasHorizontalScroll =
@@ -262,9 +403,6 @@ export function Window({ data }: WindowProps) {
 
   useEffect(
     () => () => {
-      if (dragFrameRef.current !== null) {
-        window.cancelAnimationFrame(dragFrameRef.current);
-      }
       if (resizeFrameRef.current !== null) {
         window.cancelAnimationFrame(resizeFrameRef.current);
       }
@@ -380,52 +518,6 @@ export function Window({ data }: WindowProps) {
       document.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [scheduleScrollMetricsUpdate]);
-
-  const scheduleDragOffset = useCallback((offset: { x: number; y: number }) => {
-    dragOffsetRef.current = offset;
-
-    if (dragFrameRef.current !== null) return;
-
-    dragFrameRef.current = window.requestAnimationFrame(() => {
-      dragFrameRef.current = null;
-      setCurrentDragOffset((currentOffset) =>
-        arePositionsEqual(currentOffset, dragOffsetRef.current)
-          ? currentOffset
-          : dragOffsetRef.current
-      );
-    });
-  }, []);
-
-  const handleDragStartProxy = () => {
-    setIsDraggingProxy(true);
-    dragOffsetRef.current = { x: 0, y: 0 };
-    setCurrentDragOffset({ x: 0, y: 0 });
-  };
-
-  const handleDragProxy = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
-  ) => {
-    scheduleDragOffset({ x: info.offset.x, y: info.offset.y });
-  };
-
-  const handleDragEndProxy = (
-    _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
-  ) => {
-    if (dragFrameRef.current !== null) {
-      window.cancelAnimationFrame(dragFrameRef.current);
-      dragFrameRef.current = null;
-    }
-
-    setIsDraggingProxy(false);
-    moveWindow(id, {
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y,
-    });
-    setCurrentDragOffset({ x: 0, y: 0 });
-    handleWindowClick();
-  };
 
   const handleWindowClick = () => {
     focusWindow(id);
@@ -587,19 +679,16 @@ export function Window({ data }: WindowProps) {
 
   const renderChildren = () => {
     if (fileId) {
-      const item = getItemById(fileId);
-
-      if (item?.type === "file") {
-        return renderDocument(item.content);
+      if (currentItem?.type === "file") {
+        return renderDocument(currentItem.content);
       }
 
-      const children = getChildren(fileId);
       const getDefaultPosition = (index: number) => ({
-        x: 20 + (index % 3) * 130,
-        y: 20 + Math.floor(index / 3) * 70,
+        x: 16 + (index % 3) * 112,
+        y: 14 + Math.floor(index / 3) * 58,
       });
 
-      const arrToRender = children.map((child, i) => {
+      const arrToRender = childItems.map((child, i) => {
         const itemPosition = child.position ?? getDefaultPosition(i);
 
         if (child.type === "folder") {
@@ -635,7 +724,7 @@ export function Window({ data }: WindowProps) {
   };
 
   const finderData = {
-    files: fileId ? getChildren(fileId).length : 0,
+    files: fileId ? childItems.length : 0,
     inDisk: "64 MB",
     available: "128 MB",
   };
@@ -677,25 +766,6 @@ export function Window({ data }: WindowProps) {
         onMouseDown={handleWindowClick}
       >
         <div className={s.windowTop}>
-          <motion.div
-            className={s.dragHandle}
-            drag
-            dragMomentum={false}
-            onDragStart={handleDragStartProxy}
-            onDrag={handleDragProxy}
-            onDragEnd={handleDragEndProxy}
-            dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-            dragElastic={0}
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "100%",
-              cursor: "grab",
-              left: 0,
-              top: 0,
-            }}
-          />
-
           <div className={s.buttonContainer}>
             <button
               className={s.windowTopButton}
@@ -809,21 +879,14 @@ export function Window({ data }: WindowProps) {
       </motion.div>
 
       {/* Прокси-элемент */}
-      {isDraggingProxy &&
-        windowDimensions.width > 0 &&
-        windowDimensions.height > 0 && (
-          <motion.div
-            className={s.windowProxy}
-            style={{
-              zIndex: isFocused ? Z_INDEX.windowProxy : zIndex + 1,
-              position: "absolute",
-              left: position.x + currentDragOffset.x,
-              top: position.y + currentDragOffset.y,
-              width: windowDimensions.width,
-              height: windowDimensions.height,
-            }}
-          />
-        )}
+      <WindowDragLayer
+        id={id}
+        parentId={parentId}
+        position={position}
+        size={windowDimensions}
+        zIndex={zIndex}
+        isFocused={isFocused}
+      />
     </>
   );
-}
+});

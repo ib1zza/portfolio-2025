@@ -244,7 +244,7 @@ const createInitialItems = (
       name: "Projects",
       type: "folder",
       parentId: "root",
-      position: { x: 200, y: 140 },
+      position: { x: 176, y: 132 },
       children: portfolio.projectSections.map(
         (section) => `project-section-${section.id}`
       ),
@@ -254,7 +254,7 @@ const createInitialItems = (
       name: "About Me",
       type: "folder",
       parentId: "root",
-      position: { x: 80, y: 140 },
+      position: { x: 72, y: 132 },
       children: ["aboutReadme"],
     },
     aboutReadme: {
@@ -269,7 +269,7 @@ const createInitialItems = (
       name: "Education",
       type: "folder",
       parentId: "root",
-      position: { x: 320, y: 140 },
+      position: { x: 280, y: 132 },
       children: ["educationReadme"],
     },
     educationReadme: {
@@ -284,7 +284,7 @@ const createInitialItems = (
       name: "Contact",
       type: "folder",
       parentId: "root",
-      position: { x: 460, y: 140 },
+      position: { x: 384, y: 132 },
       children: ["contactReadme"],
     },
     contactReadme: {
@@ -308,10 +308,10 @@ const createInitialItems = (
 
 const getCleanPosition = (parentId: string | null, index: number) =>
   parentId === "root"
-    ? { x: 80 + index * 120, y: 140 }
+    ? { x: 72 + index * 104, y: 132 }
     : {
-        x: 20 + (index % 3) * 130,
-        y: 20 + Math.floor(index / 3) * 70,
+        x: 16 + (index % 3) * 112,
+        y: 14 + Math.floor(index / 3) * 58,
       };
 
 interface FileSystemStore {
@@ -352,19 +352,31 @@ export const useFileSystem = create<FileSystemStore>()(
     );
   },
   moveItem: (id, position) => {
-    set((state) => ({
-      items: {
-        ...state.items,
-        [id]: {
-          ...state.items[id],
-          position,
+    set((state) => {
+      const item = state.items[id];
+
+      if (!item) return state;
+      if (
+        item.position?.x === position.x &&
+        item.position?.y === position.y
+      ) {
+        return state;
+      }
+
+      return {
+        items: {
+          ...state.items,
+          [id]: {
+            ...item,
+            position,
+          },
         },
-      },
-      itemPositions: {
-        ...state.itemPositions,
-        [id]: position,
-      },
-    }));
+        itemPositions: {
+          ...state.itemPositions,
+          [id]: position,
+        },
+      };
+    });
   },
   cleanUpChildren: (parentId) => {
     set((state) => {
@@ -377,11 +389,25 @@ export const useFileSystem = create<FileSystemStore>()(
           : Object.values(state.items).filter(
               (item) => item.parentId === parentId
             );
-      const nextItems = { ...state.items };
-      const nextPositions = { ...state.itemPositions };
+      let nextItems = state.items;
+      let nextPositions = state.itemPositions;
+      let hasChanges = false;
 
       children.forEach((item, index) => {
         const position = getCleanPosition(parentId, index);
+
+        if (
+          item.position?.x === position.x &&
+          item.position?.y === position.y
+        ) {
+          return;
+        }
+
+        if (!hasChanges) {
+          nextItems = { ...state.items };
+          nextPositions = { ...state.itemPositions };
+          hasChanges = true;
+        }
 
         nextItems[item.id] = {
           ...item,
@@ -390,7 +416,9 @@ export const useFileSystem = create<FileSystemStore>()(
         nextPositions[item.id] = position;
       });
 
-      return { items: nextItems, itemPositions: nextPositions };
+      return hasChanges
+        ? { items: nextItems, itemPositions: nextPositions }
+        : state;
     });
   },
   resetLayout: () => {

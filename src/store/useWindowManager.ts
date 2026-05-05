@@ -139,6 +139,8 @@ export const useWindowManager = create<WindowManagerStore>()(
     }),
   closeWindow: (id) =>
     set((state) => {
+      if (!state.windows[id]) return state;
+
       const newWindows = { ...state.windows };
       delete newWindows[id];
       return {
@@ -149,7 +151,7 @@ export const useWindowManager = create<WindowManagerStore>()(
     }),
   closeFocusedWindow: () =>
     set((state) => {
-      if (!state.focusedWindowId) return {};
+      if (!state.focusedWindowId) return state;
 
       const newWindows = { ...state.windows };
       delete newWindows[state.focusedWindowId];
@@ -157,10 +159,14 @@ export const useWindowManager = create<WindowManagerStore>()(
       return { windows: newWindows, focusedWindowId: undefined };
     }),
   closeAllWindows: () =>
-    set(() => ({
-      windows: {},
-      focusedWindowId: undefined,
-    })),
+    set((state) =>
+      Object.keys(state.windows).length || state.focusedWindowId
+        ? {
+            windows: {},
+            focusedWindowId: undefined,
+          }
+        : state
+    ),
   resetWindows: () =>
     set(() => ({
       windows: {},

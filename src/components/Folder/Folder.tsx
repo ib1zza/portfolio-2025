@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import type { MouseEventHandler, PointerEventHandler, RefObject } from "react";
 
 import s from "./Folder.module.scss";
@@ -27,7 +27,7 @@ const DRAG_CLICK_THRESHOLD = 3;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-export function Folder({
+export const Folder = memo(function Folder({
   id,
   name,
   position,
@@ -35,14 +35,20 @@ export function Folder({
   constraintRef,
   icon = "folder",
 }: FolderProps) {
-  const { openWindow, focusWindow, unfocusAll, windows } = useWindowManager();
-  const { setActive, activeItemId, moveItem, getItemById } = useFileSystem();
+  const openWindow = useWindowManager((state) => state.openWindow);
+  const focusWindow = useWindowManager((state) => state.focusWindow);
+  const unfocusAll = useWindowManager((state) => state.unfocusAll);
+  const isOpened = useWindowManager((state) =>
+    Object.values(state.windows).some((window) => window.fileId === id)
+  );
+  const setActive = useFileSystem((state) => state.setActive);
+  const isActive = useFileSystem((state) => state.activeItemId === id);
+  const moveItem = useFileSystem((state) => state.moveItem);
+  const getItemById = useFileSystem((state) => state.getItemById);
   const folderRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<DragState | null>(null);
   const didDragRef = useRef(false);
   const [draftPosition, setDraftPosition] = useState(position);
-  const isActive = activeItemId === id;
-  const isOpened = Object.values(windows).some((window) => window.fileId === id);
   const isOpenedInactive = isOpened && !isActive;
   const patternId = `opened-pattern-${id}`;
   const folderClipId = `folder-clip-${id}`;
@@ -325,4 +331,4 @@ export function Folder({
       <div className={s.folderName}>{name}</div>
     </div>
   );
-}
+});
