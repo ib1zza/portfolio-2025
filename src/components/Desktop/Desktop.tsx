@@ -47,7 +47,7 @@ export function Desktop() {
       return Object.values(state.items).filter(
         (item) =>
           item.parentId === parentId &&
-          (item.type === "folder" || item.type === "file")
+          (item.type === "folder" || item.type === "file" || item.type === "link")
       );
     })
   );
@@ -98,7 +98,18 @@ export function Desktop() {
     if (!activeItemId) return;
 
     const item = useFileSystem.getState().items[activeItemId];
-    if (!item || (item.type !== "folder" && item.type !== "file")) return;
+    if (
+      !item ||
+      (item.type !== "folder" && item.type !== "file" && item.type !== "link")
+    ) {
+      return;
+    }
+
+    if (item.type === "link") {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+      setActive(item.id);
+      return;
+    }
 
     const hasProjectModel =
       item.type === "file" &&

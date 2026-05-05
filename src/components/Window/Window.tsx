@@ -833,6 +833,19 @@ export const Window = memo(function Window({ data }: WindowProps) {
             />
           );
         }
+        if (child.type === "link") {
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={itemPosition}
+              parentWindowId={id}
+              constraintRef={contentRef}
+              icon={child.icon}
+            />
+          );
+        }
 
         return null;
       });

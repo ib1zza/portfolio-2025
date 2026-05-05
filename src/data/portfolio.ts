@@ -132,6 +132,7 @@ export const portfolio = {
   ],
   contacts: [
     { label: "Telegram", href: "https://t.me/ib1zza" },
+    { label: "VK", href: "https://vk.com/ib1zza" },
     { label: "GitHub", href: "https://github.com/ib1zza" },
     { label: "Email", href: "mailto:dremast1337@gmail.com" },
   ],

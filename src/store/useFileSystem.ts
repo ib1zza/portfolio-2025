@@ -15,7 +15,7 @@ export interface Position {
 export interface BaseItem {
   id: string;
   name: string;
-  type: "folder" | "file" | "app" | "system";
+  type: "folder" | "file" | "link" | "app" | "system";
   parentId?: string | null;
   position?: Position;
   active?: boolean;
@@ -41,7 +41,13 @@ export interface FileItem extends BaseItem {
   content: string | DocumentBlock[];
 }
 
-export type FileSystemItem = FolderItem | FileItem;
+export interface LinkItem extends BaseItem {
+  type: "link";
+  href: string;
+  icon: "vk" | "telegram" | "email" | "github";
+}
+
+export type FileSystemItem = FolderItem | FileItem | LinkItem;
 
 const formatProject = (project: PortfolioProject) =>
   [
@@ -72,7 +78,11 @@ const formatProject = (project: PortfolioProject) =>
     ...(project.caseStudy
       ? [
           { type: "heading" as const, text: "Case Study" },
-          { type: "meta" as const, label: "Problem", value: project.caseStudy.problem },
+          {
+            type: "meta" as const,
+            label: "Problem",
+            value: project.caseStudy.problem,
+          },
           {
             type: "meta" as const,
             label: "Solution",
@@ -111,7 +121,7 @@ const formatProject = (project: PortfolioProject) =>
             items: project.metrics.map((metric) =>
               [metric.label, metric.value, metric.note]
                 .filter(Boolean)
-                .join(" - ")
+                .join(" - "),
             ),
           },
         ]
@@ -127,9 +137,15 @@ const formatProject = (project: PortfolioProject) =>
     ...(project.accessNote
       ? [{ type: "paragraph" as const, text: project.accessNote }]
       : []),
-    ...(project.images ?? []).map((image) => ({ type: "image" as const, ...image })),
+    ...(project.images ?? []).map((image) => ({
+      type: "image" as const,
+      ...image,
+    })),
     ...(project.links.length
-      ? [{ type: "heading" as const, text: "Links" }, { type: "links" as const, items: project.links }]
+      ? [
+          { type: "heading" as const, text: "Links" },
+          { type: "links" as const, items: project.links },
+        ]
       : []),
   ] satisfies DocumentBlock[];
 
@@ -147,7 +163,11 @@ const aboutContent = [
   { type: "paragraph", text: portfolio.skills.join(", ") },
   { type: "heading", text: "Experience" },
   ...portfolio.experience.flatMap<DocumentBlock>((item) => [
-    { type: "meta", label: item.company, value: `${item.role}, ${item.period}` },
+    {
+      type: "meta",
+      label: item.company,
+      value: `${item.role}, ${item.period}`,
+    },
     { type: "list", items: item.highlights },
   ]),
 ] satisfies DocumentBlock[];
@@ -167,29 +187,54 @@ const contactsContent = [
   { type: "links", items: portfolio.contacts },
 ] satisfies DocumentBlock[];
 
-const sectionItems = portfolio.projectSections.reduce<Record<string, FileSystemItem>>(
-  (items, section) => {
-    const sectionId = `project-section-${section.id}`;
+const contactShortcutItems = portfolio.contacts.reduce<
+  Record<string, FileSystemItem>
+>((items, contact) => {
+  const icon = contact.label.toLowerCase();
 
-    items[sectionId] = {
-      id: sectionId,
-      name: section.title,
-      type: "folder",
-      parentId: "projects",
-      children: section.projectIds.map((projectId) => `project-${projectId}`),
-    };
-
+  if (
+    icon !== "vk" &&
+    icon !== "telegram" &&
+    icon !== "email" &&
+    icon !== "github"
+  ) {
     return items;
-  },
-  {}
-);
+  }
+
+  items[`contact-${icon}`] = {
+    id: `contact-${icon}`,
+    name: contact.label,
+    type: "link",
+    parentId: "contact",
+    href: contact.href,
+    icon,
+  };
+
+  return items;
+}, {});
+
+const sectionItems = portfolio.projectSections.reduce<
+  Record<string, FileSystemItem>
+>((items, section) => {
+  const sectionId = `project-section-${section.id}`;
+
+  items[sectionId] = {
+    id: sectionId,
+    name: section.title,
+    type: "folder",
+    parentId: "projects",
+    children: section.projectIds.map((projectId) => `project-${projectId}`),
+  };
+
+  return items;
+}, {});
 
 const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
   (items, project) => {
     const folderId = `project-${project.id}`;
     const readmeId = `file-${project.id}-readme`;
     const section = portfolio.projectSections.find((projectSection) =>
-      projectSection.projectIds.includes(project.id)
+      projectSection.projectIds.includes(project.id),
     );
 
     items[folderId] = {
@@ -210,7 +255,7 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
 
     return items;
   },
-  {}
+  {},
 );
 
 const STORAGE_KEY = "portfolio-2025-file-system";
@@ -228,9 +273,7 @@ const readStoredPositions = () => {
   }
 };
 
-const createInitialItems = (
-  itemPositions: Record<string, Position> = {}
-) => {
+const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
   const items: Record<string, FileSystemItem> = {
     root: {
       id: "root",
@@ -246,7 +289,7 @@ const createInitialItems = (
       parentId: "root",
       position: { x: 176, y: 132 },
       children: portfolio.projectSections.map(
-        (section) => `project-section-${section.id}`
+        (section) => `project-section-${section.id}`,
       ),
     },
     about: {
@@ -285,7 +328,12 @@ const createInitialItems = (
       type: "folder",
       parentId: "root",
       position: { x: 384, y: 132 },
-      children: ["contactReadme"],
+      children: [
+        "contact-telegram",
+        "contact-vk",
+        "contact-email",
+        "contactReadme",
+      ],
     },
     contactReadme: {
       id: "contactReadme",
@@ -294,6 +342,7 @@ const createInitialItems = (
       parentId: "contact",
       content: contactsContent,
     },
+    ...contactShortcutItems,
     ...sectionItems,
     ...projectItems,
   };
@@ -302,7 +351,7 @@ const createInitialItems = (
     Object.entries(items).map(([id, item]) => [
       id,
       { ...item, position: itemPositions[id] ?? item.position },
-    ])
+    ]),
   ) as Record<string, FileSystemItem>;
 };
 
@@ -332,107 +381,107 @@ const storedPositions = readStoredPositions();
 export const useFileSystem = create<FileSystemStore>()(
   persist(
     (set, get) => ({
-  items: createInitialItems(storedPositions),
-  itemPositions: storedPositions,
-  activeItemId: null,
-  getChildren: (parentId) =>
-    Object.values(get().items).filter((i) => i.parentId === parentId),
-
-  getItemById: (id: string) =>
-    Object.values(get().items).find((i) => i.id === id),
-
-  setActive: (id: string) => {
-    set((state) =>
-      state.activeItemId === id ? state : { activeItemId: id }
-    );
-  },
-  removeActive: () => {
-    set((state) =>
-      state.activeItemId === null ? state : { activeItemId: null }
-    );
-  },
-  moveItem: (id, position) => {
-    set((state) => {
-      const item = state.items[id];
-
-      if (!item) return state;
-      if (
-        item.position?.x === position.x &&
-        item.position?.y === position.y
-      ) {
-        return state;
-      }
-
-      return {
-        items: {
-          ...state.items,
-          [id]: {
-            ...item,
-            position,
-          },
-        },
-        itemPositions: {
-          ...state.itemPositions,
-          [id]: position,
-        },
-      };
-    });
-  },
-  cleanUpChildren: (parentId) => {
-    set((state) => {
-      const parent = parentId ? state.items[parentId] : undefined;
-      const children =
-        parent?.type === "folder"
-          ? parent.children
-              .map((childId) => state.items[childId])
-              .filter(Boolean)
-          : Object.values(state.items).filter(
-              (item) => item.parentId === parentId
-            );
-      let nextItems = state.items;
-      let nextPositions = state.itemPositions;
-      let hasChanges = false;
-
-      children.forEach((item, index) => {
-        const position = getCleanPosition(parentId, index);
-
-        if (
-          item.position?.x === position.x &&
-          item.position?.y === position.y
-        ) {
-          return;
-        }
-
-        if (!hasChanges) {
-          nextItems = { ...state.items };
-          nextPositions = { ...state.itemPositions };
-          hasChanges = true;
-        }
-
-        nextItems[item.id] = {
-          ...item,
-          position,
-        };
-        nextPositions[item.id] = position;
-      });
-
-      return hasChanges
-        ? { items: nextItems, itemPositions: nextPositions }
-        : state;
-    });
-  },
-  resetLayout: () => {
-    set(() => ({
-      items: createInitialItems(),
-      itemPositions: {},
+      items: createInitialItems(storedPositions),
+      itemPositions: storedPositions,
       activeItemId: null,
-    }));
-  },
-}),
+      getChildren: (parentId) =>
+        Object.values(get().items).filter((i) => i.parentId === parentId),
+
+      getItemById: (id: string) =>
+        Object.values(get().items).find((i) => i.id === id),
+
+      setActive: (id: string) => {
+        set((state) =>
+          state.activeItemId === id ? state : { activeItemId: id },
+        );
+      },
+      removeActive: () => {
+        set((state) =>
+          state.activeItemId === null ? state : { activeItemId: null },
+        );
+      },
+      moveItem: (id, position) => {
+        set((state) => {
+          const item = state.items[id];
+
+          if (!item) return state;
+          if (
+            item.position?.x === position.x &&
+            item.position?.y === position.y
+          ) {
+            return state;
+          }
+
+          return {
+            items: {
+              ...state.items,
+              [id]: {
+                ...item,
+                position,
+              },
+            },
+            itemPositions: {
+              ...state.itemPositions,
+              [id]: position,
+            },
+          };
+        });
+      },
+      cleanUpChildren: (parentId) => {
+        set((state) => {
+          const parent = parentId ? state.items[parentId] : undefined;
+          const children =
+            parent?.type === "folder"
+              ? parent.children
+                  .map((childId) => state.items[childId])
+                  .filter(Boolean)
+              : Object.values(state.items).filter(
+                  (item) => item.parentId === parentId,
+                );
+          let nextItems = state.items;
+          let nextPositions = state.itemPositions;
+          let hasChanges = false;
+
+          children.forEach((item, index) => {
+            const position = getCleanPosition(parentId, index);
+
+            if (
+              item.position?.x === position.x &&
+              item.position?.y === position.y
+            ) {
+              return;
+            }
+
+            if (!hasChanges) {
+              nextItems = { ...state.items };
+              nextPositions = { ...state.itemPositions };
+              hasChanges = true;
+            }
+
+            nextItems[item.id] = {
+              ...item,
+              position,
+            };
+            nextPositions[item.id] = position;
+          });
+
+          return hasChanges
+            ? { items: nextItems, itemPositions: nextPositions }
+            : state;
+        });
+      },
+      resetLayout: () => {
+        set(() => ({
+          items: createInitialItems(),
+          itemPositions: {},
+          activeItemId: null,
+        }));
+      },
+    }),
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ itemPositions: state.itemPositions }),
-    }
-  )
+    },
+  ),
 );
