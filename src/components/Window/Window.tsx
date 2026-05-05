@@ -45,6 +45,14 @@ interface WindowDragLayerProps {
   isFocused: boolean;
 }
 
+interface WindowResizeLayerProps {
+  id: string;
+  position: WindowInstance["position"];
+  size: WindowInstance["size"];
+  zIndex: number;
+  isFocused: boolean;
+}
+
 interface ScrollMetrics {
   scrollLeft: number;
   scrollTop: number;
@@ -58,6 +66,8 @@ interface ScrollMetrics {
 
 const MIN_WIDTH = 300;
 const MIN_HEIGHT = 132;
+const TOPBAR_HEIGHT = 21;
+const RESIZE_HANDLE_SIZE = 15;
 
 const INITIAL_SCROLL_METRICS: ScrollMetrics = {
   scrollLeft: 0,
@@ -79,6 +89,37 @@ const arePositionsEqual = (
   a: { x: number; y: number },
   b: { x: number; y: number }
 ) => a.x === b.x && a.y === b.y;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
+
+const getContainedPosition = (
+  position: WindowInstance["position"],
+  size: WindowInstance["size"]
+) => ({
+  x: clamp(position.x, 0, Math.max(0, window.innerWidth - size.width)),
+  y: clamp(
+    position.y,
+    TOPBAR_HEIGHT,
+    Math.max(TOPBAR_HEIGHT, window.innerHeight - size.height)
+  ),
+});
+
+const getResizableSize = (
+  position: WindowInstance["position"],
+  size: WindowInstance["size"]
+) => ({
+  width: clamp(
+    size.width,
+    MIN_WIDTH,
+    Math.max(MIN_WIDTH, window.innerWidth - position.x)
+  ),
+  height: clamp(
+    size.height,
+    MIN_HEIGHT,
+    Math.max(MIN_HEIGHT, window.innerHeight - position.y)
+  ),
+});
 
 const areScrollMetricsEqual = (a: ScrollMetrics, b: ScrollMetrics) =>
   a.scrollLeft === b.scrollLeft &&
@@ -231,10 +272,16 @@ const WindowDragLayer = memo(function WindowDragLayer({
 
     setIsDraggingProxy(false);
     setCurrentDragOffset({ x: 0, y: 0 });
-    moveWindow(id, {
-      x: position.x + info.offset.x,
-      y: position.y + info.offset.y,
-    });
+    moveWindow(
+      id,
+      getContainedPosition(
+        {
+          x: position.x + info.offset.x,
+          y: position.y + info.offset.y,
+        },
+        size
+      )
+    );
     focusOwner();
   };
 
@@ -281,6 +328,163 @@ const WindowDragLayer = memo(function WindowDragLayer({
   );
 });
 
+const WindowResizeLayer = memo(function WindowResizeLayer({
+  id,
+  position,
+  size,
+  zIndex,
+  isFocused,
+}: WindowResizeLayerProps) {
+  const focusWindow = useWindowManager((state) => state.focusWindow);
+  const updateWindowBounds = useWindowManager(
+    (state) => state.updateWindowBounds
+  );
+  const [isResizingProxy, setIsResizingProxy] = useState(false);
+  const [proxySize, setProxySize] = useState(size);
+  const resizeFrameRef = useRef<number | null>(null);
+  const resizeDraftSizeRef = useRef(size);
+  const startMouseRef = useRef({ x: 0, y: 0 });
+  const startSizeRef = useRef(size);
+
+  useEffect(() => {
+    if (!isResizingProxy) {
+      setProxySize(size);
+      resizeDraftSizeRef.current = size;
+    }
+  }, [isResizingProxy, size]);
+
+  useEffect(
+    () => () => {
+      if (resizeFrameRef.current !== null) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+      }
+    },
+    []
+  );
+
+  const scheduleProxySize = useCallback(
+    (nextSize: WindowInstance["size"]) => {
+      resizeDraftSizeRef.current = nextSize;
+
+      if (resizeFrameRef.current !== null) return;
+
+      resizeFrameRef.current = window.requestAnimationFrame(() => {
+        resizeFrameRef.current = null;
+        setProxySize((currentSize) =>
+          areSizesEqual(currentSize, resizeDraftSizeRef.current)
+            ? currentSize
+            : resizeDraftSizeRef.current
+        );
+      });
+    },
+    []
+  );
+
+  const handleResizeMouseDown = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    focusWindow(id);
+    startMouseRef.current = { x: event.clientX, y: event.clientY };
+    startSizeRef.current = size;
+    resizeDraftSizeRef.current = size;
+    setProxySize(size);
+    setIsResizingProxy(true);
+  };
+
+  useEffect(() => {
+    if (!isResizingProxy) return;
+
+    const handleMouseMove = (event: MouseEvent) => {
+      const dx = event.clientX - startMouseRef.current.x;
+      const dy = event.clientY - startMouseRef.current.y;
+
+      scheduleProxySize(
+        getResizableSize(position, {
+          width: startSizeRef.current.width + dx,
+          height: startSizeRef.current.height + dy,
+        })
+      );
+    };
+
+    const handleMouseUp = () => {
+      if (resizeFrameRef.current !== null) {
+        window.cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
+
+      const nextSize = resizeDraftSizeRef.current;
+
+      setProxySize(nextSize);
+      setIsResizingProxy(false);
+      updateWindowBounds(id, {
+        position: getContainedPosition(position, nextSize),
+        size: nextSize,
+      });
+      focusWindow(id);
+
+      const suppressNextClick = (event: MouseEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        document.removeEventListener("click", suppressNextClick, true);
+        focusWindow(id);
+      };
+
+      document.addEventListener("click", suppressNextClick, true);
+      window.setTimeout(() => {
+        document.removeEventListener("click", suppressNextClick, true);
+      }, 0);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [
+    id,
+    isResizingProxy,
+    position,
+    scheduleProxySize,
+    focusWindow,
+    updateWindowBounds,
+  ]);
+
+  const layerZIndex = isFocused ? Z_INDEX.windowFocused : zIndex;
+
+  return (
+    <>
+      <button
+        aria-label="Resize window"
+        className={s.windowResizeHitbox}
+        onMouseDown={handleResizeMouseDown}
+        style={{
+          left: position.x + size.width - RESIZE_HANDLE_SIZE,
+          top: position.y + size.height - RESIZE_HANDLE_SIZE,
+          width: RESIZE_HANDLE_SIZE,
+          height: RESIZE_HANDLE_SIZE,
+          zIndex: layerZIndex,
+        }}
+      />
+
+      {isResizingProxy && (
+        <motion.div
+          className={s.windowProxy}
+          style={{
+            zIndex: isFocused ? Z_INDEX.windowProxy : zIndex + 1,
+            position: "absolute",
+            left: position.x,
+            top: position.y,
+            width: proxySize.width,
+            height: proxySize.height,
+          }}
+        />
+      )}
+    </>
+  );
+});
+
 export const Window = memo(function Window({ data }: WindowProps) {
   const { id, position, title, zIndex, fileId, parentId, size } = data;
   const focusWindow = useWindowManager((state) => state.focusWindow);
@@ -305,7 +509,6 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const verticalTrackRef = useRef<HTMLDivElement>(null);
   const horizontalTrackRef = useRef<HTMLDivElement>(null);
-  const resizeFrameRef = useRef<number | null>(null);
   const scrollMetricsFrameRef = useRef<number | null>(null);
   const scrollDragRef = useRef<{
     axis: "x" | "y";
@@ -319,16 +522,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
     width: size.width,
     height: size.height,
   });
-  const windowDimensionsRef = useRef(windowDimensions);
-  const resizeDraftSizeRef = useRef(windowDimensions);
-  const positionRef = useRef(position);
   const [scrollMetrics, setScrollMetrics] = useState(INITIAL_SCROLL_METRICS);
   const scrollMetricsRef = useRef(INITIAL_SCROLL_METRICS);
-
-  // --- 🔧 Добавлено: состояние для ресайза
-  const [isResizing, setIsResizing] = useState(false);
-  const startMouse = useRef({ x: 0, y: 0 });
-  const startSize = useRef({ width: 0, height: 0 });
 
   const isFile = currentItem?.type === "file";
 
@@ -337,18 +532,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const hasHorizontalScroll =
     scrollMetrics.scrollWidth > scrollMetrics.clientWidth + 1;
 
-  useEffect(() => {
-    positionRef.current = position;
-  }, [position]);
-
-  useEffect(() => {
-    windowDimensionsRef.current = windowDimensions;
-  }, [windowDimensions]);
-
   const commitWindowDimensions = useCallback(
     (nextSize: { width: number; height: number }) => {
-      windowDimensionsRef.current = nextSize;
-      resizeDraftSizeRef.current = nextSize;
       setWindowDimensions((currentSize) =>
         areSizesEqual(currentSize, nextSize) ? currentSize : nextSize
       );
@@ -356,20 +541,9 @@ export const Window = memo(function Window({ data }: WindowProps) {
     []
   );
 
-  const scheduleWindowDimensions = useCallback(
-    (nextSize: { width: number; height: number }) => {
-      windowDimensionsRef.current = nextSize;
-      resizeDraftSizeRef.current = nextSize;
-
-      if (resizeFrameRef.current !== null) return;
-
-      resizeFrameRef.current = window.requestAnimationFrame(() => {
-        resizeFrameRef.current = null;
-        commitWindowDimensions(resizeDraftSizeRef.current);
-      });
-    },
-    [commitWindowDimensions]
-  );
+  useEffect(() => {
+    commitWindowDimensions(size);
+  }, [commitWindowDimensions, size]);
 
   const updateScrollMetrics = useCallback(() => {
     const node = contentRef.current;
@@ -403,9 +577,6 @@ export const Window = memo(function Window({ data }: WindowProps) {
 
   useEffect(
     () => () => {
-      if (resizeFrameRef.current !== null) {
-        window.cancelAnimationFrame(resizeFrameRef.current);
-      }
       if (scrollMetricsFrameRef.current !== null) {
         window.cancelAnimationFrame(scrollMetricsFrameRef.current);
       }
@@ -530,11 +701,10 @@ export const Window = memo(function Window({ data }: WindowProps) {
     if (!node) return;
 
     const contentSize = getContentSize(node);
-    const topbarHeight = 21;
     const chromeWidth = windowDimensions.width - node.clientWidth;
     const chromeHeight = windowDimensions.height - node.clientHeight;
     const maxWidth = window.innerWidth;
-    const maxHeight = window.innerHeight - topbarHeight;
+    const maxHeight = window.innerHeight - TOPBAR_HEIGHT;
     const nextWidth = Math.min(
       maxWidth,
       Math.max(MIN_WIDTH, contentSize.width + chromeWidth)
@@ -546,8 +716,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
     const nextPosition = {
       x: Math.min(position.x, Math.max(0, window.innerWidth - nextWidth)),
       y: Math.min(
-        Math.max(topbarHeight, position.y),
-        Math.max(topbarHeight, window.innerHeight - nextHeight)
+        Math.max(TOPBAR_HEIGHT, position.y),
+        Math.max(TOPBAR_HEIGHT, window.innerHeight - nextHeight)
       ),
     };
 
@@ -557,61 +727,6 @@ export const Window = memo(function Window({ data }: WindowProps) {
       size: { width: nextWidth, height: nextHeight },
     });
   };
-
-  // --- 🔧 Добавлено: обработчики ресайза ---
-  const handleResizeMouseDown = (e: ReactMouseEvent) => {
-    e.stopPropagation();
-    setIsResizing(true);
-    startMouse.current = { x: e.clientX, y: e.clientY };
-    startSize.current = { ...windowDimensionsRef.current };
-    resizeDraftSizeRef.current = { ...windowDimensionsRef.current };
-  };
-
-  useEffect(() => {
-    if (!isResizing) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const dx = e.clientX - startMouse.current.x;
-      const dy = e.clientY - startMouse.current.y;
-
-      // обновляем размеры, не трогая левый верхний угол
-      scheduleWindowDimensions({
-        width: Math.max(MIN_WIDTH, startSize.current.width + dx),
-        height: Math.max(MIN_HEIGHT, startSize.current.height + dy),
-      });
-    };
-
-    const handleMouseUp = () => {
-      if (resizeFrameRef.current !== null) {
-        window.cancelAnimationFrame(resizeFrameRef.current);
-        resizeFrameRef.current = null;
-      }
-
-      const nextSize = resizeDraftSizeRef.current;
-
-      commitWindowDimensions(nextSize);
-      setIsResizing(false);
-      updateWindowBounds(id, {
-        position: positionRef.current,
-        size: nextSize,
-      });
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [
-    commitWindowDimensions,
-    id,
-    isResizing,
-    scheduleWindowDimensions,
-    updateWindowBounds,
-  ]);
-  // --- 🔧 конец добавленного блока ---
 
   const renderDocument = (content: string | DocumentBlock[]) => {
     if (typeof content === "string") {
@@ -873,7 +988,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
           {/* 👇 теперь ресайз работает */}
           <button
             className={s.windowResize}
-            onMouseDown={handleResizeMouseDown}
+            tabIndex={-1}
+            aria-hidden="true"
           ></button>
         </div>
       </motion.div>
@@ -882,6 +998,13 @@ export const Window = memo(function Window({ data }: WindowProps) {
       <WindowDragLayer
         id={id}
         parentId={parentId}
+        position={position}
+        size={windowDimensions}
+        zIndex={zIndex}
+        isFocused={isFocused}
+      />
+      <WindowResizeLayer
+        id={id}
         position={position}
         size={windowDimensions}
         zIndex={zIndex}

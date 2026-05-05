@@ -7,6 +7,7 @@ export interface WindowInstance {
   id: string;
   title: string;
   parentId?: string | null;
+  openerWindowId?: string;
   fileId?: string;
   position: Position;
   size: { width: number; height: number };
@@ -25,7 +26,8 @@ interface WindowManagerStore {
     title: string,
     parentId?: string | null,
     position?: Position,
-    preferredSize?: WindowInstance["size"]
+    preferredSize?: WindowInstance["size"],
+    openerWindowId?: string
   ) => void;
   focusWindow: (id: string) => void;
   moveWindow: (id: string, position: Position) => void;
@@ -60,7 +62,8 @@ export const useWindowManager = create<WindowManagerStore>()(
     title,
     parentId = null,
     position = { x: 200, y: 100 },
-    preferredSize
+    preferredSize,
+    openerWindowId
   ) => {
     const zIndex = Object.keys(get().windows).length + 1;
     const savedBounds = get().windowHistory[id];
@@ -71,6 +74,7 @@ export const useWindowManager = create<WindowManagerStore>()(
           id,
           title,
           parentId,
+          openerWindowId,
           fileId: id,
           position: savedBounds?.position ?? position,
           size: savedBounds?.size ?? preferredSize ?? getDefaultWindowSize(),
@@ -139,24 +143,35 @@ export const useWindowManager = create<WindowManagerStore>()(
     }),
   closeWindow: (id) =>
     set((state) => {
-      if (!state.windows[id]) return state;
+      const closingWindow = state.windows[id];
+      if (!closingWindow) return state;
 
       const newWindows = { ...state.windows };
       delete newWindows[id];
+      const openerWindowId =
+        closingWindow.openerWindowId && newWindows[closingWindow.openerWindowId]
+          ? closingWindow.openerWindowId
+          : undefined;
+
       return {
         windows: newWindows,
         focusedWindowId:
-          state.focusedWindowId === id ? undefined : state.focusedWindowId,
+          state.focusedWindowId === id ? openerWindowId : state.focusedWindowId,
       };
     }),
   closeFocusedWindow: () =>
     set((state) => {
       if (!state.focusedWindowId) return state;
 
+      const closingWindow = state.windows[state.focusedWindowId];
       const newWindows = { ...state.windows };
       delete newWindows[state.focusedWindowId];
+      const openerWindowId =
+        closingWindow?.openerWindowId && newWindows[closingWindow.openerWindowId]
+          ? closingWindow.openerWindowId
+          : undefined;
 
-      return { windows: newWindows, focusedWindowId: undefined };
+      return { windows: newWindows, focusedWindowId: openerWindowId };
     }),
   closeAllWindows: () =>
     set((state) =>

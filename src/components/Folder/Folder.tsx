@@ -214,7 +214,8 @@ export const Folder = memo(function Folder({
       undefined,
       hasProjectModel
         ? { width: Math.min(900, window.innerWidth), height: 440 }
-        : undefined
+        : undefined,
+      parentWindowId
     );
   };
 

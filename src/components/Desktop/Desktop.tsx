@@ -4,11 +4,24 @@ import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import Folder from "../Folder";
 import Window from "../Window";
-import { useRef, type MouseEventHandler } from "react";
+import { useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+const isEditableTarget = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) return false;
+
+  return (
+    target.isContentEditable ||
+    target instanceof HTMLInputElement ||
+    target instanceof HTMLTextAreaElement ||
+    target instanceof HTMLSelectElement
+  );
+};
 
 export function Desktop() {
   const removeActive = useFileSystem((state) => state.removeActive);
+  const setActive = useFileSystem((state) => state.setActive);
+  const activeItemId = useFileSystem((state) => state.activeItemId);
   const desktopItems = useFileSystem(
     useShallow((state) =>
       Object.values(state.items).filter((item) => item.parentId === "root")
@@ -17,6 +30,28 @@ export function Desktop() {
   const windows = useWindowManager(
     useShallow((state) => Object.values(state.windows))
   );
+  const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
+  const focusedWindowFileId = useWindowManager((state) =>
+    state.focusedWindowId
+      ? state.windows[state.focusedWindowId]?.fileId
+      : undefined
+  );
+  const keyboardItems = useFileSystem(
+    useShallow((state) => {
+      const focusedItem = focusedWindowFileId
+        ? state.items[focusedWindowFileId]
+        : undefined;
+      const parentId = focusedItem?.type === "folder" ? focusedItem.id : "root";
+
+      return Object.values(state.items).filter(
+        (item) =>
+          item.parentId === parentId &&
+          (item.type === "folder" || item.type === "file")
+      );
+    })
+  );
+  const openWindow = useWindowManager((state) => state.openWindow);
+  const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
   const desktopRef = useRef<HTMLDivElement | null>(null);
 
@@ -26,6 +61,99 @@ export function Desktop() {
       unfocusAll();
     }
   };
+
+  const navigateActiveItem = useCallback(
+    (direction: "next" | "previous") => {
+      if (!keyboardItems.length) return;
+
+      const currentIndex = activeItemId
+        ? keyboardItems.findIndex((item) => item.id === activeItemId)
+        : -1;
+      const nextIndex =
+        direction === "next"
+          ? (currentIndex + 1) % keyboardItems.length
+          : currentIndex <= 0
+            ? keyboardItems.length - 1
+            : currentIndex - 1;
+
+      setActive(keyboardItems[nextIndex].id);
+      if (focusedWindowId) {
+        focusWindow(focusedWindowId);
+      } else {
+        unfocusAll();
+      }
+    },
+    [
+      activeItemId,
+      focusWindow,
+      focusedWindowId,
+      keyboardItems,
+      setActive,
+      unfocusAll,
+    ]
+  );
+
+  const openActiveItem = useCallback(() => {
+    if (!activeItemId) return;
+
+    const item = useFileSystem.getState().items[activeItemId];
+    if (!item || (item.type !== "folder" && item.type !== "file")) return;
+
+    const hasProjectModel =
+      item.type === "file" &&
+      Array.isArray(item.content) &&
+      item.content.some((block) => block.type === "projectModel");
+
+    openWindow(
+      item.id,
+      item.name,
+      item.id,
+      undefined,
+      hasProjectModel
+        ? { width: Math.min(900, window.innerWidth), height: 440 }
+        : undefined,
+      focusedWindowId
+    );
+    setActive(item.id);
+  }, [activeItemId, focusedWindowId, openWindow, setActive]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) return;
+
+      if (event.key === "Escape") {
+        removeActive();
+        unfocusAll();
+        return;
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        openActiveItem();
+        return;
+      }
+
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+        event.preventDefault();
+        navigateActiveItem("next");
+        return;
+      }
+
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+        event.preventDefault();
+        navigateActiveItem("previous");
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [
+    navigateActiveItem,
+    openActiveItem,
+    removeActive,
+    unfocusAll,
+  ]);
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>

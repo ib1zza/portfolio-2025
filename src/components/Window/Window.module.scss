@@ -319,6 +319,14 @@
   }
 }
 
+.windowResizeHitbox {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: nwse-resize;
+}
+
 .windowProxy {
   border-width: 1px; /* Важно указать ширину border */
   border-style: solid; /* Или любое другое, border-image заменяет его вид */
