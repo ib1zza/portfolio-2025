@@ -1,10 +1,18 @@
 @use "reset";
-@use "vars";
-@use "fonts";
-@import "mixins";
+@use "vars" as *;
+@use "fonts" with (
+  $public-base: $public-base
+);
+@use "mixins" as *;
 
 * {
   cursor: none !important;
+}
+
+img,
+svg {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 ::selection {

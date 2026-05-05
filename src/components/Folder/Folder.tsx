@@ -437,6 +437,7 @@ export const Folder = memo(function Folder({
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
       onPointerDown={handlePointerDown}
+      onDragStart={(event) => event.preventDefault()}
     >
       <div className={s.folderIcon}>{getIcon()}</div>
       <div className={s.folderName}>{name}</div>

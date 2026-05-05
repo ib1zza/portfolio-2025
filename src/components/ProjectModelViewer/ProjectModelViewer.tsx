@@ -7,6 +7,7 @@ import type { Group, Mesh, Object3D } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import type { ProjectModel } from "../../data/portfolio";
+import { getAssetPath } from "../../utils/assets";
 import s from "./ProjectModelViewer.module.scss";
 
 interface ProjectModelViewerProps {
@@ -221,7 +222,8 @@ function DownloadedObject({
   src: string;
   scale?: number;
 }) {
-  const gltf = useLoader(GLTFLoader, src);
+  const assetSrc = getAssetPath(src);
+  const gltf = useLoader(GLTFLoader, assetSrc);
   const solidModel = useMemo(
     () => prepareModelClone(gltf.scene, modelSolidMaterial, scale),
     [gltf.scene, scale],

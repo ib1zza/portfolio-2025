@@ -10,6 +10,7 @@ import {
   useEffect,
 } from "react";
 import type {
+  DragEvent as ReactDragEvent,
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
@@ -26,6 +27,7 @@ import {
 import Folder from "../Folder";
 import { Z_INDEX } from "../../constants/zIndex";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
+import { getAssetPath } from "../../utils/assets";
 
 const ProjectModelViewer = lazy(() =>
   import("../ProjectModelViewer").then((module) => ({
@@ -39,7 +41,6 @@ interface WindowProps {
 
 interface WindowDragLayerProps {
   id: string;
-  parentId?: string | null;
   position: WindowInstance["position"];
   size: WindowInstance["size"];
   zIndex: number;
@@ -206,7 +207,6 @@ const getContentSize = (node: HTMLElement) => {
 
 const WindowDragLayer = memo(function WindowDragLayer({
   id,
-  parentId,
   position,
   size,
   zIndex,
@@ -214,7 +214,7 @@ const WindowDragLayer = memo(function WindowDragLayer({
 }: WindowDragLayerProps) {
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const moveWindow = useWindowManager((state) => state.moveWindow);
-  const setActive = useFileSystem((state) => state.setActive);
+  const removeActive = useFileSystem((state) => state.removeActive);
   const [isDraggingProxy, setIsDraggingProxy] = useState(false);
   const [currentDragOffset, setCurrentDragOffset] = useState({ x: 0, y: 0 });
   const dragFrameRef = useRef<number | null>(null);
@@ -222,8 +222,8 @@ const WindowDragLayer = memo(function WindowDragLayer({
 
   const focusOwner = useCallback(() => {
     focusWindow(id);
-    if (parentId) setActive(parentId);
-  }, [focusWindow, id, parentId, setActive]);
+    removeActive();
+  }, [focusWindow, id, removeActive]);
 
   const scheduleDragOffset = useCallback((offset: { x: number; y: number }) => {
     dragOffsetRef.current = offset;
@@ -254,6 +254,11 @@ const WindowDragLayer = memo(function WindowDragLayer({
     dragOffsetRef.current = { x: 0, y: 0 };
     setCurrentDragOffset({ x: 0, y: 0 });
     setIsDraggingProxy(true);
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    focusOwner();
   };
 
   const handleDragProxy = (
@@ -296,7 +301,7 @@ const WindowDragLayer = memo(function WindowDragLayer({
         className={s.dragHandle}
         drag
         dragMomentum={false}
-        onPointerDown={focusOwner}
+        onPointerDown={handlePointerDown}
         onDragStart={handleDragStartProxy}
         onDrag={handleDragProxy}
         onDragEnd={handleDragEndProxy}
@@ -488,14 +493,14 @@ const WindowResizeLayer = memo(function WindowResizeLayer({
 });
 
 export const Window = memo(function Window({ data }: WindowProps) {
-  const { id, position, title, zIndex, fileId, parentId, size } = data;
+  const { id, position, title, zIndex, fileId, size } = data;
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const updateWindowBounds = useWindowManager(
     (state) => state.updateWindowBounds
   );
   const { closeWindowAnimated } = useWindowOpenAnimation();
   const isFocused = useWindowManager((state) => state.focusedWindowId === id);
-  const setActive = useFileSystem((state) => state.setActive);
+  const removeActive = useFileSystem((state) => state.removeActive);
   const currentItem = useFileSystem((state) =>
     fileId ? state.items[fileId] : undefined
   );
@@ -692,9 +697,15 @@ export const Window = memo(function Window({ data }: WindowProps) {
     };
   }, [scheduleScrollMetricsUpdate]);
 
-  const handleWindowClick = () => {
+  const handleWindowMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
     focusWindow(id);
-    if (parentId) setActive(parentId);
+    if (!(event.target as HTMLElement).closest("[data-finder-item-id]")) {
+      removeActive();
+    }
+  };
+
+  const preventNativeDrag = (event: ReactDragEvent) => {
+    event.preventDefault();
   };
 
   const handleZoomToFit = (e: ReactMouseEvent) => {
@@ -778,7 +789,11 @@ export const Window = memo(function Window({ data }: WindowProps) {
             case "image":
               return (
                 <figure key={index}>
-                  <img src={block.src} alt={block.alt} onLoad={updateScrollMetrics} />
+                  <img
+                    src={getAssetPath(block.src)}
+                    alt={block.alt}
+                    onLoad={updateScrollMetrics}
+                  />
                   {block.caption && <figcaption>{block.caption}</figcaption>}
                 </figure>
               );
@@ -893,7 +908,9 @@ export const Window = memo(function Window({ data }: WindowProps) {
           minHeight: MIN_HEIGHT,
           minWidth: MIN_WIDTH,
         }}
-        onMouseDown={handleWindowClick}
+        onMouseDown={handleWindowMouseDown}
+        draggable={false}
+        onDragStartCapture={preventNativeDrag}
       >
         <div className={s.windowTop}>
           <div className={s.buttonContainer}>
@@ -901,7 +918,11 @@ export const Window = memo(function Window({ data }: WindowProps) {
               className={s.windowTopButton}
               onClick={() => closeWindowAnimated(id)}
             >
-              <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
+              <img
+                src={getAssetPath("/icons/sparkle.svg")}
+                alt="sparkle"
+                draggable={false}
+              />
             </button>
           </div>
           <div className={s.title}>{title}</div>
@@ -910,7 +931,11 @@ export const Window = memo(function Window({ data }: WindowProps) {
               className={clsx(s.windowTopButton, s.windowTopButtonClose)}
               onClick={handleZoomToFit}
             >
-              <img src="/icons/sparkle.svg" alt="sparkle" draggable={false} />
+              <img
+                src={getAssetPath("/icons/sparkle.svg")}
+                alt="sparkle"
+                draggable={false}
+              />
             </button>
           </div>
         </div>
@@ -1012,7 +1037,6 @@ export const Window = memo(function Window({ data }: WindowProps) {
       {/* Прокси-элемент */}
       <WindowDragLayer
         id={id}
-        parentId={parentId}
         position={position}
         size={windowDimensions}
         zIndex={zIndex}

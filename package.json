@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --configLoader native",
+    "build:github": "tsc -b && vite build --mode github --configLoader native",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --configLoader native"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.1",
