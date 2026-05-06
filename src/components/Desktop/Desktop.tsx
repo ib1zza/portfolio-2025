@@ -19,6 +19,88 @@ const isEditableTarget = (target: EventTarget | null) => {
   );
 };
 
+type NavigationDirection = "left" | "right" | "up" | "down";
+
+interface SpatialItem {
+  id: string;
+  rect: DOMRect;
+  centerX: number;
+  centerY: number;
+}
+
+const getSpatialItems = (items: Array<{ id: string }>) =>
+  items
+    .map((item) => {
+      const element = document.querySelector<HTMLElement>(
+        `[data-finder-item-id="${CSS.escape(item.id)}"]`
+      );
+      const rect = element?.getBoundingClientRect();
+
+      if (!rect) return null;
+
+      return {
+        id: item.id,
+        rect,
+        centerX: rect.left + rect.width / 2,
+        centerY: rect.top + rect.height / 2,
+      };
+    })
+    .filter((item): item is SpatialItem => item !== null);
+
+const getFirstSpatialItem = (items: SpatialItem[]) =>
+  [...items].sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left)[0];
+
+const getSpatialScore = (
+  current: SpatialItem,
+  candidate: SpatialItem,
+  direction: NavigationDirection
+) => {
+  const dx = candidate.centerX - current.centerX;
+  const dy = candidate.centerY - current.centerY;
+
+  if (direction === "left" && dx >= 0) return Infinity;
+  if (direction === "right" && dx <= 0) return Infinity;
+  if (direction === "up" && dy >= 0) return Infinity;
+  if (direction === "down" && dy <= 0) return Infinity;
+
+  const primaryDistance =
+    direction === "left" || direction === "right" ? Math.abs(dx) : Math.abs(dy);
+  const crossDistance =
+    direction === "left" || direction === "right" ? Math.abs(dy) : Math.abs(dx);
+
+  return primaryDistance * 4 + crossDistance;
+};
+
+const getNextSpatialItem = (
+  items: SpatialItem[],
+  activeItemId: string | null,
+  direction: NavigationDirection
+) => {
+  if (!items.length) return undefined;
+
+  const current = activeItemId
+    ? items.find((item) => item.id === activeItemId)
+    : undefined;
+
+  if (!current) return getFirstSpatialItem(items);
+
+  const nextItem = items
+    .filter((item) => item.id !== current.id)
+    .map((item) => ({
+      item,
+      score: getSpatialScore(current, item, direction),
+    }))
+    .filter(({ score }) => Number.isFinite(score))
+    .sort(
+      (a, b) =>
+        a.score - b.score ||
+        a.item.rect.top - b.item.rect.top ||
+        a.item.rect.left - b.item.rect.left
+    )[0]?.item;
+
+  return nextItem ?? current;
+};
+
 export function Desktop() {
   const removeActive = useFileSystem((state) => state.removeActive);
   const setActive = useFileSystem((state) => state.setActive);
@@ -67,20 +149,18 @@ export function Desktop() {
   };
 
   const navigateActiveItem = useCallback(
-    (direction: "next" | "previous") => {
+    (direction: NavigationDirection) => {
       if (!keyboardItems.length) return;
 
-      const currentIndex = activeItemId
-        ? keyboardItems.findIndex((item) => item.id === activeItemId)
-        : -1;
-      const nextIndex =
-        direction === "next"
-          ? (currentIndex + 1) % keyboardItems.length
-          : currentIndex <= 0
-            ? keyboardItems.length - 1
-            : currentIndex - 1;
+      const nextItem = getNextSpatialItem(
+        getSpatialItems(keyboardItems),
+        activeItemId,
+        direction
+      );
 
-      setActive(keyboardItems[nextIndex].id);
+      if (!nextItem) return;
+
+      setActive(nextItem.id);
       if (focusedWindowId) {
         focusWindow(focusedWindowId);
       } else {
@@ -155,15 +235,27 @@ export function Desktop() {
         return;
       }
 
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      if (event.key === "ArrowRight") {
         event.preventDefault();
-        navigateActiveItem("next");
+        navigateActiveItem("right");
         return;
       }
 
-      if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      if (event.key === "ArrowDown") {
         event.preventDefault();
-        navigateActiveItem("previous");
+        navigateActiveItem("down");
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        navigateActiveItem("left");
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        navigateActiveItem("up");
       }
     };
 
