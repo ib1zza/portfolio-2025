@@ -1,4 +1,3 @@
-export { MacButton } from "./MacButton";
-export { MacProgress } from "./MacProgress";
 export { PopupSelect } from "./PopupSelect";
 export type { PopupSelectOption } from "./PopupSelect";
+

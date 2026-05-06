@@ -49,7 +49,7 @@ export interface LinkItem extends BaseItem {
 
 export interface AppItem extends BaseItem {
   type: "app";
-  app: "icon-painter";
+  app: "icon-painter" | "dither-studio";
 }
 
 export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
@@ -285,7 +285,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Desktop",
       type: "folder",
       parentId: null,
-      children: ["about", "projects", "education", "contact", "iconPainter"],
+      children: [
+        "about",
+        "projects",
+        "education",
+        "contact",
+        "iconPainter",
+        "ditherStudio",
+      ],
     },
     projects: {
       id: "projects",
@@ -354,6 +361,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: { x: 488, y: 132 },
       app: "icon-painter",
+    },
+    ditherStudio: {
+      id: "ditherStudio",
+      name: "Dither Studio",
+      type: "app",
+      parentId: "root",
+      position: { x: 592, y: 132 },
+      app: "dither-studio",
     },
     ...contactShortcutItems,
     ...sectionItems,

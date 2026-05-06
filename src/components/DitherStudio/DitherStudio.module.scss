@@ -1,0 +1,99 @@
+.ditherStudio {
+  display: grid;
+  grid-template-columns: 256px minmax(240px, 1fr);
+  gap: 12px;
+  width: 100%;
+  min-width: 560px;
+  min-height: 100%;
+  padding: 10px;
+  background: $white;
+  user-select: none;
+}
+
+.previewPanel,
+.controlPanel {
+  border: $border;
+  background: $white;
+}
+
+.previewPanel {
+  display: grid;
+  place-items: center;
+  width: 256px;
+  height: 256px;
+  overflow: hidden;
+}
+
+.preview {
+  display: block;
+  max-width: 256px;
+  max-height: 256px;
+  width: 256px;
+  height: 256px;
+  background: $white;
+  image-rendering: pixelated;
+}
+
+.controlPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.title {
+  @include textTitle(16px, 18px);
+  padding-bottom: 6px;
+  border-bottom: $border;
+}
+
+.fileRow,
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.selects {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.sliderLabel {
+  @include textTitle(16px, 16px);
+  display: grid;
+  grid-template-columns: auto minmax(88px, 1fr) 32px;
+  gap: 6px;
+  align-items: center;
+}
+
+.thresholdProgress {
+  width: 100%;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: $border;
+    outline-offset: 2px;
+  }
+}
+
+.meta {
+  @include textMain(16px, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

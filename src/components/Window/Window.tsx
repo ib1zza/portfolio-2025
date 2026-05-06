@@ -41,6 +41,12 @@ const IconPainter = lazy(() =>
   }))
 );
 
+const DitherStudio = lazy(() =>
+  import("../DitherStudio").then((module) => ({
+    default: module.DitherStudio,
+  }))
+);
+
 interface WindowProps {
   data: WindowInstance;
 }
@@ -821,6 +827,14 @@ export const Window = memo(function Window({ data }: WindowProps) {
         return (
           <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
             <IconPainter />
+          </Suspense>
+        );
+      }
+
+      if (currentItem?.type === "app" && currentItem.app === "dither-studio") {
+        return (
+          <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
+            <DitherStudio />
           </Suspense>
         );
       }

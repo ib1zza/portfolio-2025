@@ -48,7 +48,7 @@ function PopupSelectComponent<T extends string>({
   return (
     <div
       ref={popupRef}
-      className={s.popup}
+      className={clsx(s.popup, { [s.openRoot]: isOpen })}
       onBlur={(event) => {
         const nextFocus = event.relatedTarget;
 

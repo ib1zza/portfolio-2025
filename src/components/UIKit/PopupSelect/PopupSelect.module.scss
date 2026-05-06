@@ -8,6 +8,10 @@
   color: $black;
 }
 
+.openRoot {
+  z-index: 30;
+}
+
 .popupLabel {
   flex: 0 0 auto;
   height: 19px;

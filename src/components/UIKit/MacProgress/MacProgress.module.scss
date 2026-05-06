@@ -1,0 +1,17 @@
+.progress {
+  position: relative;
+  width: 161px;
+  height: 11px;
+  background: $white;
+  border: $border;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: calc(var(--progress-value) * 100%);
+  background: $black;
+}

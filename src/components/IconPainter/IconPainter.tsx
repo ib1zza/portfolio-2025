@@ -2,7 +2,8 @@ import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
-import { MacButton, PopupSelect } from "../UIKit";
+import { MacButton } from "../UIKit/MacButton";
+import { PopupSelect } from "../UIKit/PopupSelect";
 import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
