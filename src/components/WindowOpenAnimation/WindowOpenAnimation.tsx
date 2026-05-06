@@ -16,6 +16,7 @@ import {
   useWindowManager,
   type WindowInstance,
 } from "../../store/useWindowManager";
+import { useCursor } from "../../contexts/cursor";
 
 interface AnimationFrame {
   key: string;
@@ -55,6 +56,7 @@ export function WindowOpenAnimationProvider({
 }) {
   const openWindow = useWindowManager((state) => state.openWindow);
   const closeWindow = useWindowManager((state) => state.closeWindow);
+  const { startCursorOverride } = useCursor();
   const [animations, setAnimations] = useState<AnimationFrame[]>([]);
 
   const openWindowAnimated = useCallback(
@@ -72,6 +74,7 @@ export function WindowOpenAnimationProvider({
       const targetSize =
         windowHistory?.size ?? preferredSize ?? DEFAULT_WINDOW_SIZE;
       const animationKey = `${id}-${Date.now()}`;
+      const releaseCursor = startCursorOverride("watch");
 
       setAnimations((currentAnimations) => [
         ...currentAnimations,
@@ -83,6 +86,7 @@ export function WindowOpenAnimationProvider({
       ]);
 
       window.setTimeout(() => {
+        releaseCursor();
         setAnimations((currentAnimations) =>
           currentAnimations.filter((animation) => animation.key !== animationKey)
         );
@@ -96,7 +100,7 @@ export function WindowOpenAnimationProvider({
         );
       }, WINDOW_OPEN_ANIMATION_DURATION_MS);
     },
-    [openWindow]
+    [openWindow, startCursorOverride]
   );
 
   const closeWindowAnimated = useCallback(

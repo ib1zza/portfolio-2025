@@ -1,12 +1,13 @@
 import s from "./Desktop.module.scss";
 import { Topbar } from "../Topbar";
-import { useFileSystem } from "../../store/useFileSystem";
+import { getChildItems, useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import Folder from "../Folder";
-import Window from "../Window";
+import { WindowContainer } from "../Window";
 import { useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
+import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -101,18 +102,14 @@ const getNextSpatialItem = (
   return nextItem ?? current;
 };
 
-export function Desktop() {
+function DesktopContent() {
   const removeActive = useFileSystem((state) => state.removeActive);
   const setActive = useFileSystem((state) => state.setActive);
   const activeItemId = useFileSystem((state) => state.activeItemId);
   const desktopItems = useFileSystem(
-    useShallow((state) =>
-      Object.values(state.items).filter((item) => item.parentId === "root")
-    )
+    useShallow((state) => getChildItems(state.items, "root"))
   );
-  const windows = useWindowManager(
-    useShallow((state) => Object.values(state.windows))
-  );
+  const windowIds = useWindowManager((state) => state.windowIds);
   const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
   const focusedWindowFileId = useWindowManager((state) =>
     state.focusedWindowId
@@ -126,19 +123,18 @@ export function Desktop() {
         : undefined;
       const parentId = focusedItem?.type === "folder" ? focusedItem.id : "root";
 
-      return Object.values(state.items).filter(
+      return getChildItems(state.items, parentId).filter(
         (item) =>
-          item.parentId === parentId &&
-          (item.type === "folder" ||
-            item.type === "file" ||
-            item.type === "link" ||
-            item.type === "app")
+          item.type === "folder" ||
+          item.type === "file" ||
+          item.type === "link" ||
+          item.type === "app"
       );
     })
   );
-  const openWindow = useWindowManager((state) => state.openWindow);
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
+  const { openWindowAnimated } = useWindowOpenAnimation();
   const desktopRef = useRef<HTMLDivElement | null>(null);
 
   const handleBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -208,16 +204,20 @@ export function Desktop() {
           ? { width: Math.min(900, window.innerWidth), height: 440 }
           : undefined;
 
-    openWindow(
-      item.id,
-      item.name,
-      item.id,
-      undefined,
-      preferredSize,
-      focusedWindowId
+    const sourceElement = document.querySelector<HTMLElement>(
+      `[data-finder-item-id="${CSS.escape(item.id)}"]`
     );
+
+    openWindowAnimated({
+      id: item.id,
+      title: item.name,
+      parentId: item.id,
+      sourceRect: sourceElement?.getBoundingClientRect(),
+      preferredSize,
+      openerWindowId: focusedWindowId,
+    });
     setActive(item.id);
-  }, [activeItemId, focusedWindowId, openWindow, setActive]);
+  }, [activeItemId, focusedWindowId, openWindowAnimated, setActive]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -271,7 +271,6 @@ export function Desktop() {
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
-      <WindowOpenAnimationProvider>
       <Topbar />
 
       {/* Папки на рабочем столе */}
@@ -289,10 +288,17 @@ export function Desktop() {
       )}
 
       {/* Окна */}
-      {windows.map((win) => (
-        <Window key={win.id} data={win} />
+      {windowIds.map((windowId) => (
+        <WindowContainer key={windowId} id={windowId} />
       ))}
-      </WindowOpenAnimationProvider>
     </div>
+  );
+}
+
+export function Desktop() {
+  return (
+    <WindowOpenAnimationProvider>
+      <DesktopContent />
+    </WindowOpenAnimationProvider>
   );
 }

@@ -1,6 +1,7 @@
 // src/store/useWindowManager.ts
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { createThrottledLocalStorage } from "../utils/storage";
 import type { Position } from "./useFileSystem";
 
 export interface WindowInstance {
@@ -16,6 +17,8 @@ export interface WindowInstance {
 
 interface WindowManagerStore {
   windows: Record<string, WindowInstance>;
+  windowIds: string[];
+  openFileIds: Record<string, true>;
   windowHistory: Record<
     string,
     Pick<WindowInstance, "position" | "size">
@@ -56,6 +59,8 @@ export const useWindowManager = create<WindowManagerStore>()(
   persist(
     (set, get) => ({
   windows: {},
+  windowIds: [],
+  openFileIds: {},
   windowHistory: {},
   openWindow: (
     id,
@@ -65,7 +70,7 @@ export const useWindowManager = create<WindowManagerStore>()(
     preferredSize,
     openerWindowId
   ) => {
-    const zIndex = Object.keys(get().windows).length + 1;
+    const zIndex = get().windowIds.length + 1;
     const savedBounds = get().windowHistory[id];
     set((state) => ({
       windows: {
@@ -80,6 +85,13 @@ export const useWindowManager = create<WindowManagerStore>()(
           size: savedBounds?.size ?? preferredSize ?? getDefaultWindowSize(),
           zIndex,
         },
+      },
+      windowIds: state.windowIds.includes(id)
+        ? state.windowIds
+        : [...state.windowIds, id],
+      openFileIds: {
+        ...state.openFileIds,
+        [id]: true,
       },
       focusedWindowId: id,
     }));
@@ -147,7 +159,9 @@ export const useWindowManager = create<WindowManagerStore>()(
       if (!closingWindow) return state;
 
       const newWindows = { ...state.windows };
+      const newOpenFileIds = { ...state.openFileIds };
       delete newWindows[id];
+      if (closingWindow.fileId) delete newOpenFileIds[closingWindow.fileId];
       const openerWindowId =
         closingWindow.openerWindowId && newWindows[closingWindow.openerWindowId]
           ? closingWindow.openerWindowId
@@ -155,6 +169,8 @@ export const useWindowManager = create<WindowManagerStore>()(
 
       return {
         windows: newWindows,
+        windowIds: state.windowIds.filter((windowId) => windowId !== id),
+        openFileIds: newOpenFileIds,
         focusedWindowId:
           state.focusedWindowId === id ? openerWindowId : state.focusedWindowId,
       };
@@ -165,19 +181,30 @@ export const useWindowManager = create<WindowManagerStore>()(
 
       const closingWindow = state.windows[state.focusedWindowId];
       const newWindows = { ...state.windows };
+      const newOpenFileIds = { ...state.openFileIds };
       delete newWindows[state.focusedWindowId];
+      if (closingWindow?.fileId) delete newOpenFileIds[closingWindow.fileId];
       const openerWindowId =
         closingWindow?.openerWindowId && newWindows[closingWindow.openerWindowId]
           ? closingWindow.openerWindowId
           : undefined;
 
-      return { windows: newWindows, focusedWindowId: openerWindowId };
+      return {
+        windows: newWindows,
+        windowIds: state.windowIds.filter(
+          (windowId) => windowId !== state.focusedWindowId,
+        ),
+        openFileIds: newOpenFileIds,
+        focusedWindowId: openerWindowId,
+      };
     }),
   closeAllWindows: () =>
     set((state) =>
-      Object.keys(state.windows).length || state.focusedWindowId
+      state.windowIds.length || state.focusedWindowId
         ? {
             windows: {},
+            windowIds: [],
+            openFileIds: {},
             focusedWindowId: undefined,
           }
         : state
@@ -185,6 +212,8 @@ export const useWindowManager = create<WindowManagerStore>()(
   resetWindows: () =>
     set(() => ({
       windows: {},
+      windowIds: [],
+      openFileIds: {},
       windowHistory: {},
       focusedWindowId: undefined,
     })),
@@ -204,7 +233,15 @@ export const useWindowManager = create<WindowManagerStore>()(
 }),
     {
       name: "portfolio-2025-window-manager",
-      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      storage: createJSONStorage(() => createThrottledLocalStorage()),
+      migrate: (persistedState) => {
+        const state = persistedState as Partial<WindowManagerStore> | undefined;
+
+        return {
+          windowHistory: state?.windowHistory ?? {},
+        } as Partial<WindowManagerStore>;
+      },
       partialize: (state) => ({ windowHistory: state.windowHistory }),
     }
   )

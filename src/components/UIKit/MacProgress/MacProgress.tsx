@@ -10,6 +10,7 @@ type ProgressStyle = CSSProperties & {
 
 interface MacProgressProps extends HTMLAttributes<HTMLDivElement> {
   value: number;
+  min?: number;
   max?: number;
   className?: string;
   "aria-label"?: string;
@@ -17,6 +18,7 @@ interface MacProgressProps extends HTMLAttributes<HTMLDivElement> {
 
 function MacProgressComponent({
   value,
+  min = 0,
   max = 100,
   className,
   style,
@@ -25,10 +27,13 @@ function MacProgressComponent({
   ...props
 }: MacProgressProps) {
   const progress = useMemo(() => {
-    if (max <= 0) return 0;
+    const range = max - min;
+    if (range <= 0) return 0;
 
-    return Math.min(Math.max(value / max, 0), 1);
-  }, [max, value]);
+    return Math.min(Math.max((value - min) / range, 0), 1);
+  }, [max, min, value]);
+
+  const clampedValue = Math.min(Math.max(value, min), max);
 
   return (
     <div
@@ -36,9 +41,9 @@ function MacProgressComponent({
       className={clsx(s.progress, className)}
       role={role}
       aria-label={ariaLabel}
-      aria-valuemin={0}
+      aria-valuemin={min}
       aria-valuemax={max}
-      aria-valuenow={Math.min(Math.max(value, 0), max)}
+      aria-valuenow={clampedValue}
       style={{ ...style, "--progress-value": progress } as ProgressStyle}
     >
       <span className={s.fill} aria-hidden="true" />

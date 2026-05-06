@@ -1,0 +1,1 @@
+export { MacSlider } from "./MacSlider";

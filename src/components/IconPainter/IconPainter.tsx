@@ -4,6 +4,10 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { MacButton } from "../UIKit/MacButton";
 import { PopupSelect } from "../UIKit/PopupSelect";
+import {
+  readVersionedStorage,
+  writeVersionedStorage,
+} from "../../utils/storage";
 import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
@@ -12,6 +16,7 @@ type ExportFormat = "png" | "svg";
 const GRID_SIZE = 32;
 const PIXEL_COUNT = GRID_SIZE * GRID_SIZE;
 const STORAGE_KEY = "portfolio-2025-icon-painter";
+const STORAGE_VERSION = 1;
 const MAX_HISTORY_LENGTH = 50;
 const PREVIEW_SIZES = [128, 64, 32] as const;
 type PreviewSize = (typeof PREVIEW_SIZES)[number];
@@ -59,19 +64,15 @@ const getLineIndexes = (fromIndex: number, toIndex: number) => {
 };
 
 const readStoredPixels = () => {
-  if (typeof window === "undefined") return createBlankPixels();
-
-  try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (!stored) return createBlankPixels();
-    const parsed = JSON.parse(stored);
-
-    return Array.isArray(parsed) && parsed.length === PIXEL_COUNT
-      ? parsed.map(Boolean)
-      : createBlankPixels();
-  } catch {
-    return createBlankPixels();
-  }
+  return readVersionedStorage(
+    STORAGE_KEY,
+    STORAGE_VERSION,
+    createBlankPixels(),
+    (stored) =>
+      Array.isArray(stored) && stored.length === PIXEL_COUNT
+        ? stored.map(Boolean)
+        : createBlankPixels(),
+  );
 };
 
 const getIndexFromEvent = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -323,7 +324,7 @@ export const IconPainter = memo(function IconPainter() {
 
   useEffect(() => {
     pixelsRef.current = pixels;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(pixels));
+    writeVersionedStorage(STORAGE_KEY, STORAGE_VERSION, pixels);
     drawAllPixels(pixels);
   }, [drawAllPixels, pixels]);
 

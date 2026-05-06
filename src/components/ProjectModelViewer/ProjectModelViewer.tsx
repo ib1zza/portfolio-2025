@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useLoader } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { Box3, MeshBasicMaterial, Vector3 } from "three";
 import type { Group, Mesh, Object3D } from "three";
@@ -11,10 +11,12 @@ import { getAssetPath } from "../../utils/assets";
 import s from "./ProjectModelViewer.module.scss";
 
 interface ProjectModelViewerProps {
+  isActive: boolean;
   model: ProjectModel;
 }
 
 interface ModelSceneProps {
+  isActive: boolean;
   model: ProjectModel;
   rotationRef: RotationRef;
   isDraggingRef: BooleanRef;
@@ -46,6 +48,11 @@ const modelWireMaterial = new MeshBasicMaterial({
 
 const isMesh = (object: Object3D): object is Mesh =>
   "isMesh" in object && Boolean((object as Mesh).isMesh);
+
+const getModelSources = (model: ProjectModel) =>
+  [model.src, model.logo?.src, ...(model.extras?.map((extra) => extra.src) ?? [])]
+    .filter((src): src is string => Boolean(src))
+    .map(getAssetPath);
 
 const prepareModelClone = (
   scene: Object3D,
@@ -281,11 +288,16 @@ function RotatingLogo({ logo }: { logo: ModelLogo }) {
   );
 }
 
-function ModelScene({ model, rotationRef, isDraggingRef }: ModelSceneProps) {
+function ModelScene({
+  isActive,
+  model,
+  rotationRef,
+  isDraggingRef,
+}: ModelSceneProps) {
   const groupRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
-    if (!groupRef.current) return;
+    if (!isActive || !groupRef.current) return;
 
     const targetRotation = rotationRef.current;
     const easing = isDraggingRef.current ? 0.45 : 0.12;
@@ -320,14 +332,41 @@ function ModelScene({ model, rotationRef, isDraggingRef }: ModelSceneProps) {
   );
 }
 
-export function ProjectModelViewer({ model }: ProjectModelViewerProps) {
+export function ProjectModelViewer({ isActive, model }: ProjectModelViewerProps) {
   const rotationRef = useRef<RotationState>({ x: -0.15, y: 0.45 });
   const isDraggingRef = useRef(false);
+  const viewerRef = useRef<HTMLDivElement | null>(null);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
   const dragStartRef = useRef<{
     x: number;
     y: number;
     rotation: RotationState;
   } | null>(null);
+  const modelSources = useMemo(() => getModelSources(model), [model]);
+
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer || hasBeenVisible) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+
+      setHasBeenVisible(true);
+      observer.disconnect();
+    });
+
+    observer.observe(viewer);
+
+    return () => observer.disconnect();
+  }, [hasBeenVisible]);
+
+  useEffect(() => {
+    if (!hasBeenVisible) return;
+
+    modelSources.forEach((src) => {
+      useLoader.preload(GLTFLoader, src);
+    });
+  }, [hasBeenVisible, modelSources]);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -356,25 +395,32 @@ export function ProjectModelViewer({ model }: ProjectModelViewerProps) {
 
   return (
     <div
+      ref={viewerRef}
       className={s.viewer}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <Canvas
-        className={s.canvas}
-        camera={{ position: [0, 0.15, 4.2], fov: 35 }}
-        dpr={1}
-        gl={{ antialias: false }}
-      >
-        <color attach="background" args={[white]} />
-        <ModelScene
-          model={model}
-          rotationRef={rotationRef}
-          isDraggingRef={isDraggingRef}
-        />
-      </Canvas>
+      {hasBeenVisible ? (
+        <Canvas
+          className={s.canvas}
+          camera={{ position: [0, 0.15, 4.2], fov: 35 }}
+          dpr={1}
+          frameloop={isActive ? "always" : "demand"}
+          gl={{ antialias: false, powerPreference: "low-power" }}
+        >
+          <color attach="background" args={[white]} />
+          <ModelScene
+            isActive={isActive}
+            model={model}
+            rotationRef={rotationRef}
+            isDraggingRef={isDraggingRef}
+          />
+        </Canvas>
+      ) : (
+        <div className={s.viewerFallback} />
+      )}
       <div className={s.caption}>{model.label}</div>
     </div>
   );

@@ -6,6 +6,7 @@ import {
   type PortfolioProject,
   type ProjectModel,
 } from "../data/portfolio";
+import { createThrottledLocalStorage } from "../utils/storage";
 
 export interface Position {
   x: number;
@@ -53,6 +54,21 @@ export interface AppItem extends BaseItem {
 }
 
 export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
+
+export const getChildItems = (
+  items: Record<string, FileSystemItem>,
+  parentId: string | null,
+) => {
+  const parent = parentId ? items[parentId] : undefined;
+
+  if (parent?.type === "folder") {
+    return parent.children
+      .map((childId) => items[childId])
+      .filter((item): item is FileSystemItem => Boolean(item));
+  }
+
+  return Object.values(items).filter((item) => item.parentId === parentId);
+};
 
 const formatProject = (project: PortfolioProject) =>
   [
@@ -344,6 +360,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
         "contact-telegram",
         "contact-vk",
         "contact-email",
+        "contact-github",
         "contactReadme",
       ],
     },
@@ -412,11 +429,9 @@ export const useFileSystem = create<FileSystemStore>()(
       items: createInitialItems(storedPositions),
       itemPositions: storedPositions,
       activeItemId: null,
-      getChildren: (parentId) =>
-        Object.values(get().items).filter((i) => i.parentId === parentId),
+      getChildren: (parentId) => getChildItems(get().items, parentId),
 
-      getItemById: (id: string) =>
-        Object.values(get().items).find((i) => i.id === id),
+      getItemById: (id: string) => get().items[id],
 
       setActive: (id: string) => {
         set((state) =>
@@ -457,15 +472,7 @@ export const useFileSystem = create<FileSystemStore>()(
       },
       cleanUpChildren: (parentId) => {
         set((state) => {
-          const parent = parentId ? state.items[parentId] : undefined;
-          const children =
-            parent?.type === "folder"
-              ? parent.children
-                  .map((childId) => state.items[childId])
-                  .filter(Boolean)
-              : Object.values(state.items).filter(
-                  (item) => item.parentId === parentId,
-                );
+          const children = getChildItems(state.items, parentId);
           let nextItems = state.items;
           let nextPositions = state.itemPositions;
           let hasChanges = false;
@@ -508,7 +515,15 @@ export const useFileSystem = create<FileSystemStore>()(
     }),
     {
       name: STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
+      version: 1,
+      storage: createJSONStorage(() => createThrottledLocalStorage()),
+      migrate: (persistedState) => {
+        const state = persistedState as Partial<FileSystemStore> | undefined;
+
+        return {
+          itemPositions: state?.itemPositions ?? {},
+        } as Partial<FileSystemStore>;
+      },
       partialize: (state) => ({ itemPositions: state.itemPositions }),
     },
   ),

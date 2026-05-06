@@ -3,6 +3,7 @@ import type { CursorType } from "../types/cursor";
 
 interface CursorContextType {
   cursor: CursorType;
+  startCursorOverride: (cursor: CursorType) => () => void;
   setCursor: (cursor: CursorType) => void;
   resetCursor: () => void;
 }

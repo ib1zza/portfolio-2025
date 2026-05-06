@@ -72,7 +72,7 @@ export function Topbar() {
       : undefined
   );
   const hasWindows = useWindowManager(
-    (state) => Object.keys(state.windows).length > 0
+    (state) => state.windowIds.length > 0
   );
   const openWindow = useWindowManager((state) => state.openWindow);
   const closeAllWindows = useWindowManager((state) => state.closeAllWindows);
