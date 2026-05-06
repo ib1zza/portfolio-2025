@@ -47,7 +47,12 @@ export interface LinkItem extends BaseItem {
   icon: "vk" | "telegram" | "email" | "github";
 }
 
-export type FileSystemItem = FolderItem | FileItem | LinkItem;
+export interface AppItem extends BaseItem {
+  type: "app";
+  app: "icon-painter";
+}
+
+export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
 
 const formatProject = (project: PortfolioProject) =>
   [
@@ -280,7 +285,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Desktop",
       type: "folder",
       parentId: null,
-      children: ["about", "projects", "education", "contact"],
+      children: ["about", "projects", "education", "contact", "iconPainter"],
     },
     projects: {
       id: "projects",
@@ -341,6 +346,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       type: "file",
       parentId: "contact",
       content: contactsContent,
+    },
+    iconPainter: {
+      id: "iconPainter",
+      name: "Icon Painter",
+      type: "app",
+      parentId: "root",
+      position: { x: 488, y: 132 },
+      app: "icon-painter",
     },
     ...contactShortcutItems,
     ...sectionItems,

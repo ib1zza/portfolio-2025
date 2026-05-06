@@ -35,6 +35,12 @@ const ProjectModelViewer = lazy(() =>
   }))
 );
 
+const IconPainter = lazy(() =>
+  import("../IconPainter").then((module) => ({
+    default: module.IconPainter,
+  }))
+);
+
 interface WindowProps {
   data: WindowInstance;
 }
@@ -532,7 +538,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const [scrollMetrics, setScrollMetrics] = useState(INITIAL_SCROLL_METRICS);
   const scrollMetricsRef = useRef(INITIAL_SCROLL_METRICS);
 
-  const isFile = currentItem?.type === "file";
+  const isFile = currentItem?.type === "file" || currentItem?.type === "app";
 
   const hasVerticalScroll =
     scrollMetrics.scrollHeight > scrollMetrics.clientHeight + 1;
@@ -811,6 +817,14 @@ export const Window = memo(function Window({ data }: WindowProps) {
 
   const renderChildren = () => {
     if (fileId) {
+      if (currentItem?.type === "app" && currentItem.app === "icon-painter") {
+        return (
+          <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
+            <IconPainter />
+          </Suspense>
+        );
+      }
+
       if (currentItem?.type === "file") {
         return renderDocument(currentItem.content);
       }
@@ -858,6 +872,19 @@ export const Window = memo(function Window({ data }: WindowProps) {
               parentWindowId={id}
               constraintRef={contentRef}
               icon={child.icon}
+            />
+          );
+        }
+        if (child.type === "app") {
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={itemPosition}
+              parentWindowId={id}
+              constraintRef={contentRef}
+              icon="app"
             />
           );
         }

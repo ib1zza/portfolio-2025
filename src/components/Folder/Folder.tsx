@@ -6,6 +6,7 @@ import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
+import { getAssetPath } from "../../utils/assets";
 
 interface FolderProps {
   id: string;
@@ -13,7 +14,7 @@ interface FolderProps {
   position: { x: number; y: number };
   parentWindowId?: string;
   constraintRef?: RefObject<HTMLElement | null>;
-  icon?: "folder" | "file" | "vk" | "telegram" | "email" | "github";
+  icon?: "folder" | "file" | "app" | "vk" | "telegram" | "email" | "github";
 }
 
 interface DragState {
@@ -292,6 +293,14 @@ export const Folder = memo(function Folder({
     </svg>
   );
 
+  const appIcon = (
+    <img
+      src={getAssetPath("/icons/icon-drawer.svg")}
+      alt=""
+      draggable={false}
+    />
+  );
+
   const handleDoubleClick = () => {
     if (didDragRef.current) return;
 
@@ -306,6 +315,12 @@ export const Folder = memo(function Folder({
       item?.type === "file" &&
       Array.isArray(item.content) &&
       item.content.some((block) => block.type === "projectModel");
+    const preferredSize =
+      item?.type === "app"
+        ? { width: 640, height: 492 }
+        : hasProjectModel
+          ? { width: Math.min(900, window.innerWidth), height: 440 }
+          : undefined;
 
     setActive(id);
     openWindowAnimated({
@@ -313,9 +328,7 @@ export const Folder = memo(function Folder({
       title: name,
       parentId: id,
       sourceRect: folderRef.current?.getBoundingClientRect(),
-      preferredSize: hasProjectModel
-        ? { width: Math.min(900, window.innerWidth), height: 440 }
-        : undefined,
+      preferredSize,
       openerWindowId: parentWindowId,
     });
   };
@@ -407,6 +420,8 @@ export const Folder = memo(function Folder({
     switch (icon) {
       case "file":
         return fileIcon;
+      case "app":
+        return appIcon;
       case "vk":
         return vkIcon;
       case "telegram":

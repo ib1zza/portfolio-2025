@@ -1,0 +1,1 @@
+export { IconPainter } from "./IconPainter";

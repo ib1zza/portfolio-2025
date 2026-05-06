@@ -47,7 +47,10 @@ export function Desktop() {
       return Object.values(state.items).filter(
         (item) =>
           item.parentId === parentId &&
-          (item.type === "folder" || item.type === "file" || item.type === "link")
+          (item.type === "folder" ||
+            item.type === "file" ||
+            item.type === "link" ||
+            item.type === "app")
       );
     })
   );
@@ -100,7 +103,10 @@ export function Desktop() {
     const item = useFileSystem.getState().items[activeItemId];
     if (
       !item ||
-      (item.type !== "folder" && item.type !== "file" && item.type !== "link")
+      (item.type !== "folder" &&
+        item.type !== "file" &&
+        item.type !== "link" &&
+        item.type !== "app")
     ) {
       return;
     }
@@ -115,15 +121,19 @@ export function Desktop() {
       item.type === "file" &&
       Array.isArray(item.content) &&
       item.content.some((block) => block.type === "projectModel");
+    const preferredSize =
+      item.type === "app"
+        ? { width: 640, height: 492 }
+        : hasProjectModel
+          ? { width: Math.min(900, window.innerWidth), height: 440 }
+          : undefined;
 
     openWindow(
       item.id,
       item.name,
       item.id,
       undefined,
-      hasProjectModel
-        ? { width: Math.min(900, window.innerWidth), height: 440 }
-        : undefined,
+      preferredSize,
       focusedWindowId
     );
     setActive(item.id);
@@ -174,13 +184,14 @@ export function Desktop() {
 
       {/* Папки на рабочем столе */}
       {desktopItems.map((item) =>
-        item.type === "folder" ? (
+        item.type === "folder" || item.type === "app" ? (
           <Folder
             key={item.id}
             id={item.id}
             name={item.name}
             position={item.position!}
             constraintRef={desktopRef}
+            icon={item.type === "app" ? "app" : "folder"}
           />
         ) : null
       )}
