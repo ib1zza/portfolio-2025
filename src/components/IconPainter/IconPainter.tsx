@@ -1,10 +1,8 @@
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type {
-  ButtonHTMLAttributes,
-  PointerEvent as ReactPointerEvent,
-} from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 
+import { MacButton, PopupSelect } from "../UIKit";
 import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
@@ -14,6 +12,9 @@ const GRID_SIZE = 32;
 const PIXEL_COUNT = GRID_SIZE * GRID_SIZE;
 const STORAGE_KEY = "portfolio-2025-icon-painter";
 const MAX_HISTORY_LENGTH = 50;
+const PREVIEW_SIZES = [128, 64, 32] as const;
+type PreviewSize = (typeof PREVIEW_SIZES)[number];
+const TOOL_OPTIONS: Tool[] = ["pencil", "eraser", "fill"];
 const EXPORT_FORMATS: Array<{ value: ExportFormat; label: string }> = [
   { value: "png", label: "png" },
   { value: "svg", label: "svg" },
@@ -173,173 +174,116 @@ const drawPixels = (
   });
 };
 
-interface MacButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  isPressed?: boolean;
-  variant?: "regular" | "default";
-}
-
-const MacButton = ({
-  children,
-  className,
-  isPressed,
-  variant = "regular",
-  ...props
-}: MacButtonProps) => (
-  <button
-    className={clsx(
-      s.macButton,
-      s[variant],
-      {
-        [s.pressed]: isPressed,
-      },
-      className,
-    )}
-    type="button"
-    {...props}
-  >
-    <span className={s.defaultFill} aria-hidden="true" />
-    <span className={s.defaultTop} aria-hidden="true" />
-    <span className={s.defaultLeft} aria-hidden="true" />
-    <span className={s.defaultRight} aria-hidden="true" />
-    <span className={s.defaultBottom} aria-hidden="true" />
-    <span
-      className={clsx(s.defaultCorner, s.defaultCornerTopLeft)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.defaultCorner, s.defaultCornerTopRight)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.defaultCorner, s.defaultCornerBottomLeft)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.defaultCorner, s.defaultCornerBottomRight)}
-      aria-hidden="true"
-    />
-    <span className={s.buttonFill} aria-hidden="true" />
-    <span className={s.buttonTop} aria-hidden="true" />
-    <span className={s.buttonLeft} aria-hidden="true" />
-    <span className={s.buttonRight} aria-hidden="true" />
-    <span className={s.buttonBottom} aria-hidden="true" />
-    <span
-      className={clsx(s.buttonCorner, s.cornerTopLeft)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.buttonCorner, s.cornerTopRight)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.buttonCorner, s.cornerBottomLeft)}
-      aria-hidden="true"
-    />
-    <span
-      className={clsx(s.buttonCorner, s.cornerBottomRight)}
-      aria-hidden="true"
-    />
-    <span className={s.buttonLabel}>{children}</span>
-  </button>
-);
-
-interface ExportFormatSelectProps {
-  value: ExportFormat;
-  onChange: (value: ExportFormat) => void;
-}
-
-const ExportFormatSelect = ({ value, onChange }: ExportFormatSelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const popupRef = useRef<HTMLDivElement | null>(null);
-  const selectedOption = EXPORT_FORMATS.find(
-    (option) => option.value === value,
-  );
-
-  const closeMenu = useCallback((event: MouseEvent) => {
-    const target = event.target;
-
-    if (target instanceof Element && target.closest("[data-popup-menu-item]")) {
-      return;
-    }
-
-    setIsOpen(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    document.addEventListener("mouseup", closeMenu);
-
-    return () => {
-      document.removeEventListener("mouseup", closeMenu);
-    };
-  }, [closeMenu, isOpen]);
-
+const ToolControls = memo(function ToolControls({
+  tool,
+  onToolChange,
+}: {
+  tool: Tool;
+  onToolChange: (tool: Tool) => void;
+}) {
   return (
-    <div
-      ref={popupRef}
-      className={s.popup}
-      onBlur={(event) => {
-        const nextFocus = event.relatedTarget;
-
-        if (
-          !(nextFocus instanceof Node) ||
-          !event.currentTarget.contains(nextFocus)
-        ) {
-          setIsOpen(false);
-        }
-      }}
-    >
-      <span className={s.popupLabel}>Format:</span>
-      <div className={s.popupControl}>
-        <button
-          className={clsx(s.popupSurface, s.popupButton, { [s.open]: isOpen })}
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          onMouseDown={(event) => {
-            event.preventDefault();
-            setIsOpen(true);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              setIsOpen((current) => !current);
-            }
-            if (event.key === "Escape") {
-              setIsOpen(false);
-            }
-          }}
+    <div className={s.section}>
+      {TOOL_OPTIONS.map((item) => (
+        <MacButton
+          key={item}
+          isPressed={tool === item}
+          onClick={() => onToolChange(item)}
         >
-          <span className={s.popupValue}>{selectedOption?.label}</span>
-          <span className={s.popupCaret} aria-hidden="true" />
-        </button>
+          {item}
+        </MacButton>
+      ))}
+    </div>
+  );
+});
 
-        {isOpen && (
-          <div className={clsx(s.popupSurface, s.popupMenu)} role="listbox">
-            {EXPORT_FORMATS.map((option) => (
-              <button
-                key={option.value}
-                className={s.popupItem}
-                data-popup-menu-item
-                type="button"
-                role="option"
-                aria-selected={option.value === value}
-                onMouseUp={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
-                }}
-              >
-                <span className={s.menuCheck} aria-hidden="true" />
-                <span>{option.label}</span>
-              </button>
-            ))}
+const EditControls = memo(function EditControls({
+  canUndo,
+  canRedo,
+  isGridVisible,
+  onUndo,
+  onRedo,
+  onToggleGrid,
+  onClear,
+  onInvert,
+}: {
+  canUndo: boolean;
+  canRedo: boolean;
+  isGridVisible: boolean;
+  onUndo: () => void;
+  onRedo: () => void;
+  onToggleGrid: () => void;
+  onClear: () => void;
+  onInvert: () => void;
+}) {
+  return (
+    <>
+      <div className={s.section}>
+        <MacButton onClick={onUndo} disabled={!canUndo}>
+          undo
+        </MacButton>
+        <MacButton onClick={onRedo} disabled={!canRedo}>
+          redo
+        </MacButton>
+        <MacButton isPressed={isGridVisible} onClick={onToggleGrid}>
+          grid
+        </MacButton>
+      </div>
+      <div className={s.section}>
+        <MacButton onClick={onClear}>clear</MacButton>
+        <MacButton onClick={onInvert}>invert</MacButton>
+      </div>
+    </>
+  );
+});
+
+const ExportControls = memo(function ExportControls({
+  exportFormat,
+  onExportFormatChange,
+  onExport,
+}: {
+  exportFormat: ExportFormat;
+  onExportFormatChange: (format: ExportFormat) => void;
+  onExport: () => void;
+}) {
+  return (
+    <div className={s.exportRow}>
+      <PopupSelect
+        label="Format:"
+        value={exportFormat}
+        options={EXPORT_FORMATS}
+        onChange={onExportFormatChange}
+      />
+      <MacButton variant="default" onClick={onExport}>
+        export
+      </MacButton>
+    </div>
+  );
+});
+
+const PreviewCanvases = memo(function PreviewCanvases({
+  setPreviewRef,
+}: {
+  setPreviewRef: (size: PreviewSize, element: HTMLCanvasElement | null) => void;
+}) {
+  return (
+    <div className={s.previewWrap}>
+      <div className={s.previews}>
+        {PREVIEW_SIZES.map((size) => (
+          <div key={size} className={s.previewItem}>
+            <canvas
+              ref={(element) => setPreviewRef(size, element)}
+              className={s.preview}
+              style={{ width: size, height: size }}
+              width={size}
+              height={size}
+            />
+            <span>{size}px</span>
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
-};
+});
 
 export const IconPainter = memo(function IconPainter() {
   const [tool, setTool] = useState<Tool>("pencil");
@@ -354,7 +298,22 @@ export const IconPainter = memo(function IconPainter() {
   const strokeStartPixelsRef = useRef<boolean[] | null>(null);
   const stateFrameRef = useRef<number | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const previewRef = useRef<HTMLCanvasElement | null>(null);
+  const previewRefs = useRef<Record<number, HTMLCanvasElement | null>>({});
+
+  const drawAllPixels = useCallback((nextPixels: boolean[]) => {
+    drawPixels(canvasRef.current, nextPixels, 8);
+    PREVIEW_SIZES.forEach((size) => {
+      drawPixels(previewRefs.current[size], nextPixels, size / GRID_SIZE);
+    });
+  }, []);
+
+  const setPreviewRef = useCallback(
+    (size: PreviewSize, element: HTMLCanvasElement | null) => {
+      previewRefs.current[size] = element;
+      if (element) drawPixels(element, pixelsRef.current, size / GRID_SIZE);
+    },
+    [],
+  );
 
   const filledCount = useMemo(
     () => pixels.reduce((count, pixel) => count + Number(pixel), 0),
@@ -364,9 +323,8 @@ export const IconPainter = memo(function IconPainter() {
   useEffect(() => {
     pixelsRef.current = pixels;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(pixels));
-    drawPixels(canvasRef.current, pixels, 8);
-    drawPixels(previewRef.current, pixels);
-  }, [pixels]);
+    drawAllPixels(pixels);
+  }, [drawAllPixels, pixels]);
 
   useEffect(
     () => () => {
@@ -377,16 +335,16 @@ export const IconPainter = memo(function IconPainter() {
     [],
   );
 
-  const syncPixelsState = () => {
+  const syncPixelsState = useCallback(() => {
     if (stateFrameRef.current !== null) return;
 
     stateFrameRef.current = window.requestAnimationFrame(() => {
       stateFrameRef.current = null;
       setPixels(pixelsRef.current);
     });
-  };
+  }, []);
 
-  const pushHistory = (previousPixels: boolean[], nextPixels: boolean[]) => {
+  const pushHistory = useCallback((previousPixels: boolean[], nextPixels: boolean[]) => {
     if (arePixelsEqual(previousPixels, nextPixels)) return;
 
     setUndoStack((currentStack) => [
@@ -394,32 +352,30 @@ export const IconPainter = memo(function IconPainter() {
       previousPixels,
     ]);
     setRedoStack([]);
-  };
+  }, []);
 
-  const updatePixels = (updater: (currentPixels: boolean[]) => boolean[]) => {
+  const updatePixels = useCallback((updater: (currentPixels: boolean[]) => boolean[]) => {
     const nextPixels = updater(pixelsRef.current);
     if (nextPixels === pixelsRef.current) return;
 
     pixelsRef.current = nextPixels;
-    drawPixels(canvasRef.current, nextPixels, 8);
-    drawPixels(previewRef.current, nextPixels);
+    drawAllPixels(nextPixels);
     syncPixelsState();
-  };
+  }, [drawAllPixels, syncPixelsState]);
 
-  const commitPixels = (updater: (currentPixels: boolean[]) => boolean[]) => {
+  const commitPixels = useCallback((updater: (currentPixels: boolean[]) => boolean[]) => {
     const previousPixels = pixelsRef.current;
     const nextPixels = updater(previousPixels);
 
     if (arePixelsEqual(previousPixels, nextPixels)) return;
 
     pixelsRef.current = nextPixels;
-    drawPixels(canvasRef.current, nextPixels, 8);
-    drawPixels(previewRef.current, nextPixels);
+    drawAllPixels(nextPixels);
     setPixels(nextPixels);
     pushHistory(previousPixels, nextPixels);
-  };
+  }, [drawAllPixels, pushHistory]);
 
-  const applyTool = (index: number | null) => {
+  const applyTool = useCallback((index: number | null) => {
     if (index === null || index < 0 || index >= PIXEL_COUNT) return;
 
     const previousIndex = lastPaintedIndexRef.current;
@@ -430,23 +386,23 @@ export const IconPainter = memo(function IconPainter() {
         : paintLine(currentPixels, previousIndex, index, tool),
     );
     lastPaintedIndexRef.current = index;
-  };
+  }, [tool, updatePixels]);
 
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     isDrawingRef.current = true;
     lastPaintedIndexRef.current = null;
     strokeStartPixelsRef.current = pixelsRef.current;
     applyTool(getIndexFromEvent(event));
-  };
+  }, [applyTool]);
 
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     if (!isDrawingRef.current || tool === "fill") return;
     applyTool(getIndexFromEvent(event));
-  };
+  }, [applyTool, tool]);
 
-  const stopDrawing = () => {
+  const stopDrawing = useCallback(() => {
     if (strokeStartPixelsRef.current) {
       pushHistory(strokeStartPixelsRef.current, pixelsRef.current);
     }
@@ -459,22 +415,22 @@ export const IconPainter = memo(function IconPainter() {
     isDrawingRef.current = false;
     lastPaintedIndexRef.current = null;
     strokeStartPixelsRef.current = null;
-  };
+  }, [pushHistory]);
 
-  const exportPng = () => {
+  const exportPng = useCallback(() => {
     const canvas = document.createElement("canvas");
     canvas.width = 512;
     canvas.height = 512;
-    drawPixels(canvas, pixels, 16);
+    drawPixels(canvas, pixelsRef.current, 16);
 
     const link = document.createElement("a");
     link.href = canvas.toDataURL("image/png");
     link.download = "icon-painter.png";
     link.click();
-  };
+  }, []);
 
-  const exportSvg = () => {
-    const rects = pixels
+  const exportSvg = useCallback(() => {
+    const rects = pixelsRef.current
       .map((pixel, index) =>
         pixel
           ? `<rect x="${index % GRID_SIZE}" y="${Math.floor(
@@ -486,18 +442,18 @@ export const IconPainter = memo(function IconPainter() {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 ${GRID_SIZE} ${GRID_SIZE}" shape-rendering="crispEdges"><rect width="${GRID_SIZE}" height="${GRID_SIZE}" fill="white" />${rects}</svg>`;
 
     downloadTextFile("icon-painter.svg", svg, "image/svg+xml");
-  };
+  }, []);
 
-  const exportCurrent = () => {
+  const exportCurrent = useCallback(() => {
     if (exportFormat === "png") {
       exportPng();
       return;
     }
 
     exportSvg();
-  };
+  }, [exportFormat, exportPng, exportSvg]);
 
-  const undo = () => {
+  const undo = useCallback(() => {
     const previousPixels = undoStack.at(-1);
     if (!previousPixels) return;
 
@@ -507,12 +463,11 @@ export const IconPainter = memo(function IconPainter() {
       pixelsRef.current,
     ]);
     pixelsRef.current = previousPixels;
-    drawPixels(canvasRef.current, previousPixels, 8);
-    drawPixels(previewRef.current, previousPixels);
+    drawAllPixels(previousPixels);
     setPixels(previousPixels);
-  };
+  }, [drawAllPixels, undoStack]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     const nextPixels = redoStack.at(-1);
     if (!nextPixels) return;
 
@@ -522,10 +477,21 @@ export const IconPainter = memo(function IconPainter() {
       pixelsRef.current,
     ]);
     pixelsRef.current = nextPixels;
-    drawPixels(canvasRef.current, nextPixels, 8);
-    drawPixels(previewRef.current, nextPixels);
+    drawAllPixels(nextPixels);
     setPixels(nextPixels);
-  };
+  }, [drawAllPixels, redoStack]);
+
+  const toggleGrid = useCallback(() => {
+    setIsGridVisible((isVisible) => !isVisible);
+  }, []);
+
+  const clearPixels = useCallback(() => {
+    commitPixels(() => createBlankPixels());
+  }, [commitPixels]);
+
+  const invertPixels = useCallback(() => {
+    commitPixels((current) => current.map((pixel) => !pixel));
+  }, [commitPixels]);
 
   return (
     <div className={s.iconPainter}>
@@ -546,66 +512,33 @@ export const IconPainter = memo(function IconPainter() {
             aria-label="Icon canvas"
           />
         </div>
+
+        <div className={s.meta}>
+          <span>32 x 32 pixels</span>
+          <span>{filledCount} pixels on</span>
+          <span>auto saved</span>
+        </div>
       </div>
 
       <div className={s.toolsPanel}>
         <div className={s.title}>Icon Painter</div>
-        <div className={s.section}>
-          {(["pencil", "eraser", "fill"] as const).map((item) => (
-            <MacButton
-              key={item}
-              isPressed={tool === item}
-              onClick={() => setTool(item)}
-            >
-              {item}
-            </MacButton>
-          ))}
-        </div>
-        <div className={s.section}>
-          <MacButton onClick={undo} disabled={!undoStack.length}>
-            undo
-          </MacButton>
-          <MacButton onClick={redo} disabled={!redoStack.length}>
-            redo
-          </MacButton>
-          <MacButton
-            isPressed={isGridVisible}
-            onClick={() => setIsGridVisible((isVisible) => !isVisible)}
-          >
-            grid
-          </MacButton>
-        </div>
-        <div className={s.section}>
-          <MacButton onClick={() => commitPixels(() => createBlankPixels())}>
-            clear
-          </MacButton>
-          <MacButton
-            onClick={() =>
-              commitPixels((current) => current.map((pixel) => !pixel))
-            }
-          >
-            invert
-          </MacButton>
-        </div>
-        <div className={s.exportRow}>
-          <ExportFormatSelect value={exportFormat} onChange={setExportFormat} />
-          <MacButton variant="default" onClick={exportCurrent}>
-            export
-          </MacButton>
-        </div>
-        <div className={s.previewWrap}>
-          <canvas
-            ref={previewRef}
-            className={s.preview}
-            width={GRID_SIZE}
-            height={GRID_SIZE}
-          />
-          <div className={s.meta}>
-            <span>32 x 32 pixels</span>
-            <span>{filledCount} pixels on</span>
-            <span>auto saved</span>
-          </div>
-        </div>
+        <ToolControls tool={tool} onToolChange={setTool} />
+        <EditControls
+          canUndo={undoStack.length > 0}
+          canRedo={redoStack.length > 0}
+          isGridVisible={isGridVisible}
+          onUndo={undo}
+          onRedo={redo}
+          onToggleGrid={toggleGrid}
+          onClear={clearPixels}
+          onInvert={invertPixels}
+        />
+        <ExportControls
+          exportFormat={exportFormat}
+          onExportFormatChange={setExportFormat}
+          onExport={exportCurrent}
+        />
+        <PreviewCanvases setPreviewRef={setPreviewRef} />
       </div>
     </div>
   );

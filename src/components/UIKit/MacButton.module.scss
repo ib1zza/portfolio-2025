@@ -1,0 +1,266 @@
+.macButton {
+  @include textTitle(16px, 16px);
+  text-transform: capitalize;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 20px;
+  border: 0;
+  padding: 0 12px 2px;
+  color: $black;
+  background: transparent;
+
+  &:active:not(:disabled),
+  &.pressed {
+    color: $white;
+
+    .buttonFill {
+      background: $black;
+    }
+  }
+
+  &:disabled {
+    opacity: 1;
+    color: $black;
+
+    .buttonLabel {
+      @include pattern-mask-text;
+    }
+  }
+}
+
+.buttonLabel {
+  position: relative;
+  z-index: 1;
+  margin-bottom: -2px;
+}
+
+.buttonFill,
+.buttonTop,
+.buttonLeft,
+.buttonRight,
+.buttonBottom,
+.buttonCorner,
+.defaultFill,
+.defaultTop,
+.defaultLeft,
+.defaultRight,
+.defaultBottom,
+.defaultCorner {
+  position: absolute;
+  pointer-events: none;
+}
+
+.buttonFill {
+  inset: 1px;
+  z-index: 0;
+  background: $white;
+}
+
+.buttonTop {
+  top: 0;
+  right: 3px;
+  left: 3px;
+  height: 1px;
+  background: $black;
+}
+
+.buttonLeft {
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 1px;
+  background: $black;
+}
+
+.buttonRight {
+  top: 3px;
+  right: 0;
+  bottom: 3px;
+  width: 1px;
+  background: $black;
+}
+
+.buttonBottom {
+  right: 3px;
+  bottom: 0;
+  left: 3px;
+  height: 1px;
+  background: $black;
+}
+
+.buttonCorner {
+  width: 2px;
+  height: 2px;
+  color: $black;
+}
+
+.cornerTopLeft {
+  top: 1px;
+  left: 1px;
+  border-left: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+}
+
+.cornerTopRight {
+  top: 1px;
+  right: 1px;
+  border-top: 1px solid currentColor;
+  border-right: 1px solid currentColor;
+}
+
+.cornerBottomLeft {
+  bottom: 1px;
+  left: 1px;
+  border-bottom: 1px solid currentColor;
+  border-left: 1px solid currentColor;
+}
+
+.cornerBottomRight {
+  right: 1px;
+  bottom: 1px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+}
+
+.defaultFill,
+.defaultTop,
+.defaultLeft,
+.defaultRight,
+.defaultBottom,
+.defaultCorner {
+  display: none;
+}
+
+.default {
+  min-width: 88px;
+  height: 28px;
+  padding-bottom: 2px;
+
+  .defaultFill,
+  .defaultTop,
+  .defaultLeft,
+  .defaultRight,
+  .defaultBottom,
+  .defaultCorner {
+    display: block;
+  }
+
+  .defaultFill {
+    inset: 3px;
+    background: $white;
+  }
+
+  .defaultTop {
+    top: 0;
+    right: 6px;
+    left: 6px;
+    height: 3px;
+    background: $black;
+  }
+
+  .defaultLeft {
+    top: 6px;
+    bottom: 6px;
+    left: 0;
+    width: 3px;
+    background: $black;
+  }
+
+  .defaultRight {
+    top: 6px;
+    right: 0;
+    bottom: 6px;
+    width: 3px;
+    background: $black;
+  }
+
+  .defaultBottom {
+    right: 6px;
+    bottom: 0;
+    left: 6px;
+    height: 3px;
+    background: $black;
+  }
+
+  .defaultCorner {
+    width: 6px;
+    height: 6px;
+    color: $black;
+    background: currentColor;
+  }
+
+  .defaultCornerTopLeft {
+    top: 0;
+    left: 0;
+    clip-path: polygon(5px 0, 6px 0, 6px 4px, 4px 4px, 4px 6px, 0 6px, 0 5px, 1px 5px, 1px 3px, 2px 3px, 2px 2px, 3px 2px, 3px 1px, 5px 1px);
+  }
+
+  .defaultCornerTopRight {
+    top: 0;
+    right: 0;
+    clip-path: polygon(0 0, 1px 0, 1px 1px, 3px 1px, 3px 2px, 4px 2px, 4px 3px, 5px 3px, 5px 5px, 6px 5px, 6px 6px, 5px 6px, 3px 6px, 2px 6px, 2px 4px, 0 4px);
+  }
+
+  .defaultCornerBottomLeft {
+    bottom: 0;
+    left: 0;
+    clip-path: polygon(1px 0, 0 0, 0 1px, 1px 1px, 1px 3px, 2px 3px, 2px 4px, 3px 4px, 3px 5px, 5px 5px, 5px 6px, 6px 6px, 6px 5px, 6px 3px, 6px 2px, 4px 2px, 4px 0);
+  }
+
+  .defaultCornerBottomRight {
+    right: 0;
+    bottom: 0;
+    clip-path: polygon(2px 0, 3px 0, 5px 0, 6px 0, 6px 1px, 5px 1px, 5px 3px, 4px 3px, 4px 4px, 3px 4px, 3px 5px, 1px 5px, 1px 6px, 0 6px, 0 5px, 0 3px, 0 2px, 2px 2px);
+  }
+
+  .buttonFill {
+    inset: 5px;
+  }
+
+  .buttonTop {
+    top: 4px;
+    right: 7px;
+    left: 7px;
+  }
+
+  .buttonLeft {
+    top: 7px;
+    bottom: 7px;
+    left: 4px;
+  }
+
+  .buttonRight {
+    top: 7px;
+    right: 4px;
+    bottom: 7px;
+  }
+
+  .buttonBottom {
+    right: 7px;
+    bottom: 4px;
+    left: 7px;
+  }
+
+  .cornerTopLeft {
+    top: 5px;
+    left: 5px;
+  }
+
+  .cornerTopRight {
+    top: 5px;
+    right: 5px;
+  }
+
+  .cornerBottomLeft {
+    bottom: 5px;
+    left: 5px;
+  }
+
+  .cornerBottomRight {
+    right: 5px;
+    bottom: 5px;
+  }
+}

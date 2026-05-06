@@ -123,7 +123,7 @@ export function Desktop() {
       item.content.some((block) => block.type === "projectModel");
     const preferredSize =
       item.type === "app"
-        ? { width: 640, height: 492 }
+        ? { width: 580, height: 384 }
         : hasProjectModel
           ? { width: Math.min(900, window.innerWidth), height: 440 }
           : undefined;
