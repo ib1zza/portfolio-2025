@@ -21,6 +21,11 @@ const isEditableTarget = (target: EventTarget | null) => {
 };
 
 type NavigationDirection = "left" | "right" | "up" | "down";
+type DesktopApp =
+  | "icon-painter"
+  | "dither-studio"
+  | "model-viewer"
+  | "badge-generator";
 
 interface SpatialItem {
   id: string;
@@ -101,6 +106,11 @@ const getNextSpatialItem = (
 
   return nextItem ?? current;
 };
+
+const getPreferredAppSize = (app: DesktopApp) =>
+  app === "model-viewer" || app === "badge-generator"
+    ? { width: 660, height: 420 }
+    : { width: 580, height: 384 };
 
 function DesktopContent() {
   const removeActive = useFileSystem((state) => state.removeActive);
@@ -199,7 +209,7 @@ function DesktopContent() {
       item.content.some((block) => block.type === "projectModel");
     const preferredSize =
       item.type === "app"
-        ? { width: 580, height: 384 }
+        ? getPreferredAppSize(item.app)
         : hasProjectModel
           ? { width: Math.min(900, window.innerWidth), height: 440 }
           : undefined;
@@ -275,14 +285,25 @@ function DesktopContent() {
 
       {/* Папки на рабочем столе */}
       {desktopItems.map((item) =>
-        item.type === "folder" || item.type === "app" ? (
+        item.type === "folder" || item.type === "app" || item.type === "file" ? (
           <Folder
             key={item.id}
             id={item.id}
             name={item.name}
             position={item.position!}
             constraintRef={desktopRef}
-            icon={item.type === "app" ? "app" : "folder"}
+            icon={
+              item.type === "app"
+                ? item.savedIconId
+                  ? "saved-icon"
+                  : "app"
+                : item.type === "file"
+                  ? "file"
+                  : item.id === "trash"
+                    ? "trash"
+                  : "folder"
+            }
+            savedIconId={item.type === "app" ? item.savedIconId : undefined}
           />
         ) : null
       )}

@@ -21,7 +21,7 @@
 
 .popupControl {
   position: relative;
-  min-width: 96px;
+  width: max(96px, calc(var(--popup-option-ch, 8) * 1ch + 42px));
 }
 
 .popupSurface {
@@ -91,6 +91,7 @@
 .popupValue {
   position: relative;
   z-index: 1;
+  white-space: nowrap;
 }
 
 .popupMenu {
@@ -118,6 +119,7 @@
   text-align: left;
   text-transform: uppercase;
   background: $white;
+  white-space: nowrap;
 
   &:hover,
   &:focus-visible {

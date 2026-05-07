@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useLoader } from "@react-three/fiber";
+import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import { Box3, MeshBasicMaterial, Vector3 } from "three";
@@ -11,8 +12,10 @@ import { getAssetPath } from "../../utils/assets";
 import s from "./ProjectModelViewer.module.scss";
 
 interface ProjectModelViewerProps {
+  className?: string;
   isActive: boolean;
   model: ProjectModel;
+  size?: "default" | "large";
 }
 
 interface ModelSceneProps {
@@ -332,7 +335,12 @@ function ModelScene({
   );
 }
 
-export function ProjectModelViewer({ isActive, model }: ProjectModelViewerProps) {
+export function ProjectModelViewer({
+  className,
+  isActive,
+  model,
+  size = "default",
+}: ProjectModelViewerProps) {
   const rotationRef = useRef<RotationState>({ x: -0.15, y: 0.45 });
   const isDraggingRef = useRef(false);
   const viewerRef = useRef<HTMLDivElement | null>(null);
@@ -396,7 +404,7 @@ export function ProjectModelViewer({ isActive, model }: ProjectModelViewerProps)
   return (
     <div
       ref={viewerRef}
-      className={s.viewer}
+      className={clsx(s.viewer, s[size], className)}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

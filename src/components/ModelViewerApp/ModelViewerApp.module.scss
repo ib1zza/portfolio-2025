@@ -1,0 +1,66 @@
+.modelViewerApp {
+  display: grid;
+  grid-template-columns: 374px minmax(220px, 1fr);
+  gap: 12px;
+  width: 100%;
+  min-width: 620px;
+  min-height: 100%;
+  padding: 10px;
+  background: $white;
+  user-select: none;
+}
+
+.viewerPanel,
+.controlsPanel {
+  border: $border;
+  background: $white;
+}
+
+.viewerPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px;
+}
+
+.viewer {
+  width: 360px;
+  height: 280px;
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.title {
+  @include textTitle(16px, 18px);
+  padding-bottom: 6px;
+  border-bottom: $border;
+}
+
+.meta {
+  @include textMain(16px, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

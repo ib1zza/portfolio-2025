@@ -1,15 +1,22 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
+import { BadgeSharePage } from "./components/BadgeSharePage";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
+  const isBadgeRoute = window.location.pathname.startsWith("/badge");
   // TODO: make 2000
   const MIN_LOADER_DURATION_MS = 2000;
 
   useEffect(() => {
+    if (isBadgeRoute) {
+      document.body.style.cursor = "default";
+      return;
+    }
+
     document.body.style.cursor = "none";
 
     const minDelay = new Promise((res) =>
@@ -29,7 +36,11 @@ function App() {
     return () => {
       document.body.style.cursor = "default";
     };
-  }, []);
+  }, [isBadgeRoute]);
+
+  if (isBadgeRoute) {
+    return <BadgeSharePage />;
+  }
 
   if (!isAppReady) {
     return <Loader minDurationMs={MIN_LOADER_DURATION_MS} />;

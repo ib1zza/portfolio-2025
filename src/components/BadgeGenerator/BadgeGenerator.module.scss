@@ -1,0 +1,183 @@
+.badgeGenerator {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(340px, 1fr) 280px;
+  gap: 12px;
+  width: 100%;
+  min-width: 640px;
+  min-height: 100%;
+  padding: 10px;
+  background: $white;
+  color: $black;
+  user-select: none;
+}
+
+.previewPanel,
+.controlsPanel {
+  border: $border;
+  background: $white;
+}
+
+.previewPanel {
+  display: grid;
+  place-items: center;
+  min-height: 300px;
+}
+
+.badgePreview {
+  width: 320px;
+  height: 180px;
+  background: $white;
+  image-rendering: pixelated;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px;
+}
+
+.title {
+  @include textTitle(16px, 18px);
+  padding-bottom: 6px;
+  border-bottom: $border;
+}
+
+.field {
+  @include textTitle(16px, 18px);
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+
+  input {
+    @include textTitle(16px, 18px);
+    width: 100%;
+    height: 22px;
+    border: $border;
+    border-radius: 0;
+    padding: 0 5px 2px;
+    color: $black;
+    background: $white;
+    outline: 0;
+
+    &:focus {
+      color: $white;
+      background: $black;
+    }
+  }
+}
+
+.iconPainterHint {
+  @include textMain(16px, 15px);
+  padding-top: 4px;
+  border-top: $border;
+}
+
+.importRow {
+  @include textMain(16px, 15px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.exportRow {
+  padding-top: 10px;
+  border-top: $border;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.dialogBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: rgb(255 255 255 / 65%);
+}
+
+.importDialog {
+  width: 330px;
+  border: $border;
+  padding: 8px;
+  background: $white;
+  box-shadow: 3px 3px 0 $black;
+}
+
+.dialogTitle {
+  @include textTitle(16px, 18px);
+  padding-bottom: 6px;
+  border-bottom: $border;
+}
+
+.iconList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  min-height: 78px;
+  padding: 10px 0;
+}
+
+.iconOption {
+  @include textMain(16px, 14px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  border: 0;
+  padding: 4px;
+  color: $black;
+  background: $white;
+
+  &[data-selected="true"] {
+    color: $white;
+    background: $black;
+  }
+
+  svg {
+    width: 32px;
+    height: 32px;
+    border: $border;
+    background: $white;
+  }
+
+  span {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.emptyState {
+  @include textMain(16px, 15px);
+  grid-column: 1 / -1;
+  align-self: center;
+  text-align: center;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+}

@@ -15,18 +15,43 @@ const DitherStudio = lazy(() =>
   }))
 );
 
+const ModelViewerApp = lazy(() =>
+  import("../ModelViewerApp").then((module) => ({
+    default: module.ModelViewerApp,
+  }))
+);
+
+const BadgeGenerator = lazy(() =>
+  import("../BadgeGenerator").then((module) => ({
+    default: module.BadgeGenerator,
+  }))
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
+  isActive: boolean;
+  savedIconId?: string;
+  title: string;
+  windowId: string;
 }
 
 export const WindowAppContent = memo(function WindowAppContent({
   app,
+  isActive,
+  savedIconId,
+  title,
+  windowId,
 }: WindowAppContentProps) {
   return (
     <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
-      {app === "icon-painter" && <IconPainter />}
+      {app === "icon-painter" && (
+        <IconPainter savedIconId={savedIconId} savedIconName={title} />
+      )}
       {app === "dither-studio" && <DitherStudio />}
+      {app === "model-viewer" && (
+        <ModelViewerApp isActive={isActive} windowId={windowId} />
+      )}
+      {app === "badge-generator" && <BadgeGenerator windowId={windowId} />}
     </Suspense>
   );
 });
-

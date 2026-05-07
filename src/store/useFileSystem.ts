@@ -6,6 +6,11 @@ import {
   type PortfolioProject,
   type ProjectModel,
 } from "../data/portfolio";
+import {
+  deleteSavedIcon,
+  readSavedIcons,
+  type SavedDesktopIcon,
+} from "../components/IconPainter/iconPainterDesktop";
 import { createThrottledLocalStorage } from "../utils/storage";
 
 export interface Position {
@@ -50,7 +55,8 @@ export interface LinkItem extends BaseItem {
 
 export interface AppItem extends BaseItem {
   type: "app";
-  app: "icon-painter" | "dither-studio";
+  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator";
+  savedIconId?: string;
 }
 
 export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
@@ -280,6 +286,12 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
 );
 
 const STORAGE_KEY = "portfolio-2025-file-system";
+const savedIconItemId = (iconId: string) => `saved-icon-${iconId}`;
+
+const getSavedIconPosition = (index: number) => ({
+  x: 72 + (index % 6) * 104,
+  y: 250 + Math.floor(index / 6) * 70,
+});
 
 const readStoredPositions = () => {
   if (typeof window === "undefined") return {};
@@ -295,6 +307,26 @@ const readStoredPositions = () => {
 };
 
 const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
+  const savedIcons = readSavedIcons();
+  const savedIconIds = savedIcons.map((icon) => savedIconItemId(icon.id));
+  const savedIconItems = savedIcons.reduce<Record<string, FileSystemItem>>(
+    (items, icon, index) => {
+      const itemId = savedIconItemId(icon.id);
+
+      items[itemId] = {
+        id: itemId,
+        name: icon.name,
+        type: "app",
+        parentId: "root",
+        position: getSavedIconPosition(index),
+        app: "icon-painter",
+        savedIconId: icon.id,
+      };
+
+      return items;
+    },
+    {},
+  );
   const items: Record<string, FileSystemItem> = {
     root: {
       id: "root",
@@ -308,6 +340,10 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
         "contact",
         "iconPainter",
         "ditherStudio",
+        "modelViewer",
+        "badgeGenerator",
+        ...savedIconIds,
+        "trash",
       ],
     },
     projects: {
@@ -387,6 +423,31 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       position: { x: 592, y: 132 },
       app: "dither-studio",
     },
+    modelViewer: {
+      id: "modelViewer",
+      name: "Model Viewer",
+      type: "app",
+      parentId: "root",
+      position: { x: 696, y: 132 },
+      app: "model-viewer",
+    },
+    badgeGenerator: {
+      id: "badgeGenerator",
+      name: "Badge Generator",
+      type: "app",
+      parentId: "root",
+      position: { x: 800, y: 132 },
+      app: "badge-generator",
+    },
+    trash: {
+      id: "trash",
+      name: "Trash",
+      type: "folder",
+      parentId: "root",
+      position: { x: 1040, y: 132 },
+      children: [],
+    },
+    ...savedIconItems,
     ...contactShortcutItems,
     ...sectionItems,
     ...projectItems,
@@ -416,6 +477,8 @@ interface FileSystemStore {
   setActive: (id: string) => void;
   removeActive: () => void;
   moveItem: (id: string, position: Position) => void;
+  upsertSavedIconItem: (icon: SavedDesktopIcon) => void;
+  deleteSavedIconItem: (id: string) => void;
   cleanUpChildren: (parentId: string | null) => void;
   resetLayout: () => void;
   getItemById: (id: string) => FileSystemItem | undefined;
@@ -467,6 +530,76 @@ export const useFileSystem = create<FileSystemStore>()(
               ...state.itemPositions,
               [id]: position,
             },
+          };
+        });
+      },
+      upsertSavedIconItem: (icon) => {
+        set((state) => {
+          const itemId = savedIconItemId(icon.id);
+          const root = state.items.root;
+          if (root?.type !== "folder") return state;
+
+          const savedIconCount = root.children.filter((childId) =>
+            childId.startsWith("saved-icon-"),
+          ).length;
+          const existingItem = state.items[itemId];
+          const position =
+            existingItem?.position ??
+            state.itemPositions[itemId] ??
+            getSavedIconPosition(savedIconCount);
+          const children = root.children.includes(itemId)
+            ? root.children
+            : [
+                ...root.children.filter((childId) => childId !== "trash"),
+                itemId,
+                "trash",
+              ];
+
+          return {
+            items: {
+              ...state.items,
+              root: {
+                ...root,
+                children,
+              },
+              [itemId]: {
+                id: itemId,
+                name: icon.name,
+                type: "app",
+                parentId: "root",
+                position,
+                app: "icon-painter",
+                savedIconId: icon.id,
+              },
+            },
+          };
+        });
+      },
+      deleteSavedIconItem: (id) => {
+        set((state) => {
+          const item = state.items[id];
+          const root = state.items.root;
+
+          if (item?.type !== "app" || !item.savedIconId || root?.type !== "folder") {
+            return state;
+          }
+
+          deleteSavedIcon(item.savedIconId);
+
+          const { [id]: _removed, ...nextItems } = state.items;
+          const { [id]: _removedPosition, ...nextPositions } =
+            state.itemPositions;
+
+          return {
+            items: {
+              ...nextItems,
+              root: {
+                ...root,
+                children: root.children.filter((childId) => childId !== id),
+              },
+            },
+            itemPositions: nextPositions,
+            activeItemId: state.activeItemId === id ? null : state.activeItemId,
           };
         });
       },

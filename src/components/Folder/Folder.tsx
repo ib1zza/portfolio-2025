@@ -16,6 +16,7 @@ interface FolderProps {
   parentWindowId?: string;
   constraintRef?: RefObject<HTMLElement | null>;
   icon?: FinderIconType;
+  savedIconId?: string;
 }
 
 interface DragState {
@@ -30,6 +31,13 @@ const DRAG_CLICK_THRESHOLD = 3;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+const getPreferredAppSize = (
+  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator",
+) =>
+  app === "model-viewer" || app === "badge-generator"
+    ? { width: 660, height: 420 }
+    : { width: 580, height: 384 };
+
 export const Folder = memo(function Folder({
   id,
   name,
@@ -37,6 +45,7 @@ export const Folder = memo(function Folder({
   parentWindowId,
   constraintRef,
   icon = "folder",
+  savedIconId,
 }: FolderProps) {
   const { openWindowAnimated } = useWindowOpenAnimation();
   const focusWindow = useWindowManager((state) => state.focusWindow);
@@ -45,6 +54,7 @@ export const Folder = memo(function Folder({
   const setActive = useFileSystem((state) => state.setActive);
   const isActive = useFileSystem((state) => state.activeItemId === id);
   const moveItem = useFileSystem((state) => state.moveItem);
+  const deleteSavedIconItem = useFileSystem((state) => state.deleteSavedIconItem);
   const getItemById = useFileSystem((state) => state.getItemById);
   const folderRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<DragState | null>(null);
@@ -128,7 +138,7 @@ export const Folder = memo(function Folder({
       item.content.some((block) => block.type === "projectModel");
     const preferredSize =
       item?.type === "app"
-        ? { width: 580, height: 384 }
+        ? getPreferredAppSize(item.app)
         : hasProjectModel
           ? { width: Math.min(900, window.innerWidth), height: 440 }
           : undefined;
@@ -218,10 +228,30 @@ export const Folder = memo(function Folder({
       if (!state || event.pointerId !== state.pointerId) return;
 
       const nextPosition = getPositionFromPointer(event.clientX, event.clientY);
+      const item = getItemById(id);
+      const trashElement = document.querySelector<HTMLElement>(
+        '[data-finder-item-id="trash"]',
+      );
+      const trashRect = trashElement?.getBoundingClientRect();
+      const isOverTrash =
+        item?.type === "app" &&
+        Boolean(item.savedIconId) &&
+        trashRect &&
+        event.clientX >= trashRect.left &&
+        event.clientX <= trashRect.right &&
+        event.clientY >= trashRect.top &&
+        event.clientY <= trashRect.bottom;
+
       dragStateRef.current = null;
+      stopPointerTracking();
+
+      if (isOverTrash) {
+        deleteSavedIconItem(id);
+        return;
+      }
+
       setDraftPosition(nextPosition);
       moveItem(id, nextPosition);
-      stopPointerTracking();
     };
 
     document.addEventListener("pointermove", handleDocumentPointerMove);
@@ -249,7 +279,12 @@ export const Folder = memo(function Folder({
       onPointerDown={handlePointerDown}
     >
       <div className={s.folderIcon}>
-        <FinderIcon id={id} type={icon} isOpenedInactive={isOpenedInactive} />
+        <FinderIcon
+          id={id}
+          type={icon}
+          isOpenedInactive={isOpenedInactive}
+          savedIconId={savedIconId}
+        />
       </div>
       <FinderLabel>{name}</FinderLabel>
     </FinderItem>

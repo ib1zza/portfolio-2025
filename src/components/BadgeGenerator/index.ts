@@ -1,0 +1,1 @@
+export { BadgeGenerator } from "./BadgeGenerator";

@@ -4,10 +4,15 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { MacButton } from "../UIKit/MacButton";
 import { PopupSelect } from "../UIKit/PopupSelect";
+import { useFileSystem } from "../../store/useFileSystem";
 import {
   readVersionedStorage,
   writeVersionedStorage,
 } from "../../utils/storage";
+import {
+  readSavedIcon,
+  saveIconToDesktop,
+} from "./iconPainterDesktop";
 import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
@@ -74,6 +79,11 @@ const readStoredPixels = () => {
         : createBlankPixels(),
   );
 };
+
+const readInitialPixels = (savedIconId: string | undefined) =>
+  savedIconId
+    ? readSavedIcon(savedIconId)?.pixels ?? createBlankPixels()
+    : readStoredPixels();
 
 const getIndexFromEvent = (event: ReactPointerEvent<HTMLDivElement>) => {
   const rect = event.currentTarget.getBoundingClientRect();
@@ -242,10 +252,16 @@ const ExportControls = memo(function ExportControls({
   exportFormat,
   onExportFormatChange,
   onExport,
+  onSave,
+  onSaveAs,
+  savedIconId,
 }: {
   exportFormat: ExportFormat;
   onExportFormatChange: (format: ExportFormat) => void;
   onExport: () => void;
+  onSave: () => void;
+  onSaveAs: () => void;
+  savedIconId?: string;
 }) {
   return (
     <div className={s.exportRow}>
@@ -258,6 +274,10 @@ const ExportControls = memo(function ExportControls({
       <MacButton variant="default" onClick={onExport}>
         export
       </MacButton>
+      <MacButton onClick={onSave}>
+        {savedIconId ? "save" : "save desktop"}
+      </MacButton>
+      <MacButton onClick={onSaveAs}>save as</MacButton>
     </div>
   );
 });
@@ -287,13 +307,23 @@ const PreviewCanvases = memo(function PreviewCanvases({
   );
 });
 
-export const IconPainter = memo(function IconPainter() {
+interface IconPainterProps {
+  savedIconId?: string;
+  savedIconName?: string;
+}
+
+export const IconPainter = memo(function IconPainter({
+  savedIconId,
+  savedIconName,
+}: IconPainterProps) {
+  const upsertSavedIconItem = useFileSystem((state) => state.upsertSavedIconItem);
   const [tool, setTool] = useState<Tool>("pencil");
-  const [pixels, setPixels] = useState(readStoredPixels);
+  const [pixels, setPixels] = useState(() => readInitialPixels(savedIconId));
   const [undoStack, setUndoStack] = useState<boolean[][]>([]);
   const [redoStack, setRedoStack] = useState<boolean[][]>([]);
   const [isGridVisible, setIsGridVisible] = useState(true);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
+  const loadedSavedIconIdRef = useRef(savedIconId);
   const pixelsRef = useRef(pixels);
   const isDrawingRef = useRef(false);
   const lastPaintedIndexRef = useRef<number | null>(null);
@@ -324,9 +354,23 @@ export const IconPainter = memo(function IconPainter() {
 
   useEffect(() => {
     pixelsRef.current = pixels;
-    writeVersionedStorage(STORAGE_KEY, STORAGE_VERSION, pixels);
+    if (!savedIconId) {
+      writeVersionedStorage(STORAGE_KEY, STORAGE_VERSION, pixels);
+    }
     drawAllPixels(pixels);
-  }, [drawAllPixels, pixels]);
+  }, [drawAllPixels, pixels, savedIconId]);
+
+  useEffect(() => {
+    if (loadedSavedIconIdRef.current === savedIconId) return;
+
+    const nextPixels = readInitialPixels(savedIconId);
+    loadedSavedIconIdRef.current = savedIconId;
+    pixelsRef.current = nextPixels;
+    setPixels(nextPixels);
+    setUndoStack([]);
+    setRedoStack([]);
+    drawAllPixels(nextPixels);
+  }, [drawAllPixels, savedIconId]);
 
   useEffect(
     () => () => {
@@ -455,6 +499,27 @@ export const IconPainter = memo(function IconPainter() {
     exportSvg();
   }, [exportFormat, exportPng, exportSvg]);
 
+  const saveDesktopIcon = useCallback(
+    (mode: "overwrite" | "copy") => {
+      const currentIcon = readSavedIcon(savedIconId);
+      const shouldOverwrite = mode === "overwrite" && Boolean(currentIcon);
+      const nextName = shouldOverwrite
+        ? currentIcon!.name
+        : window.prompt("Save icon as:", savedIconName || "Badge Icon");
+
+      if (!nextName?.trim()) return;
+
+      const savedIcon = saveIconToDesktop({
+        id: shouldOverwrite ? savedIconId : undefined,
+        name: nextName,
+        pixels: pixelsRef.current,
+      });
+
+      upsertSavedIconItem(savedIcon);
+    },
+    [savedIconId, savedIconName, upsertSavedIconItem],
+  );
+
   const undo = useCallback(() => {
     const previousPixels = undoStack.at(-1);
     if (!previousPixels) return;
@@ -518,7 +583,7 @@ export const IconPainter = memo(function IconPainter() {
         <div className={s.meta}>
           <span>32 x 32 pixels</span>
           <span>{filledCount} pixels on</span>
-          <span>auto saved</span>
+          <span>{savedIconId ? "manual save" : "auto saved draft"}</span>
         </div>
       </div>
 
@@ -539,6 +604,9 @@ export const IconPainter = memo(function IconPainter() {
           exportFormat={exportFormat}
           onExportFormatChange={setExportFormat}
           onExport={exportCurrent}
+          onSave={() => saveDesktopIcon("overwrite")}
+          onSaveAs={() => saveDesktopIcon("copy")}
+          savedIconId={savedIconId}
         />
         <PreviewCanvases setPreviewRef={setPreviewRef} />
       </div>

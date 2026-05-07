@@ -111,7 +111,15 @@ export const Window = memo(function Window({ data }: WindowProps) {
     if (!fileId || !currentItem) return null;
 
     if (currentItem.type === "app") {
-      return <WindowAppContent app={currentItem.app} />;
+      return (
+        <WindowAppContent
+          app={currentItem.app}
+          isActive={isFocused}
+          savedIconId={currentItem.savedIconId}
+          title={currentItem.name}
+          windowId={id}
+        />
+      );
     }
 
     if (currentItem.type === "file") {

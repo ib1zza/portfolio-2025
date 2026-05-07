@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 
 import s from "./PopupSelect.module.scss";
 
@@ -15,6 +16,10 @@ interface PopupSelectProps<T extends string> {
   onChange: (value: T) => void;
 }
 
+type PopupControlStyle = CSSProperties & {
+  "--popup-option-ch"?: number;
+};
+
 function PopupSelectComponent<T extends string>({
   label,
   value,
@@ -24,6 +29,16 @@ function PopupSelectComponent<T extends string>({
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement | null>(null);
   const selectedOption = options.find((option) => option.value === value);
+  const controlStyle = useMemo(
+    () =>
+      ({
+        "--popup-option-ch": Math.max(
+          ...options.map((option) => option.label.length),
+          selectedOption?.label.length ?? 0,
+        ),
+      }) as PopupControlStyle,
+    [options, selectedOption?.label],
+  );
 
   const closeMenu = useCallback((event: MouseEvent) => {
     const target = event.target;
@@ -61,7 +76,7 @@ function PopupSelectComponent<T extends string>({
       }}
     >
       <span className={s.popupLabel}>{label}</span>
-      <div className={s.popupControl}>
+      <div className={s.popupControl} style={controlStyle}>
         <button
           className={clsx(s.popupSurface, s.popupButton, { [s.open]: isOpen })}
           type="button"
