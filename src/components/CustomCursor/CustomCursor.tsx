@@ -9,6 +9,9 @@ export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    if (!mediaQuery.matches) return;
+
     const handleCursorMove = (e: MouseEvent | PointerEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
@@ -35,6 +38,9 @@ export const CustomCursor: React.FC = () => {
 
   // Скрываем стандартный курсор для всего документа
   useEffect(() => {
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    if (!mediaQuery.matches) return;
+
     document.body.style.cursor = "none";
 
     return () => {

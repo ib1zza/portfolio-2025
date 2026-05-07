@@ -9,6 +9,13 @@
   padding: 10px;
   background: $white;
   user-select: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    align-content: start;
+    overflow: auto;
+  }
 }
 
 .importPanel,
@@ -24,6 +31,11 @@
   gap: 8px;
   width: 258px;
   padding-bottom: 8px;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(258px, calc(100vw - 24px));
+    justify-self: center;
+  }
 }
 
 .previewPanel {
@@ -34,6 +46,11 @@
   height: 256px;
   overflow: hidden;
   border-bottom: $border;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(256px, calc(100vw - 26px));
+    height: min(256px, calc(100vw - 26px));
+  }
 }
 
 .dropTarget {
@@ -50,6 +67,11 @@
   height: 256px;
   background: $white;
   image-rendering: pixelated;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(256px, calc(100vw - 26px));
+    height: min(256px, calc(100vw - 26px));
+  }
 }
 
 .controlPanel {

@@ -8,6 +8,11 @@
   align-items: center;
   touch-action: none;
 
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    position: static !important;
+    touch-action: manipulation;
+  }
+
   &.active,
   &:active {
     filter: invert(1);

@@ -31,6 +31,10 @@ const DRAG_CLICK_THRESHOLD = 3;
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
+const isCoarsePointer = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
 const getPreferredAppSize = (
   app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator",
 ) =>
@@ -122,9 +126,7 @@ export const Folder = memo(function Folder({
     [constraintRef, draftPosition, getClampedPosition, parentWindowId],
   );
 
-  const handleDoubleClick = () => {
-    if (didDragRef.current) return;
-
+  const openItem = useCallback(() => {
     const item = getItemById(id);
     if (item?.type === "link") {
       setActive(id);
@@ -152,6 +154,12 @@ export const Folder = memo(function Folder({
       preferredSize,
       openerWindowId: parentWindowId,
     });
+  }, [getItemById, id, name, openWindowAnimated, parentWindowId, setActive]);
+
+  const handleDoubleClick = () => {
+    if (didDragRef.current) return;
+
+    openItem();
   };
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -168,12 +176,14 @@ export const Folder = memo(function Folder({
     } else {
       unfocusAll();
     }
+    if (isCoarsePointer()) openItem();
     // TODO: связать папки и окна
     // focusWindowFromFolder(id);
   };
 
   const handlePointerDown: PointerEventHandler<HTMLDivElement> = (e) => {
     if (e.button !== 0) return;
+    if (isCoarsePointer()) return;
 
     const container = constraintRef?.current;
     const folder = folderRef.current;

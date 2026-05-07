@@ -40,10 +40,13 @@ function PopupSelectComponent<T extends string>({
     [options, selectedOption?.label],
   );
 
-  const closeMenu = useCallback((event: MouseEvent) => {
+  const closeMenu = useCallback((event: PointerEvent) => {
     const target = event.target;
 
-    if (target instanceof Element && target.closest("[data-popup-menu-item]")) {
+    if (
+      target instanceof Node &&
+      popupRef.current?.contains(target)
+    ) {
       return;
     }
 
@@ -53,12 +56,20 @@ function PopupSelectComponent<T extends string>({
   useEffect(() => {
     if (!isOpen) return;
 
-    document.addEventListener("mouseup", closeMenu);
+    document.addEventListener("pointerdown", closeMenu);
 
     return () => {
-      document.removeEventListener("mouseup", closeMenu);
+      document.removeEventListener("pointerdown", closeMenu);
     };
   }, [closeMenu, isOpen]);
+
+  const chooseOption = useCallback(
+    (nextValue: T) => {
+      onChange(nextValue);
+      setIsOpen(false);
+    },
+    [onChange],
+  );
 
   return (
     <div
@@ -82,9 +93,9 @@ function PopupSelectComponent<T extends string>({
           type="button"
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          onMouseDown={(event) => {
+          onPointerDown={(event) => {
             event.preventDefault();
-            setIsOpen(true);
+            setIsOpen((current) => !current);
           }}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
@@ -110,9 +121,12 @@ function PopupSelectComponent<T extends string>({
                 type="button"
                 role="option"
                 aria-selected={option.value === value}
-                onMouseUp={() => {
-                  onChange(option.value);
-                  setIsOpen(false);
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  chooseOption(option.value);
+                }}
+                onClick={() => {
+                  chooseOption(option.value);
                 }}
               >
                 <span className={s.menuCheck} aria-hidden="true" />

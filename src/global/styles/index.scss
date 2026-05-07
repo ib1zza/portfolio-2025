@@ -5,8 +5,10 @@
 );
 @use "mixins" as *;
 
-* {
-  cursor: none !important;
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
 }
 
 img,
@@ -42,6 +44,6 @@ body {
   //   width: 800px;
   //   height: 600px;
   width: 100%;
-  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }

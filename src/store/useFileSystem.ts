@@ -288,10 +288,23 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
 const STORAGE_KEY = "portfolio-2025-file-system";
 const savedIconItemId = (iconId: string) => `saved-icon-${iconId}`;
 
-const getSavedIconPosition = (index: number) => ({
-  x: 72 + (index % 6) * 104,
-  y: 250 + Math.floor(index / 6) * 70,
-});
+const getDesktopGridPosition = (index: number) => {
+  const viewportWidth =
+    typeof window === "undefined" ? 1280 : Math.max(320, window.innerWidth);
+  const startX = viewportWidth < 768 ? 12 : 72;
+  const startY = viewportWidth < 768 ? 36 : 132;
+  const stepX = viewportWidth < 768 ? 84 : 104;
+  const stepY = viewportWidth < 768 ? 58 : 70;
+  const columns = Math.max(1, Math.floor((viewportWidth - startX * 2) / stepX));
+
+  return {
+    x: startX + (index % columns) * stepX,
+    y: startY + Math.floor(index / columns) * stepY,
+  };
+};
+
+const getSavedIconPosition = (index: number) =>
+  getDesktopGridPosition(9 + index);
 
 const readStoredPositions = () => {
   if (typeof window === "undefined") return {};
@@ -351,7 +364,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Projects",
       type: "folder",
       parentId: "root",
-      position: { x: 176, y: 132 },
+      position: getDesktopGridPosition(1),
       children: portfolio.projectSections.map(
         (section) => `project-section-${section.id}`,
       ),
@@ -361,7 +374,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "About Me",
       type: "folder",
       parentId: "root",
-      position: { x: 72, y: 132 },
+      position: getDesktopGridPosition(0),
       children: ["aboutReadme"],
     },
     aboutReadme: {
@@ -376,7 +389,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Education",
       type: "folder",
       parentId: "root",
-      position: { x: 280, y: 132 },
+      position: getDesktopGridPosition(2),
       children: ["educationReadme"],
     },
     educationReadme: {
@@ -391,7 +404,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Contact",
       type: "folder",
       parentId: "root",
-      position: { x: 384, y: 132 },
+      position: getDesktopGridPosition(3),
       children: [
         "contact-telegram",
         "contact-vk",
@@ -412,7 +425,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Icon Painter",
       type: "app",
       parentId: "root",
-      position: { x: 488, y: 132 },
+      position: getDesktopGridPosition(4),
       app: "icon-painter",
     },
     ditherStudio: {
@@ -420,7 +433,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Dither Studio",
       type: "app",
       parentId: "root",
-      position: { x: 592, y: 132 },
+      position: getDesktopGridPosition(5),
       app: "dither-studio",
     },
     modelViewer: {
@@ -428,7 +441,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Model Viewer",
       type: "app",
       parentId: "root",
-      position: { x: 696, y: 132 },
+      position: getDesktopGridPosition(6),
       app: "model-viewer",
     },
     badgeGenerator: {
@@ -436,7 +449,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Badge Generator",
       type: "app",
       parentId: "root",
-      position: { x: 800, y: 132 },
+      position: getDesktopGridPosition(7),
       app: "badge-generator",
     },
     trash: {
@@ -444,7 +457,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Trash",
       type: "folder",
       parentId: "root",
-      position: { x: 1040, y: 132 },
+      position: getDesktopGridPosition(8),
       children: [],
     },
     ...savedIconItems,
@@ -463,7 +476,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
 
 const getCleanPosition = (parentId: string | null, index: number) =>
   parentId === "root"
-    ? { x: 72 + index * 104, y: 132 }
+    ? getDesktopGridPosition(index)
     : {
         x: 16 + (index % 3) * 112,
         y: 14 + Math.floor(index / 3) * 58,

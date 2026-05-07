@@ -145,6 +145,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
     <>
       <motion.div
         ref={windowRef}
+        data-window-id={id}
         className={clsx(s.window, { [s.inactive]: !isFocused })}
         style={{
           zIndex: isFocused ? Z_INDEX.windowFocused : zIndex,

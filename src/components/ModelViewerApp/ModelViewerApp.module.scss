@@ -8,6 +8,13 @@
   padding: 10px;
   background: $white;
   user-select: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    align-content: start;
+    overflow: auto;
+  }
 }
 
 .viewerPanel,
@@ -29,6 +36,11 @@
 .viewer {
   width: 360px;
   height: 280px;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(360px, calc(100vw - 36px));
+    height: min(280px, calc(100vw - 80px));
+  }
 }
 
 .controlsPanel {

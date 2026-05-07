@@ -3,6 +3,7 @@ import type { RefObject } from "react";
 
 import type { FileSystemItem } from "../../store/useFileSystem";
 import Folder from "../Folder";
+import s from "./Window.module.scss";
 
 interface WindowFolderContentProps {
   childItems: FileSystemItem[];
@@ -21,7 +22,7 @@ export const WindowFolderContent = memo(function WindowFolderContent({
   constraintRef,
 }: WindowFolderContentProps) {
   return (
-    <>
+    <div className={s.folderContent}>
       {childItems.map((child, index) => {
         const itemPosition = child.position ?? getDefaultPosition(index);
 
@@ -82,7 +83,6 @@ export const WindowFolderContent = memo(function WindowFolderContent({
 
         return null;
       })}
-    </>
+    </div>
   );
 });
-

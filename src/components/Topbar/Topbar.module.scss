@@ -11,6 +11,20 @@
   position: relative;
   z-index: $z-topbar;
   user-select: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: $z-topbar;
+    padding-inline: 4px;
+    overflow: visible;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .tab {
@@ -24,6 +38,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  touch-action: manipulation;
   &.active {
     background: $black;
     color: $white;

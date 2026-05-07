@@ -26,6 +26,27 @@ interface AnimationFrame {
 
 const DEFAULT_WINDOW_POSITION = { x: 200, y: 100 };
 const DEFAULT_WINDOW_SIZE = { width: 400, height: 300 };
+const MOBILE_WINDOW_INSET = 6;
+const MOBILE_WINDOW_TOP = 27;
+
+const isMobileWindowMode = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)")
+    .matches;
+
+const getMobileWindowBounds = () => ({
+  x: MOBILE_WINDOW_INSET,
+  y: MOBILE_WINDOW_TOP,
+  width: Math.max(0, window.innerWidth - MOBILE_WINDOW_INSET * 2),
+  height: Math.max(0, window.innerHeight - MOBILE_WINDOW_TOP - MOBILE_WINDOW_INSET),
+});
+
+const rectToBounds = (rect: DOMRect) => ({
+  x: rect.left,
+  y: rect.top,
+  width: rect.width,
+  height: rect.height,
+});
 
 const getStartBounds = (
   sourceRect: DOMRect | null | undefined,
@@ -73,6 +94,9 @@ export function WindowOpenAnimationProvider({
       const targetPosition = windowHistory?.position ?? position;
       const targetSize =
         windowHistory?.size ?? preferredSize ?? DEFAULT_WINDOW_SIZE;
+      const targetBounds = isMobileWindowMode()
+        ? getMobileWindowBounds()
+        : { ...targetPosition, ...targetSize };
       const animationKey = `${id}-${Date.now()}`;
       const releaseCursor = startCursorOverride("watch");
 
@@ -80,8 +104,8 @@ export function WindowOpenAnimationProvider({
         ...currentAnimations,
         {
           key: animationKey,
-          from: getStartBounds(sourceRect, targetSize),
-          to: { ...targetPosition, ...targetSize },
+          from: getStartBounds(sourceRect, targetBounds),
+          to: targetBounds,
         },
       ]);
 
@@ -108,12 +132,16 @@ export function WindowOpenAnimationProvider({
       const windowToClose = useWindowManager.getState().windows[id];
       if (!windowToClose) return;
 
+      const renderedWindow = document.querySelector<HTMLElement>(
+        `[data-window-id="${CSS.escape(id)}"]`
+      );
+      const renderedRect = renderedWindow?.getBoundingClientRect();
       const destinationElement = document.querySelector<HTMLElement>(
         `[data-finder-item-id="${windowToClose.fileId ?? id}"]`
       );
       const targetBounds = getStartBounds(
         destinationElement?.getBoundingClientRect(),
-        windowToClose.size
+        renderedRect ? rectToBounds(renderedRect) : windowToClose.size
       );
       const animationKey = `${id}-close-${Date.now()}`;
 
@@ -121,7 +149,9 @@ export function WindowOpenAnimationProvider({
         ...currentAnimations,
         {
           key: animationKey,
-          from: { ...windowToClose.position, ...windowToClose.size },
+          from: renderedRect
+            ? rectToBounds(renderedRect)
+            : { ...windowToClose.position, ...windowToClose.size },
           to: targetBounds,
         },
       ]);

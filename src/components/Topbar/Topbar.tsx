@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { useCustomCursor } from "../../hooks/useCustomCursor";
 import { useFileSystem } from "../../store/useFileSystem";
@@ -30,6 +31,15 @@ const formatClock = () =>
     minute: "2-digit",
   }).format(new Date());
 
+const isTouchLikePointer = (event: MouseEvent | PointerEvent) =>
+  "pointerType" in event &&
+  (event.pointerType === "touch" || event.pointerType === "pen");
+
+const isMobileMenuMode = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)")
+    .matches;
+
 const SubmenuContent = ({
   item,
   onClick,
@@ -42,7 +52,7 @@ const SubmenuContent = ({
   return (
     <div
       className={clsx(s.submenuItem, { [s.disabled]: item.disabled })}
-      onMouseUp={() => {
+      onPointerUp={() => {
         if (!item.disabled) onClick(item.action);
       }}
     >
@@ -195,7 +205,7 @@ export function Topbar() {
   }, []);
 
   const handleMouseOver = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent | PointerEvent) => {
       if (!isMousePressed) return;
 
       const target = event.target as Node;
@@ -214,7 +224,7 @@ export function Topbar() {
     [isMousePressed, activeMenuIndex, tabs]
   );
 
-  const handleGlobalMouseUp = useCallback((event: MouseEvent) => {
+  const handleGlobalPointerUp = useCallback((event: MouseEvent | PointerEvent) => {
     const target = event.target as Node;
     const clickedOnSubmenu = submenuRef.current?.contains(target);
     const clickedOnTabTitle = tabRefs.current.some((tab) => {
@@ -223,7 +233,14 @@ export function Topbar() {
       return tabTitle && tabTitle.contains(target);
     });
 
-    if ((!clickedOnSubmenu && !clickedOnTabTitle) || clickedOnTabTitle) {
+    if (clickedOnSubmenu) {
+      setIsMousePressed(false);
+      return;
+    }
+
+    if (isTouchLikePointer(event) || isMobileMenuMode()) {
+      if (!clickedOnTabTitle) setActiveMenuIndex(null);
+    } else {
       setActiveMenuIndex(null);
     }
     setIsMousePressed(false);
@@ -231,15 +248,30 @@ export function Topbar() {
 
   useEffect(() => {
     document.addEventListener("mouseover", handleMouseOver);
-    document.addEventListener("mouseup", handleGlobalMouseUp);
+    document.addEventListener("pointermove", handleMouseOver);
+    document.addEventListener("mouseup", handleGlobalPointerUp);
+    document.addEventListener("pointerup", handleGlobalPointerUp);
 
     return () => {
       document.removeEventListener("mouseover", handleMouseOver);
-      document.removeEventListener("mouseup", handleGlobalMouseUp);
+      document.removeEventListener("pointermove", handleMouseOver);
+      document.removeEventListener("mouseup", handleGlobalPointerUp);
+      document.removeEventListener("pointerup", handleGlobalPointerUp);
     };
-  }, [handleMouseOver, handleGlobalMouseUp]);
+  }, [handleMouseOver, handleGlobalPointerUp]);
 
-  const handleMouseDownOnTab = useCallback((index: number) => {
+  const handlePointerDownOnTab = useCallback((event: ReactPointerEvent, index: number) => {
+    event.preventDefault();
+    if (
+      event.pointerType === "touch" ||
+      event.pointerType === "pen" ||
+      isMobileMenuMode()
+    ) {
+      setIsMousePressed(false);
+      setActiveMenuIndex((currentIndex) => currentIndex === index ? null : index);
+      return;
+    }
+
     setIsMousePressed(true);
     setActiveMenuIndex(index);
   }, []);
@@ -266,7 +298,7 @@ export function Topbar() {
             className={clsx(s.tabTitle, {
               [s.active]: activeMenuIndex === index,
             })}
-            onMouseDown={() => handleMouseDownOnTab(index)}
+            onPointerDown={(event) => handlePointerDownOnTab(event, index)}
           >
             {tab.title}
           </div>

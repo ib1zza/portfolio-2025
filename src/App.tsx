@@ -7,6 +7,7 @@ const LazyCursor = lazy(() => import("./components/CustomCursor"));
 
 function App() {
   const [isAppReady, setIsAppReady] = useState(false);
+  const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
   // TODO: make 2000
   const MIN_LOADER_DURATION_MS = 2000;
@@ -17,7 +18,14 @@ function App() {
       return;
     }
 
-    document.body.style.cursor = "none";
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const syncCursorMode = () => {
+      setIsCustomCursorEnabled(mediaQuery.matches);
+      document.body.style.cursor = mediaQuery.matches ? "none" : "default";
+    };
+
+    syncCursorMode();
+    mediaQuery.addEventListener("change", syncCursorMode);
 
     const minDelay = new Promise((res) =>
       setTimeout(res, MIN_LOADER_DURATION_MS)
@@ -34,6 +42,7 @@ function App() {
     });
 
     return () => {
+      mediaQuery.removeEventListener("change", syncCursorMode);
       document.body.style.cursor = "default";
     };
   }, [isBadgeRoute]);
@@ -51,7 +60,7 @@ function App() {
       <div className="main-wrapper">
         <Suspense fallback={null}>
           <LazyDesktop />
-          <LazyCursor />
+          {isCustomCursorEnabled && <LazyCursor />}
         </Suspense>
       </div>
     </div>

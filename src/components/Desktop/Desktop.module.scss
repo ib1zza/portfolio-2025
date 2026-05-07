@@ -26,6 +26,17 @@
   // Style for the text
   color: #000;
   font-size: 14px;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 20px 18px;
+    height: 100dvh;
+    padding: 36px 12px 16px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 // Optional: Different grid sizes you can apply by adding modifier classes

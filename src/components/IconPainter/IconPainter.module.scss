@@ -9,6 +9,13 @@
   padding: 10px;
   background: $white;
   user-select: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    align-content: start;
+    overflow: auto;
+  }
 }
 
 .canvasPanel,
@@ -20,6 +27,12 @@
 .canvasPanel {
   width: 258px;
   height: 258px;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(258px, calc(100vw - 24px));
+    height: min(258px, calc(100vw - 24px));
+    justify-self: center;
+  }
 }
 
 .canvas {
@@ -28,6 +41,11 @@
   background: $white;
   position: relative;
   touch-action: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(256px, calc(100vw - 26px));
+    height: min(256px, calc(100vw - 26px));
+  }
 }
 
 .grid::before,
@@ -79,6 +97,11 @@
   width: 256px;
   height: 256px;
   image-rendering: pixelated;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    width: min(256px, calc(100vw - 26px));
+    height: min(256px, calc(100vw - 26px));
+  }
 }
 
 .toolsPanel {
