@@ -1,4 +1,5 @@
 .iconPainter {
+  position: relative;
   display: grid;
   grid-template-columns: 258px minmax(220px, 1fr);
   gap: 12px;

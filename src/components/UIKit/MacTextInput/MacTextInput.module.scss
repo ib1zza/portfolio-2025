@@ -1,0 +1,16 @@
+.input {
+  @include textTitle(16px, 18px);
+  width: 100%;
+  height: 22px;
+  border: $border;
+  border-radius: 0;
+  padding: 0 5px 2px;
+  color: $black;
+  background: $white;
+  outline: 0;
+
+  &:focus {
+    color: $white;
+    background: $black;
+  }
+}

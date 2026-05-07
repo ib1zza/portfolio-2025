@@ -1,6 +1,6 @@
 export type DitherMode = "threshold" | "bayer" | "floyd" | "atkinson";
 export type ExportFormat = "png" | "svg";
-export type OutputSize = "128" | "256" | "512";
+export type OutputSize = "32" | "128" | "256" | "512";
 
 export const DITHER_MODES: Array<{ value: DitherMode; label: string }> = [
   { value: "threshold", label: "threshold" },
@@ -10,6 +10,7 @@ export const DITHER_MODES: Array<{ value: DitherMode; label: string }> = [
 ];
 
 export const OUTPUT_SIZES: Array<{ value: OutputSize; label: string }> = [
+  { value: "32", label: "32 px" },
   { value: "128", label: "128 px" },
   { value: "256", label: "256 px" },
   { value: "512", label: "512 px" },

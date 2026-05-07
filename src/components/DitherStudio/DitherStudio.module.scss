@@ -1,4 +1,5 @@
 .ditherStudio {
+  position: relative;
   display: grid;
   grid-template-columns: 256px minmax(240px, 1fr);
   gap: 12px;

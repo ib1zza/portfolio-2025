@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { portfolio } from "../../data/portfolio";
 import { useFileSystem } from "../../store/useFileSystem";
 import { MacButton } from "../UIKit/MacButton";
+import { MacTextInput } from "../UIKit/MacTextInput";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import {
   createBlankIconPixels,
@@ -130,28 +131,28 @@ export const BadgeGenerator = memo(function BadgeGenerator({
 
         <label className={s.field}>
           <span>Name:</span>
-          <input
+          <MacTextInput
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
         </label>
         <label className={s.field}>
           <span>Role:</span>
-          <input
+          <MacTextInput
             value={role}
             onChange={(event) => setRole(event.target.value)}
           />
         </label>
         <label className={s.field}>
           <span>Stack:</span>
-          <input
+          <MacTextInput
             value={stack}
             onChange={(event) => setStack(event.target.value)}
           />
         </label>
         <label className={s.field}>
           <span>Contact:</span>
-          <input
+          <MacTextInput
             value={contact}
             onChange={(event) => setContact(event.target.value)}
           />

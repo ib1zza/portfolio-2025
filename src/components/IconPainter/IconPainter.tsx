@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { MacButton } from "../UIKit/MacButton";
+import { MacPromptDialog } from "../UIKit/MacPromptDialog";
 import { PopupSelect } from "../UIKit/PopupSelect";
 import { useFileSystem } from "../../store/useFileSystem";
 import {
@@ -17,6 +18,7 @@ import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
 type ExportFormat = "png" | "svg";
+type SaveMode = "overwrite" | "copy";
 
 const GRID_SIZE = 32;
 const PIXEL_COUNT = GRID_SIZE * GRID_SIZE;
@@ -323,6 +325,7 @@ export const IconPainter = memo(function IconPainter({
   const [redoStack, setRedoStack] = useState<boolean[][]>([]);
   const [isGridVisible, setIsGridVisible] = useState(true);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
+  const [pendingSaveMode, setPendingSaveMode] = useState<SaveMode | null>(null);
   const loadedSavedIconIdRef = useRef(savedIconId);
   const pixelsRef = useRef(pixels);
   const isDrawingRef = useRef(false);
@@ -500,12 +503,9 @@ export const IconPainter = memo(function IconPainter({
   }, [exportFormat, exportPng, exportSvg]);
 
   const saveDesktopIcon = useCallback(
-    (mode: "overwrite" | "copy") => {
+    (mode: SaveMode, nextName: string) => {
       const currentIcon = readSavedIcon(savedIconId);
       const shouldOverwrite = mode === "overwrite" && Boolean(currentIcon);
-      const nextName = shouldOverwrite
-        ? currentIcon!.name
-        : window.prompt("Save icon as:", savedIconName || "Badge Icon");
 
       if (!nextName?.trim()) return;
 
@@ -517,7 +517,17 @@ export const IconPainter = memo(function IconPainter({
 
       upsertSavedIconItem(savedIcon);
     },
-    [savedIconId, savedIconName, upsertSavedIconItem],
+    [savedIconId, upsertSavedIconItem],
+  );
+
+  const confirmSave = useCallback(
+    (nextName: string) => {
+      if (!pendingSaveMode) return;
+
+      saveDesktopIcon(pendingSaveMode, nextName);
+      setPendingSaveMode(null);
+    },
+    [pendingSaveMode, saveDesktopIcon],
   );
 
   const undo = useCallback(() => {
@@ -604,12 +614,26 @@ export const IconPainter = memo(function IconPainter({
           exportFormat={exportFormat}
           onExportFormatChange={setExportFormat}
           onExport={exportCurrent}
-          onSave={() => saveDesktopIcon("overwrite")}
-          onSaveAs={() => saveDesktopIcon("copy")}
+          onSave={() => setPendingSaveMode("overwrite")}
+          onSaveAs={() => setPendingSaveMode("copy")}
           savedIconId={savedIconId}
         />
         <PreviewCanvases setPreviewRef={setPreviewRef} />
       </div>
+
+      {pendingSaveMode && (
+        <MacPromptDialog
+          title={pendingSaveMode === "copy" ? "New" : "Save"}
+          label="Label"
+          initialValue={
+            pendingSaveMode === "overwrite"
+              ? readSavedIcon(savedIconId)?.name || savedIconName || "Badge Icon"
+              : savedIconName || "Badge Icon"
+          }
+          onCancel={() => setPendingSaveMode(null)}
+          onConfirm={confirmSave}
+        />
+      )}
     </div>
   );
 });

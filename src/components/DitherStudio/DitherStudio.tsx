@@ -1,10 +1,13 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton } from "../UIKit/MacButton";
+import { MacPromptDialog } from "../UIKit/MacPromptDialog";
 import { MacSlider } from "../UIKit/MacSlider";
 import { PopupSelect } from "../UIKit/PopupSelect";
 import { drawDitheredImage } from "./ditherCanvas";
 import { downloadText, getSvgFromCanvas } from "./ditherExport";
+import { saveIconToDesktop } from "../IconPainter/iconPainterDesktop";
+import { useFileSystem } from "../../store/useFileSystem";
 import {
   DITHER_MODES,
   EXPORT_FORMATS,
@@ -16,6 +19,7 @@ import {
 import s from "./DitherStudio.module.scss";
 
 export const DitherStudio = memo(function DitherStudio() {
+  const upsertSavedIconItem = useFileSystem((state) => state.upsertSavedIconItem);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("No image");
   const [mode, setMode] = useState<DitherMode>("bayer");
@@ -24,6 +28,7 @@ export const DitherStudio = memo(function DitherStudio() {
   const [invert, setInvert] = useState(false);
   const [outputSize, setOutputSize] = useState<OutputSize>("256");
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
+  const [isSaveIconDialogOpen, setIsSaveIconDialogOpen] = useState(false);
   const [status, setStatus] = useState("ready");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -107,6 +112,30 @@ export const DitherStudio = memo(function DitherStudio() {
     ]);
     setStatus("copied png");
   }, [exportFormat]);
+
+  const saveIcon = useCallback((name: string) => {
+    if (!image) return;
+
+    if (!name?.trim()) return;
+
+    const iconCanvas = document.createElement("canvas");
+    drawDitheredImage(iconCanvas, image, mode, threshold, contrast, invert, 32);
+
+    const context = iconCanvas.getContext("2d");
+    if (!context) return;
+
+    const { data } = context.getImageData(0, 0, 32, 32);
+    const pixels = Array.from({ length: 32 * 32 }, (_, index) => {
+      const dataIndex = index * 4;
+
+      return data[dataIndex] < 128;
+    });
+    const savedIcon = saveIconToDesktop({ name, pixels });
+
+    upsertSavedIconItem(savedIcon);
+    setIsSaveIconDialogOpen(false);
+    setStatus("saved 32 px icon");
+  }, [contrast, image, invert, mode, threshold, upsertSavedIconItem]);
 
   const clearImage = useCallback(() => {
     setImage(null);
@@ -216,6 +245,12 @@ export const DitherStudio = memo(function DitherStudio() {
           <MacButton onClick={copyCurrent} disabled={!image}>
             copy
           </MacButton>
+          <MacButton
+            onClick={() => setIsSaveIconDialogOpen(true)}
+            disabled={!image}
+          >
+            save icon
+          </MacButton>
         </div>
 
         <div className={s.meta}>
@@ -226,6 +261,16 @@ export const DitherStudio = memo(function DitherStudio() {
           <span>{status}</span>
         </div>
       </section>
+
+      {isSaveIconDialogOpen && (
+        <MacPromptDialog
+          title="New"
+          label="Label"
+          initialValue="Dither Icon"
+          onCancel={() => setIsSaveIconDialogOpen(false)}
+          onConfirm={saveIcon}
+        />
+      )}
     </div>
   );
 });
