@@ -15,7 +15,7 @@
     top: 27px !important;
     left: 6px !important;
     width: calc(100vw - 12px) !important;
-    height: calc(100dvh - 33px) !important;
+    height: calc(100dvh - 43px) !important;
     min-width: 0 !important;
     min-height: 0 !important;
   }
@@ -97,6 +97,17 @@
   width: var(--content-height);
   border: 1px solid $black;
   position: relative;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -10px;
+      z-index: 3;
+      background: transparent;
+    }
+  }
+
   img {
     display: none;
     inset: 0;

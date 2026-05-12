@@ -28,6 +28,7 @@ const DEFAULT_WINDOW_POSITION = { x: 200, y: 100 };
 const DEFAULT_WINDOW_SIZE = { width: 400, height: 300 };
 const MOBILE_WINDOW_INSET = 6;
 const MOBILE_WINDOW_TOP = 27;
+const MOBILE_WINDOW_BOTTOM = 16;
 
 const isMobileWindowMode = () =>
   typeof window !== "undefined" &&
@@ -38,7 +39,7 @@ const getMobileWindowBounds = () => ({
   x: MOBILE_WINDOW_INSET,
   y: MOBILE_WINDOW_TOP,
   width: Math.max(0, window.innerWidth - MOBILE_WINDOW_INSET * 2),
-  height: Math.max(0, window.innerHeight - MOBILE_WINDOW_TOP - MOBILE_WINDOW_INSET),
+  height: Math.max(0, window.innerHeight - MOBILE_WINDOW_TOP - MOBILE_WINDOW_BOTTOM),
 });
 
 const rectToBounds = (rect: DOMRect) => ({
