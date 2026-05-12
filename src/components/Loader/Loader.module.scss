@@ -27,6 +27,7 @@
   height: auto;
   shape-rendering: crispEdges;
   image-rendering: pixelated;
+  transform: translateY(calc(-50% + 50px));
 }
 .helloSketchIcon {
   display: block;
@@ -44,6 +45,7 @@
   height: auto;
   shape-rendering: crispEdges;
   image-rendering: pixelated;
+  transform: translateY(calc(50% - 50px));
 }
 
 .helloSketchPixel {
