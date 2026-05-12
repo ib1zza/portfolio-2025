@@ -72,9 +72,28 @@
 .field {
   @include textTitle(16px, 18px);
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
   align-items: center;
   gap: 6px;
+}
+
+.sectionLabel {
+  @include textTitle(16px, 18px);
+}
+
+.contactEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: $border;
+}
+
+.contactFields {
+  display: grid;
+  grid-template-columns: minmax(64px, 0.7fr) minmax(100px, 1fr) auto;
+  gap: 6px;
+  align-items: center;
 }
 
 .iconPainterHint {
@@ -115,12 +134,17 @@
   background: rgb(255 255 255 / 65%);
 }
 
-.importDialog {
+.importDialog,
+.popupWindow {
   width: 330px;
   border: $border;
   padding: 8px;
   background: $white;
   box-shadow: 3px 3px 0 $black;
+}
+
+.popupWindow {
+  width: min(330px, calc(100vw - 28px));
 }
 
 .dialogTitle {
@@ -179,6 +203,50 @@
 .dialogActions {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+
+.qrFrame {
+  display: grid;
+  place-items: center;
+  padding: 12px 0 8px;
+
+  img {
+    display: block;
+    width: 192px;
+    height: 192px;
+    border: $border;
+    image-rendering: pixelated;
+  }
+}
+
+.shareUrl {
+  @include textMain(16px, 14px);
+  border: $border;
+  padding: 4px;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+
+  a {
+    @include textMain(16px, 16px);
+    color: $black;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus-visible {
+      color: $white;
+      background: $black;
+      outline: none;
+    }
+  }
 }

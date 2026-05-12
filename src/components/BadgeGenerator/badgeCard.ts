@@ -7,9 +7,15 @@ import {
 export interface BadgeInput {
   name: string;
   role: string;
-  stack: string;
-  contact: string;
+  company: string;
+  about: string;
+  contacts: BadgeContact[];
   pixels: boolean[];
+}
+
+export interface BadgeContact {
+  label: string;
+  href: string;
 }
 
 export const CARD_WIDTH = 320;
@@ -39,8 +45,8 @@ const getNameMetrics = (name: string) => {
 export const createBadgeSvg = ({
   name,
   role,
-  stack,
-  contact,
+  company,
+  about,
   pixels,
 }: BadgeInput) => {
   const iconRects = iconPixelsToRects(pixels, ICON_SCALE, 24, 66);
@@ -56,9 +62,9 @@ export const createBadgeSvg = ({
     <rect x="22" y="64" width="${ICON_SIZE + 4}" height="${ICON_SIZE + 4}" fill="white" stroke="black"/>
     ${iconRects}
     <text x="106" y="76" font-family="ChiKareGo2, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(role, 18))}</text>
-    <text x="106" y="95" font-family="FindersKeepers, Arial, sans-serif" font-size="16" fill="black">${escapeXml(trimLine(stack, 34))}</text>
+    <text x="106" y="95" font-family="FindersKeepers, Arial, sans-serif" font-size="16" fill="black">${escapeXml(trimLine(company, 34))}</text>
     <line x1="106" y1="104" x2="292" y2="104" stroke="black"/>
-    <text x="106" y="130" font-family="FindersKeepers, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(contact, 26))}</text>
+    <text x="106" y="130" font-family="FindersKeepers, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(about, 26))}</text>
   </svg>
   `;
 };
@@ -135,7 +141,7 @@ export const renderBadgeCanvas = async (input: BadgeInput) => {
   );
   drawText(
     context,
-    trimLine(input.stack, 34),
+    trimLine(input.company, 34),
     106,
     95,
     '16px "FindersKeepers", Arial, sans-serif',
@@ -146,7 +152,7 @@ export const renderBadgeCanvas = async (input: BadgeInput) => {
   context.stroke();
   drawText(
     context,
-    trimLine(input.contact, 26),
+    trimLine(input.about, 26),
     106,
     130,
     '18px "FindersKeepers", Arial, sans-serif',
@@ -200,8 +206,14 @@ export const createBadgeUrl = (input: BadgeInput) => {
 
   url.searchParams.set("name", input.name);
   url.searchParams.set("role", input.role);
-  url.searchParams.set("stack", input.stack);
-  url.searchParams.set("contact", input.contact);
+  url.searchParams.set("company", input.company);
+  url.searchParams.set("about", input.about);
+  input.contacts
+    .filter((contact) => contact.href.trim())
+    .forEach((contact, index) => {
+      url.searchParams.set(`contact${index}Label`, contact.label);
+      url.searchParams.set(`contact${index}Href`, contact.href);
+    });
   url.searchParams.set("icon", pixelsToHex(input.pixels));
 
   return url.toString();
@@ -212,12 +224,17 @@ export const readBadgeInputFromSearch = (
   fallback: BadgeInput,
 ): BadgeInput => {
   const params = new URLSearchParams(search);
+  const contacts = Array.from({ length: 8 }, (_, index) => ({
+    label: params.get(`contact${index}Label`) || "",
+    href: params.get(`contact${index}Href`) || "",
+  })).filter((contact) => contact.href);
 
   return {
     name: params.get("name") || fallback.name,
     role: params.get("role") || fallback.role,
-    stack: params.get("stack") || fallback.stack,
-    contact: params.get("contact") || fallback.contact,
+    company: params.get("company") || params.get("stack") || fallback.company,
+    about: params.get("about") || params.get("contact") || fallback.about,
+    contacts: contacts.length ? contacts : fallback.contacts,
     pixels: pixelsFromHex(params.get("icon")),
   };
 };

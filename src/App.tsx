@@ -13,9 +13,16 @@ function App() {
   const MIN_LOADER_DURATION_MS = 2000;
 
   useEffect(() => {
+    document.body.classList.toggle("native-cursor", isBadgeRoute);
+
     if (isBadgeRoute) {
       document.body.style.cursor = "default";
-      return;
+      setIsCustomCursorEnabled(false);
+
+      return () => {
+        document.body.classList.remove("native-cursor");
+        document.body.style.cursor = "default";
+      };
     }
 
     const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -43,6 +50,7 @@ function App() {
 
     return () => {
       mediaQuery.removeEventListener("change", syncCursorMode);
+      document.body.classList.remove("native-cursor");
       document.body.style.cursor = "default";
     };
   }, [isBadgeRoute]);

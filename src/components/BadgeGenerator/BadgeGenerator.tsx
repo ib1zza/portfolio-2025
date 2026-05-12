@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import QRCode from "qrcode";
 
 import { portfolio } from "../../data/portfolio";
 import { useFileSystem } from "../../store/useFileSystem";
@@ -11,17 +12,20 @@ import {
   readSavedIcons,
   type SavedDesktopIcon,
 } from "../IconPainter/iconPainterDesktop";
-import { createBadgeSvg, createBadgeUrl, renderBadgeCanvas } from "./badgeCard";
+import {
+  createBadgeSvg,
+  createBadgeUrl,
+  renderBadgeCanvas,
+  type BadgeContact,
+} from "./badgeCard";
 import s from "./BadgeGenerator.module.scss";
 
-const DEFAULT_STACK = portfolio.skills
-  .filter((skill) => ["TypeScript", "React", "Vue", "Nuxt"].includes(skill))
-  .join(" / ");
-
-const DEFAULT_CONTACT =
-  portfolio.contacts.find((contact) => contact.label === "Telegram")?.href ??
-  portfolio.contacts[0]?.href ??
-  "";
+const DEFAULT_COMPANY = portfolio.experience[0]?.company ?? "GROKHOTOV STUDIO";
+const DEFAULT_ABOUT = "I build UI kits, animation, and production websites.";
+const DEFAULT_CONTACTS = portfolio.contacts.map((contact) => ({
+  label: contact.label,
+  href: contact.href,
+}));
 
 interface BadgeGeneratorProps {
   windowId: string;
@@ -35,14 +39,17 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   const iconPainterButtonRef = useRef<HTMLDivElement | null>(null);
   const [name, setName] = useState(portfolio.profile.name);
   const [role, setRole] = useState(portfolio.profile.role);
-  const [stack, setStack] = useState(DEFAULT_STACK);
-  const [contact, setContact] = useState(DEFAULT_CONTACT);
+  const [company, setCompany] = useState(DEFAULT_COMPANY);
+  const [about, setAbout] = useState(DEFAULT_ABOUT);
+  const [contacts, setContacts] = useState<BadgeContact[]>(DEFAULT_CONTACTS);
   const [savedIcons, setSavedIcons] = useState(readSavedIcons);
   const [selectedIconId, setSelectedIconId] = useState<string | null>(
     () => readSavedIcons()[0]?.id ?? null,
   );
   const [dialogIconId, setDialogIconId] = useState<string | null>(null);
   const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState("");
 
   useEffect(() => {
     const syncSavedIcons = () => {
@@ -70,13 +77,35 @@ export const BadgeGenerator = memo(function BadgeGenerator({
     () => ({
       name,
       role,
-      stack,
-      contact,
+      company,
+      about,
+      contacts,
       pixels: selectedIcon?.pixels ?? createBlankIconPixels(),
     }),
-    [contact, name, role, selectedIcon?.pixels, stack],
+    [about, company, contacts, name, role, selectedIcon?.pixels],
   );
   const badgeSvg = useMemo(() => createBadgeSvg(badgeInput), [badgeInput]);
+  const badgeUrl = useMemo(() => createBadgeUrl(badgeInput), [badgeInput]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    QRCode.toDataURL(badgeUrl, {
+      color: {
+        dark: "#000000",
+        light: "#ffffff",
+      },
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 192,
+    }).then((dataUrl) => {
+      if (isActive) setQrDataUrl(dataUrl);
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, [badgeUrl]);
 
   const openIconPainter = useCallback(() => {
     setActive("iconPainter");
@@ -100,12 +129,36 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   }, [badgeInput]);
 
   const openBadgeUrl = useCallback(() => {
-    window.open(createBadgeUrl(badgeInput), "_blank", "noopener,noreferrer");
-  }, [badgeInput]);
+    window.open(badgeUrl, "_blank", "noopener,noreferrer");
+  }, [badgeUrl]);
 
   const copyBadgeUrl = useCallback(async () => {
-    await navigator.clipboard?.writeText(createBadgeUrl(badgeInput));
-  }, [badgeInput]);
+    await navigator.clipboard?.writeText(badgeUrl);
+  }, [badgeUrl]);
+
+  const updateContact = useCallback(
+    (index: number, field: keyof BadgeContact, value: string) => {
+      setContacts((currentContacts) =>
+        currentContacts.map((contact, contactIndex) =>
+          contactIndex === index ? { ...contact, [field]: value } : contact,
+        ),
+      );
+    },
+    [],
+  );
+
+  const addContact = useCallback(() => {
+    setContacts((currentContacts) => [
+      ...currentContacts,
+      { label: "Link", href: "" },
+    ]);
+  }, []);
+
+  const removeContact = useCallback((index: number) => {
+    setContacts((currentContacts) =>
+      currentContacts.filter((_, contactIndex) => contactIndex !== index),
+    );
+  }, []);
 
   const openImportDialog = useCallback(() => {
     setDialogIconId(selectedIconId ?? savedIcons[0]?.id ?? null);
@@ -144,19 +197,48 @@ export const BadgeGenerator = memo(function BadgeGenerator({
           />
         </label>
         <label className={s.field}>
-          <span>Stack:</span>
+          <span>Company:</span>
           <MacTextInput
-            value={stack}
-            onChange={(event) => setStack(event.target.value)}
+            value={company}
+            onChange={(event) => setCompany(event.target.value)}
           />
         </label>
         <label className={s.field}>
-          <span>Contact:</span>
+          <span>About:</span>
           <MacTextInput
-            value={contact}
-            onChange={(event) => setContact(event.target.value)}
+            value={about}
+            onChange={(event) => setAbout(event.target.value)}
           />
         </label>
+
+        <div className={s.contactEditor}>
+          <div className={s.sectionLabel}>Contacts</div>
+          {contacts.map((contactItem, index) => (
+            <div className={s.contactFields} key={index}>
+              <MacTextInput
+                aria-label={`Contact ${index + 1} label`}
+                value={contactItem.label}
+                onChange={(event) =>
+                  updateContact(index, "label", event.target.value)
+                }
+              />
+              <MacTextInput
+                aria-label={`Contact ${index + 1} link`}
+                value={contactItem.href}
+                onChange={(event) =>
+                  updateContact(index, "href", event.target.value)
+                }
+              />
+              <MacButton
+                disabled={contacts.length <= 1}
+                onClick={() => removeContact(index)}
+              >
+                del
+              </MacButton>
+            </div>
+          ))}
+          <MacButton onClick={addContact}>add contact</MacButton>
+        </div>
 
         <div className={s.iconPainterHint}>
           Draw an icon in Icon Painter and save it to desktop.
@@ -172,20 +254,22 @@ export const BadgeGenerator = memo(function BadgeGenerator({
         </div>
 
         <div className={s.exportRow}>
-          <label className={s.field}>
-            <span>Save:</span>
-          </label>
+          <MacButton onClick={() => setIsShareOpen(true)}>share</MacButton>
+
           <MacButton variant="default" onClick={exportPng}>
             export png
           </MacButton>
-
-          <label className={s.field}>
-            <span>Share:</span>
-          </label>
-          <MacButton onClick={openBadgeUrl}>open url</MacButton>
-          <MacButton onClick={copyBadgeUrl}>copy url</MacButton>
         </div>
       </section>
+
+      {isShareOpen && (
+        <ShareDialog
+          onClose={() => setIsShareOpen(false)}
+          onCopy={copyBadgeUrl}
+          onOpen={openBadgeUrl}
+          qrDataUrl={qrDataUrl}
+        />
+      )}
 
       {isImportOpen && (
         <IconImportDialog
@@ -196,6 +280,36 @@ export const BadgeGenerator = memo(function BadgeGenerator({
           onSelect={setDialogIconId}
         />
       )}
+    </div>
+  );
+});
+
+const ShareDialog = memo(function ShareDialog({
+  onClose,
+  onCopy,
+  onOpen,
+  qrDataUrl,
+}: {
+  onClose: () => void;
+  onCopy: () => void;
+  onOpen: () => void;
+  qrDataUrl: string;
+}) {
+  return (
+    <div className={s.dialogBackdrop}>
+      <div className={s.popupWindow}>
+        <div className={s.dialogTitle}>Share Badge</div>
+        <div className={s.qrFrame}>
+          {qrDataUrl ? <img src={qrDataUrl} alt="Badge QR code" /> : null}
+        </div>
+        <div className={s.dialogActions}>
+          <MacButton onClick={onClose}>close</MacButton>
+          <MacButton onClick={onOpen}>open</MacButton>
+          <MacButton variant="default" onClick={onCopy}>
+            copy link
+          </MacButton>
+        </div>
+      </div>
     </div>
   );
 });

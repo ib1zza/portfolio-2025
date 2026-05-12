@@ -6,7 +6,7 @@
 @use "mixins" as *;
 
 @media (hover: hover) and (pointer: fine) {
-  * {
+  body:not(.native-cursor) * {
     cursor: none !important;
   }
 }
