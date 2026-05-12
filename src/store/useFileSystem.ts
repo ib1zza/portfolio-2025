@@ -214,6 +214,124 @@ const contactsContent = [
   { type: "links", items: portfolio.contacts },
 ] satisfies DocumentBlock[];
 
+const creditsContent = [
+  { type: "title", text: "Credits & Licenses" },
+  {
+    type: "paragraph",
+    text: "This portfolio is a personal, non-affiliated homage to early Macintosh interface culture. It combines original implementation work with credited references, fonts, icons, 3D assets, screenshots, and brand marks used to describe real projects.",
+  },
+  { type: "heading", text: "Apple Inspiration" },
+  {
+    type: "paragraph",
+    text: "Special thanks to Apple and the designers of the original Macintosh, Finder, MacPaint, and System 6/System 7 interface language. The monochrome windows, menu bar, title stripes, pixel cursors, scrollbars, document metaphors, and interaction patterns in this site are built as a modern web tribute to that design era.",
+  },
+  {
+    type: "paragraph",
+    text: "This project is not affiliated with, endorsed by, or sponsored by Apple Inc. Apple, Macintosh, Finder, MacPaint, and related product names are trademarks of their respective owners.",
+  },
+  { type: "heading", text: "Design References" },
+  {
+    type: "list",
+    items: [
+      "Classic Macintosh UI Kit by Iftach: used as the primary visual reference for buttons, pop-up menus, window chrome, cursors, and classic Macintosh component proportions.",
+      "Charlie Dean portfolio: credited as a contemporary portfolio reference and inspiration source.",
+      "Gleb Solutions: credited as a contemporary web/portfolio reference and inspiration source.",
+    ],
+  },
+  { type: "heading", text: "3D Models" },
+  {
+    type: "list",
+    items: [
+      "cartoon-teeth-set.glb: Cartoon Teeth Set from Get3DModels. Source lists author as poly by google and license as CC Attribution.",
+      "open-wardrobe-closet.glb: Open Wardrobe Closet from Get3DModels. Source lists author as poly by google and license as CC Attribution.",
+      "cap.glb: Low Poly Cap from Get3DModels. Source lists author as poly by google and license as CC Attribution.",
+      "printer-scanner.glb: Office Printer from Get3DModels. Source lists author as Chenchanchong and license as CC Attribution.",
+      "t-shirt.glb: local GLB contains mesh names based on Shirt_adid, but no reliable source/license metadata was found in the asset or public search results. Treat as source-to-verify before final production attribution, or replace with a model that has explicit license data.",
+      "simplex.glb: Simplex project logo converted to GLB for case-study presentation. Treated as client/brand material used only to identify the commercial project.",
+      "silkworm.glb: Silkworm project logo converted to GLB for case-study presentation. Treated as client/brand material used only to identify the commercial project.",
+    ],
+  },
+  { type: "heading", text: "Fonts" },
+  {
+    type: "list",
+    items: [
+      "ChiKareGo2.ttf: pixel font by Giles Booth, based on the classic Macintosh Chicago direction by Susan Kare.",
+      "FindersKeepers.ttf: font by Giles Booth, based on the 9pt Geneva/Finder label look documented by the author.",
+      "Both fonts are used for the retro interface typography in this portfolio. If this project becomes commercial, keep the font source/license notes with the repository and replace any font whose redistribution status is unclear.",
+    ],
+  },
+  { type: "heading", text: "Icons, Cursors, UI Assets" },
+  {
+    type: "list",
+    items: [
+      "Finder-style folder, file, app, contact, trash, and tool icons are custom SVG/pixel drawings created for this project or adapted from user-provided SVGs.",
+      "VK, Telegram, Email, GitHub, trash, and Icon Painter icons were created/provided during the project and converted into the local 1-bit icon style.",
+      "Cursor SVGs are local 1-bit recreations for arrow, hand, beam, grab, resize, pencil, precision, busy, and watch states.",
+      "Happy Mac and Sad Mac style icons are used as nostalgic references to classic Macintosh system imagery, not as official Apple assets.",
+    ],
+  },
+  { type: "heading", text: "Project Screenshots & Logos" },
+  {
+    type: "list",
+    items: [
+      "Project preview screenshots under /projects are used as portfolio case-study material for the author's own work.",
+      "Simplex and Silkworm marks are used only as project identifiers inside their case studies.",
+      "Generated Icon Painter, Dither Studio, and Badge Generator outputs are user-created assets stored locally in the browser.",
+    ],
+  },
+  { type: "heading", text: "Open Source Runtime" },
+  {
+    type: "paragraph",
+    text: "The site is built with React, TypeScript, Vite, Zustand, Three.js, React Three Fiber, Motion, QRCode, and related frontend tooling. Dependency licenses should be reviewed from package metadata before redistribution.",
+  },
+  { type: "heading", text: "Source Links" },
+  {
+    type: "links",
+    items: [
+      {
+        label: "Classic Macintosh UI Kit by Iftach",
+        href: "https://dribbble.com/shots/6102247-Classic-Macintosh-UI-Kit",
+      },
+      {
+        label: "Classic Macintosh UI Kit product page",
+        href: "https://gum.co/ClassicMacintoshUIKit",
+      },
+      {
+        label: "Charlie Dean",
+        href: "https://charliedean.com/portfolio",
+      },
+      {
+        label: "Gleb Solutions",
+        href: "https://gleb.solutions/",
+      },
+      {
+        label: "Cartoon Teeth Set",
+        href: "https://www.get3dmodels.com/anatomy/cartoon-teeth-set/",
+      },
+      {
+        label: "Open Wardrobe Closet",
+        href: "https://www.get3dmodels.com/fashion/open-wardrobe-closet/",
+      },
+      {
+        label: "Low Poly Cap",
+        href: "https://www.get3dmodels.com/fashion/low-poly-cap/",
+      },
+      {
+        label: "Office Printer",
+        href: "https://www.get3dmodels.com/architecture/office-printer/",
+      },
+      {
+        label: "FindersKeepers by Giles Booth",
+        href: "https://www.suppertime.co.uk/blogmywiki/2017/04/finderskeepers/",
+      },
+      {
+        label: "ChiKareGo2 / FindersKeepers font mirror",
+        href: "https://tilde.club/~georgemoody/fonts/",
+      },
+    ],
+  },
+] satisfies DocumentBlock[];
+
 const contactShortcutItems = portfolio.contacts.reduce<
   Record<string, FileSystemItem>
 >((items, contact) => {
@@ -304,7 +422,7 @@ const getDesktopGridPosition = (index: number) => {
 };
 
 const getSavedIconPosition = (index: number) =>
-  getDesktopGridPosition(9 + index);
+  getDesktopGridPosition(10 + index);
 
 const readStoredPositions = () => {
   if (typeof window === "undefined") return {};
@@ -355,6 +473,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
         "ditherStudio",
         "modelViewer",
         "badgeGenerator",
+        "credits",
         ...savedIconIds,
         "trash",
       ],
@@ -452,12 +571,20 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       position: getDesktopGridPosition(7),
       app: "badge-generator",
     },
+    credits: {
+      id: "credits",
+      name: "Credits",
+      type: "file",
+      parentId: "root",
+      position: getDesktopGridPosition(8),
+      content: creditsContent,
+    },
     trash: {
       id: "trash",
       name: "Trash",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(8),
+      position: getDesktopGridPosition(9),
       children: [],
     },
     ...savedIconItems,

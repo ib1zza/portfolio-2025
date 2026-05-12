@@ -438,7 +438,9 @@
   }
 
   figure {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     border: $border;
     padding: 4px;
     background: $white;

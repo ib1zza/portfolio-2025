@@ -35,7 +35,7 @@ function App() {
     mediaQuery.addEventListener("change", syncCursorMode);
 
     const minDelay = new Promise((res) =>
-      setTimeout(res, MIN_LOADER_DURATION_MS)
+      setTimeout(res, MIN_LOADER_DURATION_MS),
     );
 
     const loadLazyComponents = Promise.all([
