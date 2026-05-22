@@ -5,12 +5,15 @@ import { BadgeSharePage } from "./components/BadgeSharePage";
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
 
+const MIN_LOADER_DURATION_MS = 3000;
+const LOADER_AFTER_CONTENT_READY_MS = 100;
+
 function App() {
-  const [isAppReady, setIsAppReady] = useState(false);
+  const [isContentReady, setIsContentReady] = useState(false);
+  const [isLoaderVisible, setIsLoaderVisible] = useState(true);
   const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
+
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
-  // TODO: make 2000
-  const MIN_LOADER_DURATION_MS = 3000;
 
   useEffect(() => {
     document.body.classList.toggle("native-cursor", isBadgeRoute);
@@ -18,6 +21,8 @@ function App() {
     if (isBadgeRoute) {
       document.body.style.cursor = "default";
       setIsCustomCursorEnabled(false);
+      setIsContentReady(true);
+      setIsLoaderVisible(false);
 
       return () => {
         document.body.classList.remove("native-cursor");
@@ -25,7 +30,11 @@ function App() {
       };
     }
 
+    let isCancelled = false;
+    let revealTimer: number | undefined;
+
     const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+
     const syncCursorMode = () => {
       setIsCustomCursorEnabled(mediaQuery.matches);
       document.body.style.cursor = mediaQuery.matches ? "none" : "default";
@@ -34,21 +43,42 @@ function App() {
     syncCursorMode();
     mediaQuery.addEventListener("change", syncCursorMode);
 
-    const minDelay = new Promise((res) =>
-      setTimeout(res, MIN_LOADER_DURATION_MS),
-    );
+    const minDelay = new Promise((resolve) => {
+      window.setTimeout(resolve, MIN_LOADER_DURATION_MS);
+    });
 
     const loadLazyComponents = Promise.all([
       import("./components/Desktop"),
       import("./components/CustomCursor"),
     ]);
 
-    // Ожидаем и загрузку компонентов, и минимум 2 секунды
     Promise.all([minDelay, loadLazyComponents]).then(() => {
-      setIsAppReady(true);
+      if (isCancelled) return;
+
+      // 1. Сначала монтируем основной контент под лоадером
+      setIsContentReady(true);
+
+      // 2. Даём браузеру хотя бы один кадр на первый рендер
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (isCancelled) return;
+
+          // 3. Лоадер ещё немного лежит поверх уже смонтированного контента
+          revealTimer = window.setTimeout(() => {
+            if (isCancelled) return;
+            setIsLoaderVisible(false);
+          }, LOADER_AFTER_CONTENT_READY_MS);
+        });
+      });
     });
 
     return () => {
+      isCancelled = true;
+
+      if (revealTimer) {
+        window.clearTimeout(revealTimer);
+      }
+
       mediaQuery.removeEventListener("change", syncCursorMode);
       document.body.classList.remove("native-cursor");
       document.body.style.cursor = "default";
@@ -59,19 +89,21 @@ function App() {
     return <BadgeSharePage />;
   }
 
-  if (!isAppReady) {
-    return <Loader minDurationMs={MIN_LOADER_DURATION_MS} />;
-  }
-
   return (
-    <div className="App">
-      <div className="main-wrapper">
-        <Suspense fallback={null}>
-          <LazyDesktop />
-          {isCustomCursorEnabled && <LazyCursor />}
-        </Suspense>
-      </div>
-    </div>
+    <>
+      {isContentReady && (
+        <div className="App">
+          <div className="main-wrapper">
+            <Suspense fallback={null}>
+              <LazyDesktop />
+              {isCustomCursorEnabled && <LazyCursor />}
+            </Suspense>
+          </div>
+        </div>
+      )}
+
+      {isLoaderVisible && <Loader />}
+    </>
   );
 }
 

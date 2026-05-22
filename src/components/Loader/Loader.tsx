@@ -270,19 +270,7 @@ interface LoaderProps {
   minDurationMs?: number;
 }
 
-const Loader: React.FC<LoaderProps> = ({ minDurationMs = 2000 }) => {
-  const [showLoader, setShowLoader] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoader(false);
-    }, minDurationMs);
-
-    return () => clearTimeout(timer);
-  }, [minDurationMs]);
-
-  if (!showLoader) return null;
-
+const Loader: React.FC<LoaderProps> = () => {
   return (
     <div className={s.loaderOverlay}>
       <div className={s.loaderContent}>
