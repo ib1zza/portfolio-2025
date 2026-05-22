@@ -241,7 +241,7 @@ const HelloSketch = () => {
       className={s.helloSketch}
       width="512"
       height="512"
-      viewBox="0 0 32 32"
+      viewBox="1 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       shapeRendering="crispEdges"
