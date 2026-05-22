@@ -14,9 +14,9 @@
   --window-scrollbar-size: #{ui(14px)};
   --window-line-size: #{ui(1px)};
   --line-size: var(--window-line-size);
-  --mobile-window-inset: 6px;
-  --mobile-window-top: 27px;
-  --mobile-window-bottom: 16px;
+  --mobile-window-inset: #{ui(12px)};
+  --mobile-window-top: calc(var(--topbar-height) + 12px);
+  --mobile-window-bottom: #{ui(12px)};
   --finder-icon-size: #{ui(32px)};
   --finder-label-font-size: #{ui(16px)};
   --finder-label-line-height: #{ui(12px)};
@@ -39,7 +39,10 @@
   --section-gap: #{ui(6px)};
   --app-canvas-size: #{ui(256px)};
   --app-canvas-panel-size: #{ui(258px)};
-  --app-mobile-canvas-size: min(var(--app-canvas-size), calc(100vw - #{ui(26px)}));
+  --app-mobile-canvas-size: min(
+    var(--app-canvas-size),
+    calc(100vw - #{ui(26px)})
+  );
   --app-mobile-canvas-panel-size: min(
     var(--app-canvas-panel-size),
     calc(100vw - #{ui(24px)})
