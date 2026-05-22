@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--desktop-mobile-gap-x);
   max-height: 95vh;
   height: 100%;
@@ -22,11 +22,11 @@
 
 .ibizzaLogo {
   display: block;
-  width: var(--loader-art-size);
+  width: calc(var(--loader-art-size) * 0.28125);
   height: auto;
   shape-rendering: crispEdges;
   image-rendering: pixelated;
-  transform: translateY(calc(-50% + var(--loader-art-offset)));
+  // transform: translateY(calc(-50% + var(--loader-art-offset)));
 }
 .helloSketchIcon {
   display: block;
@@ -42,7 +42,6 @@
   height: auto;
   shape-rendering: crispEdges;
   image-rendering: pixelated;
-  transform: translateY(calc(50% - var(--loader-art-offset)));
 }
 
 .helloSketchPixel {
@@ -59,6 +58,17 @@
 @media (prefers-reduced-motion: reduce) {
   .helloSketchPixel {
     animation: none;
+    opacity: 1;
+  }
+}
+
+.ibizzaLogoPixel {
+  opacity: 0;
+  animation: hello-pixel-draw 1ms linear forwards;
+}
+
+@keyframes drawIbizzaLogoPixel {
+  to {
     opacity: 1;
   }
 }

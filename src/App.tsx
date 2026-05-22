@@ -10,7 +10,7 @@ function App() {
   const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
   // TODO: make 2000
-  const MIN_LOADER_DURATION_MS = 2000;
+  const MIN_LOADER_DURATION_MS = 3000;
 
   useEffect(() => {
     document.body.classList.toggle("native-cursor", isBadgeRoute);

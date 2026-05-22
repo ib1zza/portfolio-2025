@@ -172,24 +172,66 @@ const HELLO_STROKES: Pixel[] = [
   // o — нижняя дуга и завершение росчерка
 ];
 
+const IBIZZA_LOGO_STROKES: Pixel[] = [
+  // левая верхняя штука — поднимаемся по диагонали к верху
+  [2, 2],
+  [3, 1],
+  [4, 0],
+
+  // центральная вертикаль — сверху вниз
+  [4, 1],
+  [4, 2],
+  [4, 3],
+  [4, 4],
+  [4, 5],
+  [4, 6],
+  [4, 7],
+  [4, 8],
+
+  // правая диагональ — из нижней части вправо-вверх
+  [5, 7],
+  [6, 6],
+  [7, 5],
+  [8, 4],
+
+  // горизонталь — справа налево до упора
+  [7, 4],
+  [6, 4],
+  [5, 4],
+  [4, 4],
+  [3, 4],
+  [2, 4],
+  [1, 4],
+  [0, 4],
+];
+
 const IbizzaLogo = () => (
   <svg
     className={s.ibizzaLogo}
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
+    width="144"
+    height="144"
+    viewBox="0 0 9 9"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    shapeRendering="crispEdges"
+    aria-hidden="true"
   >
-    <g transform="translate(11 11)">
-      <path
-        d="M4 0H5V4H8V4.5V5H5V7H6V6H7V5H8V4.5V4H9V4.5V5H8V6H7V7H6V8H5V9H4V5H0V4H4V2H3V3H2V2H3V1H4V0Z"
+    {IBIZZA_LOGO_STROKES.map(([x, y], index) => (
+      <rect
+        key={`${x}-${y}-${index}`}
+        className={s.ibizzaLogoPixel}
+        x={x}
+        y={y}
+        width="1"
+        height="1"
         fill="black"
+        style={{
+          animationDelay: `${index * 45}ms`,
+        }}
       />
-    </g>
+    ))}
   </svg>
 );
-
 const HelloSketch = () => {
   const pixels = useMemo(() => HELLO_STROKES, []);
 
@@ -216,7 +258,7 @@ const HelloSketch = () => {
           height="1"
           fill="black"
           style={{
-            animationDelay: `${index * 18 * 2}ms`,
+            animationDelay: `${index * 18 * 1.6}ms`,
           }}
         />
       ))}
@@ -244,8 +286,8 @@ const Loader: React.FC<LoaderProps> = ({ minDurationMs = 2000 }) => {
   return (
     <div className={s.loaderOverlay}>
       <div className={s.loaderContent}>
-        <IbizzaLogo />
-        <LoadingIcon />
+        {/* <IbizzaLogo /> */}
+        {/* <LoadingIcon /> */}
         <HelloSketch />
       </div>
     </div>
