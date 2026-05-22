@@ -16,7 +16,7 @@
   --line-size: var(--window-line-size);
   --mobile-window-inset: #{ui(12px)};
   --mobile-window-top: calc(var(--topbar-height) + 12px);
-  --mobile-window-bottom: #{ui(12px)};
+  --mobile-window-bottom: #{ui(40px)};
   --finder-icon-size: #{ui(32px)};
   --finder-label-font-size: #{ui(16px)};
   --finder-label-line-height: #{ui(12px)};
