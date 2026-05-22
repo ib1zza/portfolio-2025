@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import s from "./Loader.module.scss";
-
+// @ts-ignore
 const LoadingIcon = () => (
   <svg
     className={s.helloSketchIcon}
@@ -205,6 +205,7 @@ const IBIZZA_LOGO_STROKES: Pixel[] = [
   [0, 4],
 ];
 
+// @ts-ignore
 const IbizzaLogo = () => (
   <svg
     className={s.ibizzaLogo}
