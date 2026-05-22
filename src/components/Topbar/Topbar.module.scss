@@ -1,13 +1,14 @@
 .topbar {
+  --line-size: var(--window-line-size);
   width: 100%;
   background: $white;
-  height: 21px;
+  height: var(--topbar-height);
   border-bottom: $border;
-  @include textTitle(16px, 14px);
+  @include textTitle(ui(16px), ui(14px));
   color: $black;
   display: flex;
   align-items: stretch;
-  padding-inline: 20px;
+  padding-inline: ui(20px);
   position: relative;
   z-index: $z-topbar;
   user-select: none;
@@ -33,7 +34,7 @@
 
 .tabTitle {
   height: 100%;
-  padding-inline: 10px;
+  padding-inline: ui(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,15 +51,15 @@
   top: 100%;
   left: 0;
   background: $white;
-  border: 1px solid $black;
+  border: $border;
   z-index: $z-submenu;
-  min-width: 160px;
+  min-width: ui(160px);
 }
 
 .submenuItem {
-  padding: 4px 16px;
+  padding: ui(4px) ui(16px);
   white-space: nowrap;
-  height: 20px;
+  height: ui(20px);
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -75,8 +76,8 @@
 
 .submenuSeparator {
   @include pattern;
-  margin: 4px 0;
-  height: 1px;
+  margin: ui(4px) 0;
+  height: var(--line-size);
 }
 
 .clock {
@@ -84,6 +85,6 @@
   height: 100%;
   display: flex;
   align-items: center;
-  padding-inline: 10px;
+  padding-inline: ui(10px);
   background: $white;
 }

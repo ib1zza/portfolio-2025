@@ -5,13 +5,12 @@ $public-base: "/" !default;
   pointer-events: none;
   z-index: $z-cursor;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: top left;
   background-size: contain;
-  transform: translate(-50%, -50%);
   opacity: 1;
-  width: 32px;
-  height: 32px;
-  transform: scale(0.5) translate(-50%, -50%);
+  width: var(--cursor-size);
+  height: var(--cursor-size);
+  transform: none;
 }
 
 // Устанавливаем arrow как курсор по умолчанию
@@ -66,13 +65,4 @@ $public-base: "/" !default;
 
 .watch {
   background-image: url("#{$public-base}cursors/watch.svg");
-}
-
-@keyframes spin {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
 }

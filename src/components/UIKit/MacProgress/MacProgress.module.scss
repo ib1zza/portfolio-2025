@@ -1,7 +1,7 @@
 .progress {
   position: relative;
-  width: 161px;
-  height: 11px;
+  width: var(--mac-progress-width);
+  height: var(--mac-progress-height);
   background: $white;
   border: $border;
   overflow: hidden;

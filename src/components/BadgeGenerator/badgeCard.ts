@@ -20,10 +20,31 @@ export interface BadgeContact {
 
 export const CARD_WIDTH = 320;
 export const CARD_HEIGHT = 180;
+export const BADGE_QR_SIZE = 192;
 
 const ICON_SCALE = 2;
 const ICON_SIZE = ICON_GRID_SIZE * ICON_SCALE;
 const EXPORT_SCALE = 3;
+const NAME_BACKGROUND_MIN_WIDTH = 80;
+const NAME_BACKGROUND_MAX_WIDTH = 230;
+const NAME_BACKGROUND_CHAR_WIDTH = 10;
+const CARD_CENTER_X = CARD_WIDTH / 2;
+const CARD_LINES = [13, 16, 19] as const;
+const CARD_LINE_START_X = 14;
+const CARD_LINE_END_X = 306;
+const NAME_Y = 16;
+const ICON_FRAME = { x: 22, y: 64, padding: 4 } as const;
+const ICON_ORIGIN = { x: 24, y: 66 } as const;
+const TEXT_X = 106;
+const TEXT_UNDERLINE = { y: 104, endX: 292 } as const;
+const TEXT_Y = {
+  role: 76,
+  company: 95,
+  about: 130,
+} as const;
+const TITLE_FONT = '18px "ChiKareGo2", Arial, sans-serif';
+const BODY_FONT = '18px "FindersKeepers", Arial, sans-serif';
+const COMPANY_FONT = '16px "FindersKeepers", Arial, sans-serif';
 
 const escapeXml = (value: string) =>
   value
@@ -36,7 +57,10 @@ const trimLine = (value: string, maxLength: number) =>
   value.length > maxLength ? `${value.slice(0, maxLength - 1)}.` : value;
 
 const getNameMetrics = (name: string) => {
-  const width = Math.min(230, Math.max(80, name.length * 10));
+  const width = Math.min(
+    NAME_BACKGROUND_MAX_WIDTH,
+    Math.max(NAME_BACKGROUND_MIN_WIDTH, name.length * NAME_BACKGROUND_CHAR_WIDTH),
+  );
   const x = Math.round((CARD_WIDTH - width) / 2);
 
   return { x, width };
@@ -49,22 +73,30 @@ export const createBadgeSvg = ({
   about,
   pixels,
 }: BadgeInput) => {
-  const iconRects = iconPixelsToRects(pixels, ICON_SCALE, 24, 66);
+  const iconRects = iconPixelsToRects(
+    pixels,
+    ICON_SCALE,
+    ICON_ORIGIN.x,
+    ICON_ORIGIN.y,
+  );
   const nameMetrics = getNameMetrics(name);
+  const linePath = CARD_LINES.map(
+    (y) => `M${CARD_LINE_START_X} ${y}H${CARD_LINE_END_X}`,
+  ).join("");
 
   return `
   <svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" shape-rendering="crispEdges">
     <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="white"/>
     <rect x="0.5" y="0.5" width="${CARD_WIDTH - 1}" height="${CARD_HEIGHT - 1}" fill="none" stroke="black"/>
-    <path d="M14 13H306M14 16H306M14 19H306" stroke="black"/>
+    <path d="${linePath}" stroke="black"/>
     <rect x="${nameMetrics.x}" y="6" width="${nameMetrics.width}" height="22" fill="white"/>
-    <text x="160" y="16" dominant-baseline="middle" text-anchor="middle" font-family="ChiKareGo2, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(name, 22))}</text>
-    <rect x="22" y="64" width="${ICON_SIZE + 4}" height="${ICON_SIZE + 4}" fill="white" stroke="black"/>
+    <text x="${CARD_CENTER_X}" y="${NAME_Y}" dominant-baseline="middle" text-anchor="middle" font-family="ChiKareGo2, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(name, 22))}</text>
+    <rect x="${ICON_FRAME.x}" y="${ICON_FRAME.y}" width="${ICON_SIZE + ICON_FRAME.padding}" height="${ICON_SIZE + ICON_FRAME.padding}" fill="white" stroke="black"/>
     ${iconRects}
-    <text x="106" y="76" font-family="ChiKareGo2, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(role, 18))}</text>
-    <text x="106" y="95" font-family="FindersKeepers, Arial, sans-serif" font-size="16" fill="black">${escapeXml(trimLine(company, 34))}</text>
-    <line x1="106" y1="104" x2="292" y2="104" stroke="black"/>
-    <text x="106" y="130" font-family="FindersKeepers, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(about, 26))}</text>
+    <text x="${TEXT_X}" y="${TEXT_Y.role}" font-family="ChiKareGo2, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(role, 18))}</text>
+    <text x="${TEXT_X}" y="${TEXT_Y.company}" font-family="FindersKeepers, Arial, sans-serif" font-size="16" fill="black">${escapeXml(trimLine(company, 34))}</text>
+    <line x1="${TEXT_X}" y1="${TEXT_UNDERLINE.y}" x2="${TEXT_UNDERLINE.endX}" y2="${TEXT_UNDERLINE.y}" stroke="black"/>
+    <text x="${TEXT_X}" y="${TEXT_Y.about}" font-family="FindersKeepers, Arial, sans-serif" font-size="18" fill="black">${escapeXml(trimLine(about, 26))}</text>
   </svg>
   `;
 };
@@ -98,10 +130,10 @@ export const renderBadgeCanvas = async (input: BadgeInput) => {
   context.lineWidth = 1;
   context.strokeRect(0.5, 0.5, CARD_WIDTH - 1, CARD_HEIGHT - 1);
 
-  [13, 16, 19].forEach((y) => {
+  CARD_LINES.forEach((y) => {
     context.beginPath();
-    context.moveTo(14, y);
-    context.lineTo(306, y);
+    context.moveTo(CARD_LINE_START_X, y);
+    context.lineTo(CARD_LINE_END_X, y);
     context.stroke();
   });
 
@@ -112,21 +144,26 @@ export const renderBadgeCanvas = async (input: BadgeInput) => {
   drawText(
     context,
     trimLine(input.name, 22),
-    160,
-    16,
-    '18px "ChiKareGo2", Arial, sans-serif',
+    CARD_CENTER_X,
+    NAME_Y,
+    TITLE_FONT,
   );
 
   context.textAlign = "left";
   context.textBaseline = "alphabetic";
-  context.strokeRect(22.5, 64.5, ICON_SIZE + 3, ICON_SIZE + 3);
+  context.strokeRect(
+    ICON_FRAME.x + 0.5,
+    ICON_FRAME.y + 0.5,
+    ICON_SIZE + ICON_FRAME.padding - 1,
+    ICON_SIZE + ICON_FRAME.padding - 1,
+  );
   context.fillStyle = "#000";
   input.pixels.forEach((pixel, index) => {
     if (!pixel) return;
 
     context.fillRect(
-      24 + (index % ICON_GRID_SIZE) * ICON_SCALE,
-      66 + Math.floor(index / ICON_GRID_SIZE) * ICON_SCALE,
+      ICON_ORIGIN.x + (index % ICON_GRID_SIZE) * ICON_SCALE,
+      ICON_ORIGIN.y + Math.floor(index / ICON_GRID_SIZE) * ICON_SCALE,
       ICON_SCALE,
       ICON_SCALE,
     );
@@ -135,27 +172,27 @@ export const renderBadgeCanvas = async (input: BadgeInput) => {
   drawText(
     context,
     trimLine(input.role, 18),
-    106,
-    76,
-    '18px "ChiKareGo2", Arial, sans-serif',
+    TEXT_X,
+    TEXT_Y.role,
+    TITLE_FONT,
   );
   drawText(
     context,
     trimLine(input.company, 34),
-    106,
-    95,
-    '16px "FindersKeepers", Arial, sans-serif',
+    TEXT_X,
+    TEXT_Y.company,
+    COMPANY_FONT,
   );
   context.beginPath();
-  context.moveTo(106, 104);
-  context.lineTo(292, 104);
+  context.moveTo(TEXT_X, TEXT_UNDERLINE.y);
+  context.lineTo(TEXT_UNDERLINE.endX, TEXT_UNDERLINE.y);
   context.stroke();
   drawText(
     context,
     trimLine(input.about, 26),
-    106,
-    130,
-    '18px "FindersKeepers", Arial, sans-serif',
+    TEXT_X,
+    TEXT_Y.about,
+    BODY_FONT,
   );
 
   return canvas;

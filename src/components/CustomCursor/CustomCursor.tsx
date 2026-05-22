@@ -1,5 +1,6 @@
 // components/CustomCursor.tsx
 import React, { useEffect, useState } from "react";
+import { FINE_POINTER_QUERY } from "../../constants/responsive";
 import { useCursor } from "../../contexts/cursor";
 import s from "./CustomCursor.module.scss";
 
@@ -9,7 +10,7 @@ export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const mediaQuery = window.matchMedia(FINE_POINTER_QUERY);
     if (!mediaQuery.matches) return;
 
     const handleCursorMove = (e: MouseEvent | PointerEvent) => {
@@ -38,7 +39,7 @@ export const CustomCursor: React.FC = () => {
 
   // Скрываем стандартный курсор для всего документа
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const mediaQuery = window.matchMedia(FINE_POINTER_QUERY);
     if (!mediaQuery.matches) return;
 
     document.body.style.cursor = "none";
@@ -53,6 +54,7 @@ export const CustomCursor: React.FC = () => {
   return (
     <div
       className={`${s.cursor} ${s[cursor]}`}
+      data-custom-cursor
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,

@@ -13,12 +13,14 @@ import {
   type SavedDesktopIcon,
 } from "../IconPainter/iconPainterDesktop";
 import {
+  BADGE_QR_SIZE,
   createBadgeSvg,
   createBadgeUrl,
   renderBadgeCanvas,
   type BadgeContact,
 } from "./badgeCard";
 import s from "./BadgeGenerator.module.scss";
+import { getAppWindowSize } from "../../constants/windowLayout";
 
 const DEFAULT_COMPANY = portfolio.experience[0]?.company ?? "GROKHOTOV STUDIO";
 const DEFAULT_ABOUT = "I build UI kits, animation, and production websites.";
@@ -97,7 +99,7 @@ export const BadgeGenerator = memo(function BadgeGenerator({
       },
       errorCorrectionLevel: "M",
       margin: 1,
-      width: 192,
+      width: BADGE_QR_SIZE,
     }).then((dataUrl) => {
       if (isActive) setQrDataUrl(dataUrl);
     });
@@ -114,7 +116,7 @@ export const BadgeGenerator = memo(function BadgeGenerator({
       title: "Icon Painter",
       parentId: "iconPainter",
       sourceRect: iconPainterButtonRef.current?.getBoundingClientRect(),
-      preferredSize: { width: 580, height: 384 },
+      preferredSize: getAppWindowSize("icon-painter"),
       openerWindowId: windowId,
     });
   }, [openWindowAnimated, setActive, windowId]);

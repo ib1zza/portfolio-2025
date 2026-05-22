@@ -2,7 +2,7 @@
   // TODO: make dynamic
 
   width: max-content;
-  min-width: 48px;
+  min-width: ui(48px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -24,22 +24,26 @@
 }
 
 .folderIcon {
-  width: 32px;
-  height: 32px;
+  width: var(--finder-icon-size);
+  height: var(--finder-icon-size);
 
-  img {
+  img,
+  svg {
     display: block;
-    width: 32px;
-    height: 32px;
+    width: var(--finder-icon-size);
+    height: var(--finder-icon-size);
     image-rendering: pixelated;
   }
 }
 
 .folderName {
-  min-height: 12px;
-  @include textMain(16px, 12px);
+  min-height: var(--finder-label-line-height);
+  @include textMain(
+    var(--finder-label-font-size),
+    var(--finder-label-line-height)
+  );
   background: $white;
-  padding-inline: 3px;
+  padding-inline: ui(3px);
   user-select: none;
   white-space: nowrap;
   text-align: center;

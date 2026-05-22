@@ -1,11 +1,11 @@
 .modelViewerApp {
   display: grid;
-  grid-template-columns: 374px minmax(220px, 1fr);
-  gap: 12px;
+  grid-template-columns: ui(374px) minmax(ui(220px), 1fr);
+  gap: var(--app-gap);
   width: 100%;
-  min-width: 620px;
+  min-width: var(--model-viewer-min-width);
   min-height: 100%;
-  padding: 10px;
+  padding: var(--app-padding);
   background: $white;
   user-select: none;
 
@@ -28,40 +28,40 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--panel-padding);
   min-width: 0;
-  padding: 6px;
+  padding: var(--section-gap);
 }
 
 .viewer {
-  width: 360px;
-  height: 280px;
+  width: var(--model-viewer-width);
+  height: var(--model-viewer-height);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: min(360px, calc(100vw - 36px));
-    height: min(280px, calc(100vw - 80px));
+    width: min(var(--model-viewer-width), calc(100vw - #{ui(36px)}));
+    height: min(var(--model-viewer-height), calc(100vw - #{ui(80px)}));
   }
 }
 
 .controlsPanel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--panel-gap);
   min-width: 0;
-  padding: 8px;
+  padding: var(--panel-padding);
 }
 
 .title {
-  @include textTitle(16px, 18px);
-  padding-bottom: 6px;
+  @include textTitle(var(--control-title-font-size), ui(18px));
+  padding-bottom: var(--section-gap);
   border-bottom: $border;
 }
 
 .meta {
-  @include textMain(16px, 16px);
+  @include textMain(var(--font-main-size), ui(16px));
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: ui(2px);
   min-width: 0;
 
   span {
@@ -74,5 +74,5 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--section-gap);
 }

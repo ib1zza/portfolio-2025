@@ -2,6 +2,7 @@ import { memo } from "react";
 import type { RefObject } from "react";
 
 import type { FileSystemItem } from "../../store/useFileSystem";
+import { scaleUiValue } from "../../utils/uiScale";
 import Folder from "../Folder";
 import s from "./Window.module.scss";
 
@@ -11,9 +12,22 @@ interface WindowFolderContentProps {
   constraintRef: RefObject<HTMLDivElement | null>;
 }
 
+const DEFAULT_GRID = {
+  columns: 3,
+  startX: 16,
+  startY: 14,
+  stepX: 112,
+  stepY: 58,
+} as const;
+
 const getDefaultPosition = (index: number) => ({
-  x: 16 + (index % 3) * 112,
-  y: 14 + Math.floor(index / 3) * 58,
+  x:
+    scaleUiValue(DEFAULT_GRID.startX) +
+    (index % DEFAULT_GRID.columns) * scaleUiValue(DEFAULT_GRID.stepX),
+  y:
+    scaleUiValue(DEFAULT_GRID.startY) +
+    Math.floor(index / DEFAULT_GRID.columns) *
+      scaleUiValue(DEFAULT_GRID.stepY),
 });
 
 export const WindowFolderContent = memo(function WindowFolderContent({

@@ -12,6 +12,7 @@ import {
   type SavedDesktopIcon,
 } from "../components/IconPainter/iconPainterDesktop";
 import { createThrottledLocalStorage } from "../utils/storage";
+import { scaleUiValue } from "../utils/uiScale";
 
 export interface Position {
   x: number;
@@ -405,14 +406,41 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
 
 const STORAGE_KEY = "portfolio-2025-file-system";
 const savedIconItemId = (iconId: string) => `saved-icon-${iconId}`;
+const MOBILE_LAYOUT_BREAKPOINT = 768;
+const FALLBACK_VIEWPORT_WIDTH = 1280;
+const MIN_VIEWPORT_WIDTH = 320;
+const SAVED_ICON_START_INDEX = 10;
+const DESKTOP_GRID = {
+  startX: 72,
+  startY: 132,
+  stepX: 104,
+  stepY: 70,
+} as const;
+const MOBILE_GRID = {
+  startX: 12,
+  startY: 36,
+  stepX: 84,
+  stepY: 58,
+} as const;
+const WINDOW_GRID = {
+  columns: 3,
+  startX: 16,
+  startY: 14,
+  stepX: 112,
+  stepY: 58,
+} as const;
 
 const getDesktopGridPosition = (index: number) => {
   const viewportWidth =
-    typeof window === "undefined" ? 1280 : Math.max(320, window.innerWidth);
-  const startX = viewportWidth < 768 ? 12 : 72;
-  const startY = viewportWidth < 768 ? 36 : 132;
-  const stepX = viewportWidth < 768 ? 84 : 104;
-  const stepY = viewportWidth < 768 ? 58 : 70;
+    typeof window === "undefined"
+      ? FALLBACK_VIEWPORT_WIDTH
+      : Math.max(MIN_VIEWPORT_WIDTH, window.innerWidth);
+  const isMobileGrid = viewportWidth < MOBILE_LAYOUT_BREAKPOINT;
+  const grid = isMobileGrid ? MOBILE_GRID : DESKTOP_GRID;
+  const startX = isMobileGrid ? grid.startX : scaleUiValue(grid.startX);
+  const startY = isMobileGrid ? grid.startY : scaleUiValue(grid.startY);
+  const stepX = isMobileGrid ? grid.stepX : scaleUiValue(grid.stepX);
+  const stepY = isMobileGrid ? grid.stepY : scaleUiValue(grid.stepY);
   const columns = Math.max(1, Math.floor((viewportWidth - startX * 2) / stepX));
 
   return {
@@ -422,7 +450,7 @@ const getDesktopGridPosition = (index: number) => {
 };
 
 const getSavedIconPosition = (index: number) =>
-  getDesktopGridPosition(10 + index);
+  getDesktopGridPosition(SAVED_ICON_START_INDEX + index);
 
 const readStoredPositions = () => {
   if (typeof window === "undefined") return {};
@@ -605,8 +633,13 @@ const getCleanPosition = (parentId: string | null, index: number) =>
   parentId === "root"
     ? getDesktopGridPosition(index)
     : {
-        x: 16 + (index % 3) * 112,
-        y: 14 + Math.floor(index / 3) * 58,
+        x:
+          scaleUiValue(WINDOW_GRID.startX) +
+          (index % WINDOW_GRID.columns) * scaleUiValue(WINDOW_GRID.stepX),
+        y:
+          scaleUiValue(WINDOW_GRID.startY) +
+          Math.floor(index / WINDOW_GRID.columns) *
+            scaleUiValue(WINDOW_GRID.stepY),
       };
 
 interface FileSystemStore {
@@ -788,10 +821,14 @@ export const useFileSystem = create<FileSystemStore>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => createThrottledLocalStorage()),
-      migrate: (persistedState) => {
+      migrate: (persistedState, version) => {
         const state = persistedState as Partial<FileSystemStore> | undefined;
+
+        if (version < 2) {
+          return { itemPositions: {} } as Partial<FileSystemStore>;
+        }
 
         return {
           itemPositions: state?.itemPositions ?? {},

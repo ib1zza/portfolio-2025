@@ -8,39 +8,24 @@ import {
   type OpenWindowAnimatedParams,
 } from "./WindowOpenAnimationContext";
 import { Z_INDEX } from "../../constants/zIndex";
-import {
-  WINDOW_OPEN_ANIMATION_DURATION_MS,
-  WINDOW_OPEN_ANIMATION_START_WIDTH,
-} from "../../constants/windowAnimation";
+import { WINDOW_OPEN_ANIMATION_DURATION_MS } from "../../constants/windowAnimation";
 import {
   useWindowManager,
   type WindowInstance,
 } from "../../store/useWindowManager";
 import { useCursor } from "../../contexts/cursor";
+import {
+  getDefaultWindowPosition,
+  getDefaultWindowSize,
+  getWindowOpenStartWidth,
+  getWindowTargetBounds,
+} from "../../constants/windowLayout";
 
 interface AnimationFrame {
   key: string;
   from: WindowInstance["position"] & WindowInstance["size"];
   to: WindowInstance["position"] & WindowInstance["size"];
 }
-
-const DEFAULT_WINDOW_POSITION = { x: 200, y: 100 };
-const DEFAULT_WINDOW_SIZE = { width: 400, height: 300 };
-const MOBILE_WINDOW_INSET = 6;
-const MOBILE_WINDOW_TOP = 27;
-const MOBILE_WINDOW_BOTTOM = 16;
-
-const isMobileWindowMode = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)")
-    .matches;
-
-const getMobileWindowBounds = () => ({
-  x: MOBILE_WINDOW_INSET,
-  y: MOBILE_WINDOW_TOP,
-  width: Math.max(0, window.innerWidth - MOBILE_WINDOW_INSET * 2),
-  height: Math.max(0, window.innerHeight - MOBILE_WINDOW_TOP - MOBILE_WINDOW_BOTTOM),
-});
 
 const rectToBounds = (rect: DOMRect) => ({
   x: rect.left,
@@ -54,7 +39,7 @@ const getStartBounds = (
   targetSize: WindowInstance["size"]
 ) => {
   const aspectRatio = targetSize.width / targetSize.height;
-  const startWidth = WINDOW_OPEN_ANIMATION_START_WIDTH;
+  const startWidth = getWindowOpenStartWidth();
   const startHeight = Math.max(10, startWidth / aspectRatio);
   const centerX = sourceRect
     ? sourceRect.left + sourceRect.width / 2
@@ -87,17 +72,15 @@ export function WindowOpenAnimationProvider({
       title,
       parentId = null,
       sourceRect,
-      position = DEFAULT_WINDOW_POSITION,
+      position = getDefaultWindowPosition(),
       preferredSize,
       openerWindowId,
     }: OpenWindowAnimatedParams) => {
       const windowHistory = useWindowManager.getState().windowHistory[id];
       const targetPosition = windowHistory?.position ?? position;
       const targetSize =
-        windowHistory?.size ?? preferredSize ?? DEFAULT_WINDOW_SIZE;
-      const targetBounds = isMobileWindowMode()
-        ? getMobileWindowBounds()
-        : { ...targetPosition, ...targetSize };
+        windowHistory?.size ?? preferredSize ?? getDefaultWindowSize();
+      const targetBounds = getWindowTargetBounds(targetPosition, targetSize);
       const animationKey = `${id}-${Date.now()}`;
       const releaseCursor = startCursorOverride("watch");
 

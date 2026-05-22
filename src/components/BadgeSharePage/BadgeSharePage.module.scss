@@ -1,8 +1,8 @@
 .badgePage {
   display: grid;
-  gap: 16px;
+  gap: var(--app-gap);
   min-height: 100vh;
-  padding: 24px;
+  padding: var(--font-main-line-height);
   place-items: center;
   align-content: center;
   background: $white;
@@ -10,7 +10,7 @@
 }
 
 .badgeFrame {
-  width: min(80vw, 960px);
+  width: var(--badge-page-width);
   aspect-ratio: 16 / 9;
   image-rendering: pixelated;
 
@@ -23,7 +23,7 @@
 
 .actions {
   display: flex;
-  gap: 8px;
+  gap: var(--panel-padding);
   align-items: center;
   justify-content: center;
 }
@@ -38,28 +38,28 @@
 }
 
 .popupWindow {
-  width: min(330px, calc(100vw - 28px));
+  width: min(var(--dialog-width), calc(100vw - var(--dialog-mobile-inline-gap)));
   border: $border;
-  padding: 8px;
+  padding: var(--panel-padding);
   background: $white;
-  box-shadow: 3px 3px 0 $black;
+  box-shadow: ui(3px) ui(3px) 0 $black;
 }
 
 .dialogTitle {
-  @include textTitle(16px, 18px);
-  padding-bottom: 6px;
+  @include textTitle(var(--control-title-font-size), ui(18px));
+  padding-bottom: var(--section-gap);
   border-bottom: $border;
 }
 
 .qrFrame {
   display: grid;
   place-items: center;
-  padding: 12px 0 8px;
+  padding: var(--app-gap) 0 var(--panel-padding);
 
   img {
     display: block;
-    width: 192px;
-    height: 192px;
+    width: var(--qr-size);
+    height: var(--qr-size);
     border: $border;
     image-rendering: pixelated;
   }
@@ -68,7 +68,7 @@
 .dialogActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--panel-padding);
   align-items: center;
   justify-content: flex-end;
 }
@@ -76,11 +76,11 @@
 .contactList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px 0;
+  gap: var(--section-gap);
+  padding: var(--panel-gap) 0;
 
   a {
-    @include textMain(16px, 16px);
+    @include textMain(var(--font-main-size), ui(16px));
     color: $black;
     text-decoration: underline;
 
@@ -94,6 +94,6 @@
 }
 
 .emptyState {
-  @include textMain(16px, 15px);
+  @include textMain(var(--font-main-size), ui(15px));
   text-align: center;
 }

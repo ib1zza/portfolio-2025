@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
+import { isMobilePointerMode } from "../../constants/responsive";
 import { useCustomCursor } from "../../hooks/useCustomCursor";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
@@ -34,11 +35,6 @@ const formatClock = () =>
 const isTouchLikePointer = (event: MouseEvent | PointerEvent) =>
   "pointerType" in event &&
   (event.pointerType === "touch" || event.pointerType === "pen");
-
-const isMobileMenuMode = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 768px), (hover: none), (pointer: coarse)")
-    .matches;
 
 const SubmenuContent = ({
   item,
@@ -238,7 +234,7 @@ export function Topbar() {
       return;
     }
 
-    if (isTouchLikePointer(event) || isMobileMenuMode()) {
+    if (isTouchLikePointer(event) || isMobilePointerMode()) {
       if (!clickedOnTabTitle) setActiveMenuIndex(null);
     } else {
       setActiveMenuIndex(null);
@@ -265,7 +261,7 @@ export function Topbar() {
     if (
       event.pointerType === "touch" ||
       event.pointerType === "pen" ||
-      isMobileMenuMode()
+      isMobilePointerMode()
     ) {
       setIsMousePressed(false);
       setActiveMenuIndex((currentIndex) => currentIndex === index ? null : index);

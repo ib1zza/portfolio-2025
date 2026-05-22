@@ -1,12 +1,12 @@
 .badgeGenerator {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(340px, 1fr) 280px;
-  gap: 12px;
+  grid-template-columns: minmax(ui(340px), 1fr) ui(280px);
+  gap: var(--app-gap);
   width: 100%;
-  min-width: 640px;
+  min-width: var(--badge-generator-min-width);
   min-height: 100%;
-  padding: 10px;
+  padding: var(--app-padding);
   background: $white;
   color: $black;
   user-select: none;
@@ -28,22 +28,22 @@
 .previewPanel {
   display: grid;
   place-items: center;
-  min-height: 300px;
+  min-height: ui(300px);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     min-height: 0;
-    padding-block: 10px;
+    padding-block: var(--panel-gap);
   }
 }
 
 .badgePreview {
-  width: 320px;
-  height: 180px;
+  width: var(--badge-preview-width);
+  height: var(--badge-preview-height);
   background: $white;
   image-rendering: pixelated;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: min(320px, calc(100vw - 24px));
+    width: min(var(--badge-preview-width), calc(100vw - #{ui(24px)}));
     height: auto;
     aspect-ratio: 16 / 9;
   }
@@ -58,55 +58,55 @@
 .controlsPanel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--panel-gap);
   min-width: 0;
-  padding: 8px;
+  padding: var(--panel-padding);
 }
 
 .title {
-  @include textTitle(16px, 18px);
-  padding-bottom: 6px;
+  @include textTitle(var(--control-title-font-size), ui(18px));
+  padding-bottom: var(--section-gap);
   border-bottom: $border;
 }
 
 .field {
-  @include textTitle(16px, 18px);
+  @include textTitle(var(--control-title-font-size), ui(18px));
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns: ui(88px) minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  gap: var(--section-gap);
 }
 
 .sectionLabel {
-  @include textTitle(16px, 18px);
+  @include textTitle(var(--control-title-font-size), ui(18px));
 }
 
 .contactEditor {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding-top: 4px;
+  gap: var(--section-gap);
+  padding-top: ui(4px);
   border-top: $border;
 }
 
 .contactFields {
   display: grid;
-  grid-template-columns: minmax(64px, 0.7fr) minmax(100px, 1fr) auto;
-  gap: 6px;
+  grid-template-columns: minmax(ui(64px), 0.7fr) minmax(ui(100px), 1fr) auto;
+  gap: var(--section-gap);
   align-items: center;
 }
 
 .iconPainterHint {
-  @include textMain(16px, 15px);
-  padding-top: 4px;
+  @include textMain(var(--font-main-size), ui(15px));
+  padding-top: ui(4px);
   border-top: $border;
 }
 
 .importRow {
-  @include textMain(16px, 15px);
+  @include textMain(var(--font-main-size), ui(15px));
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--panel-padding);
 
   span {
     overflow: hidden;
@@ -116,12 +116,12 @@
 }
 
 .exportRow {
-  padding-top: 10px;
+  padding-top: var(--panel-gap);
   border-top: $border;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: var(--panel-padding);
   margin-top: auto;
 }
 
@@ -136,40 +136,40 @@
 
 .importDialog,
 .popupWindow {
-  width: 330px;
+  width: var(--dialog-width);
   border: $border;
-  padding: 8px;
+  padding: var(--panel-padding);
   background: $white;
-  box-shadow: 3px 3px 0 $black;
+  box-shadow: ui(3px) ui(3px) 0 $black;
 }
 
 .popupWindow {
-  width: min(330px, calc(100vw - 28px));
+  width: min(var(--dialog-width), calc(100vw - var(--dialog-mobile-inline-gap)));
 }
 
 .dialogTitle {
-  @include textTitle(16px, 18px);
-  padding-bottom: 6px;
+  @include textTitle(var(--control-title-font-size), ui(18px));
+  padding-bottom: var(--section-gap);
   border-bottom: $border;
 }
 
 .iconList {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  min-height: 78px;
-  padding: 10px 0;
+  gap: var(--panel-padding);
+  min-height: ui(78px);
+  padding: var(--panel-gap) 0;
 }
 
 .iconOption {
-  @include textMain(16px, 14px);
+  @include textMain(var(--font-main-size), ui(14px));
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: ui(4px);
   min-width: 0;
   border: 0;
-  padding: 4px;
+  padding: ui(4px);
   color: $black;
   background: $white;
 
@@ -179,8 +179,8 @@
   }
 
   svg {
-    width: 32px;
-    height: 32px;
+    width: var(--finder-icon-size);
+    height: var(--finder-icon-size);
     border: $border;
     background: $white;
   }
@@ -194,7 +194,7 @@
 }
 
 .emptyState {
-  @include textMain(16px, 15px);
+  @include textMain(var(--font-main-size), ui(15px));
   grid-column: 1 / -1;
   align-self: center;
   text-align: center;
@@ -204,29 +204,29 @@
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--panel-padding);
   align-items: center;
 }
 
 .qrFrame {
   display: grid;
   place-items: center;
-  padding: 12px 0 8px;
+  padding: var(--app-gap) 0 var(--panel-padding);
 
   img {
     display: block;
-    width: 192px;
-    height: 192px;
+    width: var(--qr-size);
+    height: var(--qr-size);
     border: $border;
     image-rendering: pixelated;
   }
 }
 
 .shareUrl {
-  @include textMain(16px, 14px);
+  @include textMain(var(--font-main-size), ui(14px));
   border: $border;
-  padding: 4px;
-  margin-bottom: 8px;
+  padding: ui(4px);
+  margin-bottom: var(--panel-padding);
   overflow-wrap: anywhere;
   user-select: text;
 }
@@ -234,11 +234,11 @@
 .contactList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 10px 0;
+  gap: var(--section-gap);
+  padding: var(--panel-gap) 0;
 
   a {
-    @include textMain(16px, 16px);
+    @include textMain(var(--font-main-size), ui(16px));
     color: $black;
     text-decoration: underline;
 

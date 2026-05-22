@@ -1,12 +1,12 @@
 .ditherStudio {
   position: relative;
   display: grid;
-  grid-template-columns: 256px minmax(240px, 1fr);
-  gap: 12px;
+  grid-template-columns: var(--app-canvas-size) minmax(ui(240px), 1fr);
+  gap: var(--app-gap);
   width: 100%;
-  min-width: 560px;
+  min-width: var(--dither-studio-min-width);
   min-height: 100%;
-  padding: 10px;
+  padding: var(--app-padding);
   background: $white;
   user-select: none;
 
@@ -28,12 +28,12 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 8px;
-  width: 258px;
-  padding-bottom: 8px;
+  gap: var(--panel-padding);
+  width: var(--app-canvas-panel-size);
+  padding-bottom: var(--panel-padding);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: min(258px, calc(100vw - 24px));
+    width: var(--app-mobile-canvas-panel-size);
     justify-self: center;
   }
 }
@@ -42,14 +42,14 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 256px;
-  height: 256px;
+  width: var(--app-canvas-size);
+  height: var(--app-canvas-size);
   overflow: hidden;
   border-bottom: $border;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: min(256px, calc(100vw - 26px));
-    height: min(256px, calc(100vw - 26px));
+    width: var(--app-mobile-canvas-size);
+    height: var(--app-mobile-canvas-size);
   }
 }
 
@@ -61,30 +61,30 @@
 
 .preview {
   display: block;
-  max-width: 256px;
-  max-height: 256px;
-  width: 256px;
-  height: 256px;
+  max-width: var(--app-canvas-size);
+  max-height: var(--app-canvas-size);
+  width: var(--app-canvas-size);
+  height: var(--app-canvas-size);
   background: $white;
   image-rendering: pixelated;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: min(256px, calc(100vw - 26px));
-    height: min(256px, calc(100vw - 26px));
+    width: var(--app-mobile-canvas-size);
+    height: var(--app-mobile-canvas-size);
   }
 }
 
 .controlPanel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--panel-gap);
   min-width: 0;
-  padding: 8px;
+  padding: var(--panel-padding);
 }
 
 .title {
-  @include textTitle(16px, 18px);
-  padding-bottom: 6px;
+  @include textTitle(var(--control-title-font-size), ui(18px));
+  padding-bottom: var(--section-gap);
   border-bottom: $border;
 }
 
@@ -93,11 +93,11 @@
 .exportRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--section-gap);
 }
 
 .importControls {
-  padding: 0 8px;
+  padding: 0 var(--panel-padding);
 }
 
 .fileInput {
@@ -107,20 +107,23 @@
 .selects {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--panel-padding);
   align-items: flex-start;
 }
 
 .exportRow {
   align-items: center;
-  gap: 8px;
+  gap: var(--panel-padding);
 }
 
 .sliderLabel {
-  @include textTitle(16px, 16px);
+  @include textTitle(
+    var(--control-title-font-size),
+    var(--control-title-line-height)
+  );
   display: grid;
-  grid-template-columns: auto minmax(88px, 1fr) 32px;
-  gap: 6px;
+  grid-template-columns: auto minmax(ui(88px), 1fr) ui(32px);
+  gap: var(--section-gap);
   align-items: center;
 }
 
@@ -130,15 +133,15 @@
 
   &:focus-visible {
     outline: $border;
-    outline-offset: 2px;
+    outline-offset: ui(2px);
   }
 }
 
 .meta {
-  @include textMain(16px, 16px);
+  @include textMain(var(--font-main-size), ui(16px));
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: ui(2px);
   min-width: 0;
 
   span {

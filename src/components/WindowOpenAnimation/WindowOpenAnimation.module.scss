@@ -1,8 +1,9 @@
 .openWindowProxy {
+  --line-size: var(--window-line-size);
   position: absolute;
   top: 0;
   left: 0;
-  border: 1px dotted $black;
+  border: var(--line-size) dotted $black;
   background: transparent;
   pointer-events: none;
 }

@@ -5,6 +5,86 @@
 );
 @use "mixins" as *;
 
+:root {
+  --ui-scale: 1;
+  --topbar-height: #{ui(21px)};
+  --window-titlebar-height: #{ui(17px)};
+  --window-titlebar-content-height: #{ui(11px)};
+  --window-finder-data-height: #{ui(18px)};
+  --window-scrollbar-size: #{ui(14px)};
+  --window-line-size: #{ui(1px)};
+  --line-size: var(--window-line-size);
+  --mobile-window-inset: 6px;
+  --mobile-window-top: 27px;
+  --mobile-window-bottom: 16px;
+  --finder-icon-size: #{ui(32px)};
+  --finder-label-font-size: #{ui(16px)};
+  --finder-label-line-height: #{ui(12px)};
+  --control-title-font-size: #{ui(16px)};
+  --control-title-line-height: #{ui(16px)};
+  --control-title-tight-line-height: #{ui(14px)};
+  --mac-button-height: #{ui(20px)};
+  --mac-button-min-width: #{ui(80px)};
+  --mac-default-button-height: #{ui(28px)};
+  --mac-default-button-min-width: #{ui(88px)};
+  --mac-input-height: #{ui(22px)};
+  --mac-popup-height: #{ui(19px)};
+  --mac-popup-item-height: #{ui(16px)};
+  --mac-progress-width: #{ui(161px)};
+  --mac-progress-height: #{ui(11px)};
+  --app-padding: #{ui(10px)};
+  --app-gap: #{ui(12px)};
+  --panel-padding: #{ui(8px)};
+  --panel-gap: #{ui(10px)};
+  --section-gap: #{ui(6px)};
+  --app-canvas-size: #{ui(256px)};
+  --app-canvas-panel-size: #{ui(258px)};
+  --app-mobile-canvas-size: min(var(--app-canvas-size), calc(100vw - #{ui(26px)}));
+  --app-mobile-canvas-panel-size: min(
+    var(--app-canvas-panel-size),
+    calc(100vw - #{ui(24px)})
+  );
+  --icon-painter-min-width: #{ui(560px)};
+  --dither-studio-min-width: #{ui(560px)};
+  --badge-generator-min-width: #{ui(640px)};
+  --badge-preview-width: #{ui(320px)};
+  --badge-preview-height: #{ui(180px)};
+  --badge-page-width: min(80vw, #{ui(960px)});
+  --dialog-width: #{ui(330px)};
+  --dialog-mobile-inline-gap: #{ui(28px)};
+  --qr-size: #{ui(192px)};
+  --model-viewer-min-width: #{ui(620px)};
+  --model-viewer-width: #{ui(360px)};
+  --model-viewer-height: #{ui(280px)};
+  --project-model-viewer-width: #{ui(260px)};
+  --project-model-viewer-height: #{ui(220px)};
+  --document-text-width: #{ui(520px)};
+  --document-image-width: #{ui(420px)};
+  --loader-art-size: min(#{ui(256px)}, calc(100vw - #{ui(64px)}));
+  --loader-art-offset: #{ui(50px)};
+  --cursor-size: #{ui(16px)};
+  --halftone-pixel-size: #{ui(1px)};
+  --desktop-mobile-gap-x: #{ui(18px)};
+  --desktop-mobile-gap-y: #{ui(20px)};
+  --desktop-mobile-padding-top: #{ui(36px)};
+  --desktop-mobile-padding-inline: #{ui(12px)};
+  --desktop-mobile-padding-bottom: #{ui(28px)};
+  --font-main-size: #{ui(16px)};
+  --font-main-line-height: #{ui(24px)};
+}
+
+@media (min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {
+  :root {
+    --ui-scale: 1.5;
+  }
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  :root {
+    --ui-scale: 2;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   body:not(.native-cursor) * {
     cursor: none !important;
@@ -31,7 +111,7 @@ body,
 }
 
 body {
-  @include textMain(16px, 24px);
+  @include textMain(var(--font-main-size), var(--font-main-line-height));
 }
 
 .App {

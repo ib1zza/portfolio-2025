@@ -3,11 +3,12 @@ import type { MouseEvent as ReactMouseEvent, RefObject } from "react";
 
 import type { WindowInstance } from "../../../store/useWindowManager";
 import {
-  MIN_HEIGHT,
-  MIN_WIDTH,
-  TOPBAR_HEIGHT,
   areSizesEqual,
 } from "../windowGeometry";
+import {
+  getTopbarHeight,
+  getWindowMinSize,
+} from "../../../constants/windowLayout";
 
 interface UseWindowFitToContentParams {
   contentRef: RefObject<HTMLDivElement | null>;
@@ -118,21 +119,23 @@ export const useWindowFitToContent = ({
       const contentSize = getContentSize(node);
       const chromeWidth = size.width - node.clientWidth;
       const chromeHeight = size.height - node.clientHeight;
+      const minSize = getWindowMinSize();
+      const topbarHeight = getTopbarHeight();
       const maxWidth = window.innerWidth;
-      const maxHeight = window.innerHeight - TOPBAR_HEIGHT;
+      const maxHeight = window.innerHeight - topbarHeight;
       const nextWidth = Math.min(
         maxWidth,
-        Math.max(MIN_WIDTH, contentSize.width + chromeWidth)
+        Math.max(minSize.width, contentSize.width + chromeWidth)
       );
       const nextHeight = Math.min(
         maxHeight,
-        Math.max(MIN_HEIGHT, contentSize.height + chromeHeight)
+        Math.max(minSize.height, contentSize.height + chromeHeight)
       );
       const nextPosition = {
         x: Math.min(position.x, Math.max(0, window.innerWidth - nextWidth)),
         y: Math.min(
-          Math.max(TOPBAR_HEIGHT, position.y),
-          Math.max(TOPBAR_HEIGHT, window.innerHeight - nextHeight)
+          Math.max(topbarHeight, position.y),
+          Math.max(topbarHeight, window.innerHeight - nextHeight)
         ),
       };
 
@@ -157,4 +160,3 @@ export const useWindowFitToContent = ({
     handleZoomToFit,
   };
 };
-

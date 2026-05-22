@@ -4,28 +4,28 @@
   z-index: 20;
   display: grid;
   place-items: start center;
-  padding-top: 22px;
+  padding-top: ui(22px);
   background: rgb(255 255 255 / 72%);
 }
 
 .dialog {
-  width: min(calc(100% - 28px), 400px);
+  width: min(calc(100% - #{ui(28px)}), ui(400px));
   border: $border;
   background: $white;
-  box-shadow: 3px 3px 0 $black;
+  box-shadow: ui(3px) ui(3px) 0 $black;
 }
 
 .titleBar {
-  --content-height: 11px;
-  --padding-block-pattern: 3px;
-  --padding-inline-pattern: 1px;
+  --content-height: var(--window-titlebar-content-height);
+  --padding-block-pattern: #{ui(3px)};
+  --padding-inline-pattern: #{ui(1px)};
   position: relative;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  height: 17px;
-  padding-block: 3px;
-  padding-inline: 8px;
+  height: var(--window-titlebar-height);
+  padding-block: ui(3px);
+  padding-inline: ui(8px);
   border-bottom: $border;
   background: $white;
 }
@@ -34,34 +34,34 @@
   height: var(--content-height);
   background-image: repeating-linear-gradient(
     to bottom,
-    $black 0 1px,
-    transparent 1px 2px
+    $black 0 ui(1px),
+    transparent ui(1px) ui(2px)
   );
 }
 
 .title {
-  @include textTitle(14px, var(--content-height));
+  @include textTitle(ui(14px), var(--content-height));
   height: var(--content-height);
-  padding-inline: 10px;
+  padding-inline: ui(10px);
   background: $white;
 }
 
 .content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
+  gap: ui(12px);
   align-items: center;
-  padding: 18px 14px 14px;
+  padding: ui(18px) ui(14px) ui(14px);
 }
 
 .field {
-  @include textTitle(16px, 18px);
+  @include textTitle(var(--control-title-font-size), ui(18px));
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 6px;
+  gap: ui(6px);
   align-items: center;
 }
 
 .okButton {
-  min-width: 76px;
+  min-width: ui(76px);
 }

@@ -12,8 +12,8 @@ import {
   areSizesEqual,
   getContainedPosition,
   getResizableSize,
-  RESIZE_HANDLE_SIZE,
 } from "./windowGeometry";
+import { getWindowResizeHandleSize } from "../../constants/windowLayout";
 
 interface WindowResizeLayerProps {
   id: string;
@@ -144,6 +144,7 @@ export const WindowResizeLayer = memo(function WindowResizeLayer({
   ]);
 
   const layerZIndex = isFocused ? Z_INDEX.windowFocused : zIndex;
+  const resizeHandleSize = getWindowResizeHandleSize();
 
   return (
     <>
@@ -152,10 +153,10 @@ export const WindowResizeLayer = memo(function WindowResizeLayer({
         className={s.windowResizeHitbox}
         onMouseDown={handleResizeMouseDown}
         style={{
-          left: position.x + size.width - RESIZE_HANDLE_SIZE,
-          top: position.y + size.height - RESIZE_HANDLE_SIZE,
-          width: RESIZE_HANDLE_SIZE,
-          height: RESIZE_HANDLE_SIZE,
+          left: position.x + size.width - resizeHandleSize,
+          top: position.y + size.height - resizeHandleSize,
+          width: resizeHandleSize,
+          height: resizeHandleSize,
           zIndex: layerZIndex,
         }}
       />
@@ -176,4 +177,3 @@ export const WindowResizeLayer = memo(function WindowResizeLayer({
     </>
   );
 });
-

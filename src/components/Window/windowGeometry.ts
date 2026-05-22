@@ -1,10 +1,8 @@
 import type { WindowInstance } from "../../store/useWindowManager";
-
-export const MIN_WIDTH = 300;
-export const MIN_HEIGHT = 132;
-export const TOPBAR_HEIGHT = 21;
-export const RESIZE_HANDLE_SIZE = 15;
-export const TITLEBAR_BUTTON_SAFE_AREA = 30;
+import {
+  getTopbarHeight,
+  getWindowMinSize,
+} from "../../constants/windowLayout";
 
 export const areSizesEqual = (
   a: { width: number; height: number },
@@ -22,28 +20,35 @@ const clamp = (value: number, min: number, max: number) =>
 export const getContainedPosition = (
   position: WindowInstance["position"],
   size: WindowInstance["size"]
-) => ({
-  x: clamp(position.x, 0, Math.max(0, window.innerWidth - size.width)),
-  y: clamp(
-    position.y,
-    TOPBAR_HEIGHT,
-    Math.max(TOPBAR_HEIGHT, window.innerHeight - size.height)
-  ),
-});
+) => {
+  const topbarHeight = getTopbarHeight();
+
+  return {
+    x: clamp(position.x, 0, Math.max(0, window.innerWidth - size.width)),
+    y: clamp(
+      position.y,
+      topbarHeight,
+      Math.max(topbarHeight, window.innerHeight - size.height),
+    ),
+  };
+};
 
 export const getResizableSize = (
   position: WindowInstance["position"],
   size: WindowInstance["size"]
-) => ({
-  width: clamp(
-    size.width,
-    MIN_WIDTH,
-    Math.max(MIN_WIDTH, window.innerWidth - position.x)
-  ),
-  height: clamp(
-    size.height,
-    MIN_HEIGHT,
-    Math.max(MIN_HEIGHT, window.innerHeight - position.y)
-  ),
-});
+) => {
+  const minSize = getWindowMinSize();
 
+  return {
+    width: clamp(
+      size.width,
+      minSize.width,
+      Math.max(minSize.width, window.innerWidth - position.x),
+    ),
+    height: clamp(
+      size.height,
+      minSize.height,
+      Math.max(minSize.height, window.innerHeight - position.y),
+    ),
+  };
+};

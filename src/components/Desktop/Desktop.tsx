@@ -8,6 +8,11 @@ import { useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
+import {
+  getAppWindowSize,
+  getProjectModelWindowSize,
+  type WindowAppId,
+} from "../../constants/windowLayout";
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -21,12 +26,6 @@ const isEditableTarget = (target: EventTarget | null) => {
 };
 
 type NavigationDirection = "left" | "right" | "up" | "down";
-type DesktopApp =
-  | "icon-painter"
-  | "dither-studio"
-  | "model-viewer"
-  | "badge-generator";
-
 interface SpatialItem {
   id: string;
   rect: DOMRect;
@@ -106,11 +105,6 @@ const getNextSpatialItem = (
 
   return nextItem ?? current;
 };
-
-const getPreferredAppSize = (app: DesktopApp) =>
-  app === "model-viewer" || app === "badge-generator"
-    ? { width: 660, height: 420 }
-    : { width: 580, height: 384 };
 
 function DesktopContent() {
   const removeActive = useFileSystem((state) => state.removeActive);
@@ -209,9 +203,9 @@ function DesktopContent() {
       item.content.some((block) => block.type === "projectModel");
     const preferredSize =
       item.type === "app"
-        ? getPreferredAppSize(item.app)
+        ? getAppWindowSize(item.app as WindowAppId)
         : hasProjectModel
-          ? { width: Math.min(900, window.innerWidth), height: 440 }
+          ? getProjectModelWindowSize()
           : undefined;
 
     const sourceElement = document.querySelector<HTMLElement>(

@@ -1,10 +1,13 @@
 .popup {
-  @include textTitle(16px, 14px);
+  @include textTitle(
+    var(--control-title-font-size),
+    var(--control-title-tight-line-height)
+  );
   position: relative;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  height: 19px;
+  height: var(--mac-popup-height);
   color: $black;
 }
 
@@ -14,19 +17,19 @@
 
 .popupLabel {
   flex: 0 0 auto;
-  height: 19px;
-  padding: 2px 6px 5px 0;
+  height: var(--mac-popup-height);
+  padding: ui(2px) ui(6px) ui(5px) 0;
   background: $white;
 }
 
 .popupControl {
   position: relative;
-  width: max(96px, calc(var(--popup-option-ch, 8) * 1ch + 42px));
+  width: max(ui(96px), calc(var(--popup-option-ch, 8) * 1ch + #{ui(42px)}));
 }
 
 .popupSurface {
   position: relative;
-  height: 19px;
+  height: var(--mac-popup-height);
   background: transparent;
   isolation: isolate;
 
@@ -38,18 +41,18 @@
   }
 
   &::before {
-    top: 3px;
+    top: ui(3px);
     right: 0;
     bottom: 0;
-    left: 3px;
+    left: ui(3px);
     z-index: -2;
     background: $black;
   }
 
   &::after {
     top: 0;
-    right: 1px;
-    bottom: 1px;
+    right: ui(1px);
+    bottom: ui(1px);
     left: 0;
     z-index: -1;
     background: $white;
@@ -58,13 +61,16 @@
 }
 
 .popupButton {
-  @include textTitle(16px, 14px);
+  @include textTitle(
+    var(--control-title-font-size),
+    var(--control-title-tight-line-height)
+  );
   display: block;
   width: 100%;
   min-width: inherit;
   border: 0;
   margin: 0;
-  padding: 2px 20px 5px 16px;
+  padding: ui(2px) ui(20px) ui(5px) ui(16px);
   color: $black;
   text-align: left;
   text-transform: uppercase;
@@ -73,18 +79,44 @@
 .popupCaret {
   position: absolute;
   top: 50%;
-  right: 5px;
+  right: ui(8px);
   z-index: 1;
   width: 11px;
   height: 6px;
-  transform: translateY(-50%);
+  transform: translateY(-50%) scale(var(--ui-scale));
+  transform-origin: center;
 
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     background: currentColor;
-    clip-path: polygon(0 0, 11px 0, 11px 1px, 10px 1px, 10px 2px, 9px 2px, 9px 3px, 8px 3px, 8px 4px, 7px 4px, 7px 5px, 6px 5px, 6px 6px, 5px 6px, 5px 5px, 4px 5px, 4px 4px, 3px 4px, 3px 3px, 2px 3px, 2px 2px, 1px 2px, 1px 1px, 0 1px);
+    clip-path: polygon(
+      0 0,
+      11px 0,
+      11px 1px,
+      10px 1px,
+      10px 2px,
+      9px 2px,
+      9px 3px,
+      8px 3px,
+      8px 4px,
+      7px 4px,
+      7px 5px,
+      6px 5px,
+      6px 6px,
+      5px 6px,
+      5px 5px,
+      4px 5px,
+      4px 4px,
+      3px 4px,
+      3px 3px,
+      2px 3px,
+      2px 2px,
+      1px 2px,
+      1px 1px,
+      0 1px
+    );
   }
 }
 
@@ -101,20 +133,23 @@
   z-index: 10;
   width: 100%;
   height: auto;
-  min-height: 35px;
+  min-height: ui(35px);
   box-sizing: border-box;
-  padding: 1px 1px 2px;
+  padding: ui(1px) ui(1px) ui(2px);
 }
 
 .popupItem {
-  @include textTitle(16px, 14px);
+  @include textTitle(
+    var(--control-title-font-size),
+    var(--control-title-tight-line-height)
+  );
   position: relative;
   display: flex;
   align-items: center;
-  width: calc(100% - 1px);
-  height: 16px;
+  width: calc(100% - #{ui(1px)});
+  height: var(--mac-popup-item-height);
   border: 0;
-  padding: 0 4px 2px 15px;
+  padding: 0 ui(4px) ui(2px) ui(15px);
   color: $black;
   text-align: left;
   text-transform: uppercase;
@@ -135,11 +170,13 @@
 
 .menuCheck {
   position: absolute;
-  top: 4px;
-  left: 3px;
+  top: ui(4px);
+  left: ui(3px);
   display: none;
   width: 9px;
   height: 8px;
+  transform: scale(var(--ui-scale));
+  transform-origin: top left;
 
   &::before {
     content: "";

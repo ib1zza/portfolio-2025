@@ -12,8 +12,11 @@ import s from "./Window.module.scss";
 import {
   arePositionsEqual,
   getContainedPosition,
-  TITLEBAR_BUTTON_SAFE_AREA,
 } from "./windowGeometry";
+import {
+  getWindowTitlebarButtonSafeArea,
+  getWindowTitlebarHeight,
+} from "../../constants/windowLayout";
 
 interface WindowDragLayerProps {
   id: string;
@@ -111,7 +114,9 @@ export const WindowDragLayer = memo(function WindowDragLayer({
   };
 
   const handleZIndex = isFocused ? Z_INDEX.windowFocused : zIndex;
-  const handleWidth = Math.max(0, size.width - TITLEBAR_BUTTON_SAFE_AREA * 2);
+  const titlebarButtonSafeArea = getWindowTitlebarButtonSafeArea();
+  const handleWidth = Math.max(0, size.width - titlebarButtonSafeArea * 2);
+  const handleHeight = getWindowTitlebarHeight();
 
   return (
     <>
@@ -127,10 +132,10 @@ export const WindowDragLayer = memo(function WindowDragLayer({
         dragElastic={0}
         style={{
           position: "absolute",
-          left: position.x + TITLEBAR_BUTTON_SAFE_AREA,
+          left: position.x + titlebarButtonSafeArea,
           top: position.y,
           width: handleWidth,
-          height: 17,
+          height: handleHeight,
           cursor: "grab",
           zIndex: handleZIndex,
         }}
@@ -152,4 +157,3 @@ export const WindowDragLayer = memo(function WindowDragLayer({
     </>
   );
 });
-

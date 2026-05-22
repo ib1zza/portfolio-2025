@@ -14,8 +14,8 @@
     width: 100%;
     height: 100%;
     background-image: radial-gradient(
-      circle at 1px 1px,
-      rgba(0, 0, 0, 0.1) 1px,
+      circle at var(--halftone-pixel-size) var(--halftone-pixel-size),
+      rgba(0, 0, 0, 0.1) var(--halftone-pixel-size),
       transparent 0
     );
     background-size: calc(var(--grid-size) * 1) calc(var(--grid-size) * 1);
@@ -25,15 +25,17 @@
 
   // Style for the text
   color: #000;
-  font-size: 14px;
+  font-size: ui(14px);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    gap: 20px 18px;
+    gap: var(--desktop-mobile-gap-y) var(--desktop-mobile-gap-x);
     height: 100dvh;
-    padding: 36px 12px 28px;
+    padding: var(--desktop-mobile-padding-top)
+      var(--desktop-mobile-padding-inline)
+      var(--desktop-mobile-padding-bottom);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }

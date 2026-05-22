@@ -2,6 +2,10 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { createThrottledLocalStorage } from "../utils/storage";
+import {
+  getDefaultWindowPosition,
+  getDefaultWindowSize,
+} from "../constants/windowLayout";
 import type { Position } from "./useFileSystem";
 
 export interface WindowInstance {
@@ -45,8 +49,6 @@ interface WindowManagerStore {
   unfocusAll: (id?: string) => void;
 }
 
-const getDefaultWindowSize = () => ({ width: 400, height: 300 });
-
 const arePositionsEqual = (a: Position, b: Position) =>
   a.x === b.x && a.y === b.y;
 
@@ -66,7 +68,7 @@ export const useWindowManager = create<WindowManagerStore>()(
     id,
     title,
     parentId = null,
-    position = { x: 200, y: 100 },
+    position = getDefaultWindowPosition(),
     preferredSize,
     openerWindowId
   ) => {
@@ -233,10 +235,14 @@ export const useWindowManager = create<WindowManagerStore>()(
 }),
     {
       name: "portfolio-2025-window-manager",
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => createThrottledLocalStorage()),
-      migrate: (persistedState) => {
+      migrate: (persistedState, version) => {
         const state = persistedState as Partial<WindowManagerStore> | undefined;
+
+        if (version < 2) {
+          return { windowHistory: {} } as Partial<WindowManagerStore>;
+        }
 
         return {
           windowHistory: state?.windowHistory ?? {},

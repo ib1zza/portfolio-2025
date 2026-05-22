@@ -6,6 +6,7 @@ import { PopupSelect } from "../UIKit/PopupSelect";
 import { ProjectModelViewer } from "../ProjectModelViewer";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
+import { getProjectModelWindowSize } from "../../constants/windowLayout";
 import s from "./ModelViewerApp.module.scss";
 
 type ModelPresetId = string;
@@ -53,7 +54,7 @@ export const ModelViewerApp = memo(function ModelViewerApp({
       title: selectedPreset.project.title,
       parentId: readmeId,
       sourceRect: openReadmeSourceRef.current?.getBoundingClientRect(),
-      preferredSize: { width: Math.min(900, window.innerWidth), height: 440 },
+      preferredSize: getProjectModelWindowSize(),
       openerWindowId: windowId,
     });
   }, [openWindowAnimated, selectedPreset, setActive, windowId]);

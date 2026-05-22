@@ -1,10 +1,10 @@
 .viewer {
-  width: 260px;
-  height: 220px;
+  width: var(--project-model-viewer-width);
+  height: var(--project-model-viewer-height);
   border: $border;
   background: $white;
   position: sticky;
-  top: 10px;
+  top: var(--app-padding);
   flex-shrink: 0;
   overflow: hidden;
   user-select: none;
@@ -18,11 +18,11 @@
     background-image: linear-gradient(
       to bottom,
       transparent 0,
-      transparent 1px,
-      rgba(0, 0, 0, 0.08) 1px,
-      rgba(0, 0, 0, 0.08) 2px
+      transparent ui(1px),
+      rgba(0, 0, 0, 0.08) ui(1px),
+      rgba(0, 0, 0, 0.08) ui(2px)
     );
-    background-size: 100% 3px;
+    background-size: 100% ui(3px);
     mix-blend-mode: multiply;
   }
 }
@@ -30,8 +30,8 @@
 .large {
   position: relative;
   top: auto;
-  width: 360px;
-  height: 280px;
+  width: var(--model-viewer-width);
+  height: var(--model-viewer-height);
 }
 
 .canvas {
@@ -47,11 +47,11 @@
 
 .caption {
   position: absolute;
-  left: 6px;
-  right: 6px;
-  bottom: 5px;
+  left: var(--section-gap);
+  right: var(--section-gap);
+  bottom: ui(5px);
   background: $white;
-  @include textMain(16px, 12px);
+  @include textMain(var(--font-main-size), ui(12px));
   text-align: center;
   pointer-events: none;
 }

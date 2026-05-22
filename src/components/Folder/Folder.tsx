@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import type { MouseEventHandler, PointerEventHandler, RefObject } from "react";
 
+import { isCoarsePointerMode } from "../../constants/responsive";
 import s from "./Folder.module.scss";
 import { useWindowManager } from "../../store/useWindowManager";
 import { useFileSystem } from "../../store/useFileSystem";
@@ -8,6 +9,12 @@ import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import { FinderIcon, type FinderIconType } from "./FinderIcon";
 import { FinderItem } from "./FinderItem";
 import { FinderLabel } from "./FinderLabel";
+import {
+  getAppWindowSize,
+  getProjectModelWindowSize,
+  getTopbarHeight,
+  type WindowAppId,
+} from "../../constants/windowLayout";
 
 interface FolderProps {
   id: string;
@@ -30,17 +37,6 @@ const DRAG_CLICK_THRESHOLD = 3;
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
-
-const isCoarsePointer = () =>
-  typeof window !== "undefined" &&
-  window.matchMedia("(hover: none), (pointer: coarse)").matches;
-
-const getPreferredAppSize = (
-  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator",
-) =>
-  app === "model-viewer" || app === "badge-generator"
-    ? { width: 660, height: 420 }
-    : { width: 580, height: 384 };
 
 export const Folder = memo(function Folder({
   id,
@@ -74,7 +70,7 @@ export const Folder = memo(function Folder({
   const getBounds = useCallback(() => {
     const container = constraintRef?.current;
     const folder = folderRef.current;
-    const desktopMinY = parentWindowId ? 0 : 21;
+    const desktopMinY = parentWindowId ? 0 : getTopbarHeight();
 
     if (!container || !folder) {
       return { minX: 0, minY: desktopMinY, maxX: Infinity, maxY: Infinity };
@@ -140,9 +136,9 @@ export const Folder = memo(function Folder({
       item.content.some((block) => block.type === "projectModel");
     const preferredSize =
       item?.type === "app"
-        ? getPreferredAppSize(item.app)
+        ? getAppWindowSize(item.app as WindowAppId)
         : hasProjectModel
-          ? { width: Math.min(900, window.innerWidth), height: 440 }
+          ? getProjectModelWindowSize()
           : undefined;
 
     setActive(id);
@@ -176,14 +172,14 @@ export const Folder = memo(function Folder({
     } else {
       unfocusAll();
     }
-    if (isCoarsePointer()) openItem();
+    if (isCoarsePointerMode()) openItem();
     // TODO: связать папки и окна
     // focusWindowFromFolder(id);
   };
 
   const handlePointerDown: PointerEventHandler<HTMLDivElement> = (e) => {
     if (e.button !== 0) return;
-    if (isCoarsePointer()) return;
+    if (isCoarsePointerMode()) return;
 
     const container = constraintRef?.current;
     const folder = folderRef.current;

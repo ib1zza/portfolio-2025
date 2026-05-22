@@ -5,6 +5,7 @@ import { portfolio } from "../../data/portfolio";
 import { MacButton } from "../UIKit/MacButton";
 import { createBlankIconPixels } from "../IconPainter/iconPainterDesktop";
 import {
+  BADGE_QR_SIZE,
   createBadgeSvg,
   readBadgeInputFromSearch,
   type BadgeInput,
@@ -44,7 +45,7 @@ export function BadgeSharePage() {
       },
       errorCorrectionLevel: "M",
       margin: 1,
-      width: 192,
+      width: BADGE_QR_SIZE,
     }).then((dataUrl) => {
       if (isActive) setQrDataUrl(dataUrl);
     });

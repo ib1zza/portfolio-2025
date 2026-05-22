@@ -24,10 +24,7 @@ import { WindowFolderContent } from "./WindowFolderContent";
 import { WindowResizeLayer } from "./WindowResizeLayer";
 import { WindowScrollbars } from "./WindowScrollbars";
 import { WindowTitleBar } from "./WindowTitleBar";
-import {
-  MIN_HEIGHT,
-  MIN_WIDTH,
-} from "./windowGeometry";
+import { getWindowMinSize } from "../../constants/windowLayout";
 
 interface WindowProps {
   data: WindowInstance;
@@ -62,6 +59,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
   });
 
   const isFile = currentItem?.type === "file" || currentItem?.type === "app";
+  const minSize = getWindowMinSize();
 
   const { commitWindowDimensions, handleZoomToFit } = useWindowFitToContent({
     contentRef,
@@ -154,8 +152,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
           top: position.y,
           width: windowDimensions.width || "auto",
           height: windowDimensions.height || "auto",
-          minHeight: MIN_HEIGHT,
-          minWidth: MIN_WIDTH,
+          minHeight: minSize.height,
+          minWidth: minSize.width,
         }}
         onMouseDown={handleWindowMouseDown}
         draggable={false}

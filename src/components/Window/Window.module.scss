@@ -1,5 +1,6 @@
 .window {
-  border: 1px solid $black;
+  --line-size: var(--window-line-size);
+  border: var(--line-size) solid $black;
   position: absolute;
   // TODO: make dynamic
   top: 100px;
@@ -12,24 +13,26 @@
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     position: fixed !important;
-    top: 27px !important;
-    left: 6px !important;
-    width: calc(100vw - 12px) !important;
-    height: calc(100dvh - 43px) !important;
+    top: var(--mobile-window-top) !important;
+    left: var(--mobile-window-inset) !important;
+    width: calc(100vw - (var(--mobile-window-inset) * 2)) !important;
+    height: calc(
+      100dvh - var(--mobile-window-top) - var(--mobile-window-bottom)
+    ) !important;
     min-width: 0 !important;
     min-height: 0 !important;
   }
 }
 
 .windowTop {
-  --content-height: 11px;
-  --padding-block-pattern: 3px;
-  --paddin-inline-pattern: 1px;
+  --content-height: var(--window-titlebar-content-height);
+  --padding-block-pattern: #{ui(3px)};
+  --paddin-inline-pattern: #{ui(1px)};
   width: 100%;
-  border-bottom: 1px solid $black;
-  padding-block: 3px;
-  padding-inline: 8px;
-  height: 17px;
+  border-bottom: var(--line-size) solid $black;
+  padding-block: ui(3px);
+  padding-inline: ui(8px);
+  height: var(--window-titlebar-height);
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -49,11 +52,11 @@
     background-color: var(--bg-color);
     background-image: linear-gradient(
       to bottom,
-      var(--pixel-color) 1px,
-      transparent 1px,
-      transparent 2px
+      var(--pixel-color) ui(1px),
+      transparent ui(1px),
+      transparent ui(2px)
     );
-    background-size: 100% 2px;
+    background-size: 100% ui(2px);
     background-repeat: repeat-y;
     z-index: -1;
   }
@@ -84,7 +87,7 @@
 }
 
 .buttonContainer {
-  padding-inline: 1px;
+  padding-inline: ui(1px);
   height: var(--content-height);
   background: $white;
   display: flex;
@@ -95,7 +98,7 @@
 .windowTopButton {
   height: var(--content-height);
   width: var(--content-height);
-  border: 1px solid $black;
+  border: var(--line-size) solid $black;
   position: relative;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
@@ -109,9 +112,14 @@
   }
 
   img {
+    position: absolute;
     display: none;
     inset: 0;
+    width: 100%;
+    height: 100%;
     z-index: 2;
+    image-rendering: pixelated;
+    object-fit: fill;
     user-select: none;
   }
   &:active {
@@ -128,10 +136,10 @@
     position: absolute;
     top: 0px;
     left: 0px;
-    width: 6px;
-    height: 6px;
-    border-right: 1px solid $black;
-    border-bottom: 1px solid $black;
+    width: ui(6px);
+    height: ui(6px);
+    border-right: var(--line-size) solid $black;
+    border-bottom: var(--line-size) solid $black;
   }
 
   &:active::before {
@@ -144,22 +152,22 @@
   vertical-align: middle;
   text-align: center;
 
-  @include textTitle(14px, var(--content-height));
+  @include textTitle(ui(14px), var(--content-height));
   background: $white;
-  padding-inline: 10px;
+  padding-inline: ui(10px);
 }
 
 .finderData {
-  height: 18px;
+  height: var(--window-finder-data-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-inline: 10px;
-  border-bottom: $border;
+  padding-inline: ui(10px);
+  border-bottom: var(--line-size) solid $black;
 
   & > * {
     width: 30%;
-    line-height: 18px;
+    line-height: var(--window-finder-data-height);
     white-space: nowrap;
   }
 
@@ -177,10 +185,14 @@
 }
 
 .content {
-  --controls-size: 14px;
+  --controls-size: var(--window-scrollbar-size);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) calc(1px + var(--controls-size));
-  grid-template-rows: minmax(0, 1fr) calc(1px + var(--controls-size));
+  grid-template-columns: minmax(0, 1fr) calc(
+      var(--line-size) + var(--controls-size)
+    );
+  grid-template-rows: minmax(0, 1fr) calc(
+      var(--line-size) + var(--controls-size)
+    );
   flex-grow: 1;
   min-height: 0;
   overflow: hidden;
@@ -208,8 +220,8 @@
     flex-wrap: wrap;
     align-content: flex-start;
     align-items: flex-start;
-    gap: 18px 20px;
-    padding: 14px 10px;
+    gap: var(--desktop-mobile-gap-x) var(--desktop-mobile-gap-y);
+    padding: var(--window-scrollbar-size) var(--app-padding);
     min-width: 0;
     box-sizing: border-box;
   }
@@ -218,7 +230,7 @@
 .verticalScroll {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
-  border-left: $border;
+  border-left: var(--line-size) solid $black;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -227,7 +239,7 @@
 .horizontalScroll {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
-  border-top: $border;
+  border-top: var(--line-size) solid $black;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -243,7 +255,7 @@
 }
 
 .horizontalScrollBar {
-  background-position-x: 1px;
+  background-position-x: var(--line-size);
 }
 
 .emptyScrollBar {
@@ -255,9 +267,9 @@
   top: 0;
   left: 0;
   background: $white;
-  border: $border;
-  min-width: 16px;
-  min-height: 16px;
+  border: var(--line-size) solid $black;
+  min-width: ui(16px);
+  min-height: ui(16px);
   will-change: transform;
   touch-action: none;
 }
@@ -282,6 +294,12 @@
     color: $black;
   }
 
+  svg {
+    width: ui(12px);
+    height: ui(10px);
+    display: block;
+  }
+
   &:active {
     svg {
       fill: $black;
@@ -289,9 +307,9 @@
   }
   &Up {
     // for border
-    height: calc(var(--controls-size) + 1px);
+    height: calc(var(--controls-size) + var(--line-size));
 
-    border-bottom: $border;
+    border-bottom: var(--line-size) solid $black;
     svg {
       transform: rotate(0deg);
     }
@@ -299,8 +317,8 @@
 
   &Down {
     // for border
-    height: calc(var(--controls-size) + 1px);
-    border-top: $border;
+    height: calc(var(--controls-size) + var(--line-size));
+    border-top: var(--line-size) solid $black;
 
     svg {
       transform: rotate(180deg);
@@ -308,16 +326,16 @@
   }
 
   &Right {
-    width: calc(var(--controls-size) + 1px);
-    border-left: $border;
+    width: calc(var(--controls-size) + var(--line-size));
+    border-left: var(--line-size) solid $black;
     svg {
       transform: rotate(90deg);
     }
   }
 
   &Left {
-    width: calc(var(--controls-size) + 1px);
-    border-right: $border;
+    width: calc(var(--controls-size) + var(--line-size));
+    border-right: var(--line-size) solid $black;
     svg {
       transform: rotate(270deg);
     }
@@ -327,30 +345,30 @@
 .windowResize {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
-  border-top: $border;
-  border-left: $border;
+  border-top: var(--line-size) solid $black;
+  border-left: var(--line-size) solid $black;
   position: relative;
 
   &::before {
     content: "";
     display: block;
     position: absolute;
-    width: 9px;
-    height: 9px;
-    border: $border;
-    bottom: 1px;
-    right: 1px;
+    width: ui(9px);
+    height: ui(9px);
+    border: var(--line-size) solid $black;
+    bottom: var(--line-size);
+    right: var(--line-size);
   }
 
   &::after {
     content: "";
     display: block;
     position: absolute;
-    width: 7px;
-    height: 7px;
-    border: $border;
-    top: 2px;
-    left: 2px;
+    width: ui(7px);
+    height: ui(7px);
+    border: var(--line-size) solid $black;
+    top: calc(var(--line-size) * 2);
+    left: calc(var(--line-size) * 2);
     background: $white;
   }
 }
@@ -364,13 +382,12 @@
 }
 
 .windowProxy {
-  border-width: 1px; /* Важно указать ширину border */
-  border-style: solid; /* Или любое другое, border-image заменяет его вид */
+  --line-size: var(--window-line-size);
   background-color: transparent;
   pointer-events: none;
   position: relative; /* Важно для позиционирования .dragHandle внутри него */
 
-  border: 1px dotted $black;
+  border: var(--line-size) dotted $black;
 }
 
 .dragHandle {
@@ -390,7 +407,7 @@
 }
 
 .contentText {
-  padding-inline: 8px;
+  padding-inline: var(--panel-padding);
   white-space: pre-wrap;
   user-select: text;
 }
@@ -398,38 +415,38 @@
 .document {
   width: max-content;
   min-width: 100%;
-  padding: 10px 12px 12px;
+  padding: var(--app-padding) var(--app-gap) var(--app-gap);
   user-select: text;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--window-scrollbar-size);
 
   h1,
   h2,
   p,
   ul,
   figure {
-    margin: 0 0 10px;
+    margin: 0 0 var(--panel-gap);
   }
 
   h1 {
-    @include textTitle(18px, 20px);
+    @include textTitle(ui(18px), ui(20px));
   }
 
   h2 {
-    @include textTitle(14px, 16px);
-    padding-top: 4px;
+    @include textTitle(ui(14px), ui(16px));
+    padding-top: ui(4px);
   }
 
   p,
   li,
   figcaption {
-    @include textMain(16px, 16px);
-    max-width: 520px;
+    @include textMain(var(--font-main-size), ui(16px));
+    max-width: var(--document-text-width);
   }
 
   ul {
-    padding-left: 16px;
+    padding-left: var(--font-main-size);
   }
 
   a {
@@ -440,28 +457,28 @@
   figure {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    border: $border;
-    padding: 4px;
+    gap: ui(4px);
+    border: var(--line-size) solid $black;
+    padding: ui(4px);
     background: $white;
   }
 
   img {
     display: block;
-    width: 420px;
+    width: var(--document-image-width);
     max-width: none;
     image-rendering: auto;
     filter: grayscale(1) contrast(1.2);
 
     @media (max-width: 768px), (hover: none), (pointer: coarse) {
-      width: min(420px, calc(100vw - 54px));
+      width: min(var(--document-image-width), calc(100vw - #{ui(54px)}));
       max-width: 100%;
     }
   }
 }
 
 .documentText {
-  min-width: 520px;
+  min-width: var(--document-text-width);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     min-width: 0;
@@ -469,9 +486,9 @@
 }
 
 .modelFallback {
-  width: 260px;
-  height: 220px;
-  border: $border;
+  width: var(--project-model-viewer-width);
+  height: var(--project-model-viewer-height);
+  border: var(--line-size) solid $black;
   background: $white;
   flex-shrink: 0;
 }

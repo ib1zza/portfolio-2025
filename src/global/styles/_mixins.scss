@@ -15,7 +15,11 @@
   line-height: $line-height;
 }
 
-@mixin pattern($grid-size: 1px, $pixel-color: #fff, $bg-color: #000) {
+@mixin pattern(
+  $grid-size: var(--halftone-pixel-size),
+  $pixel-color: #fff,
+  $bg-color: #000
+) {
   --grid-size: #{$grid-size};
   width: 100%;
   height: 100%;
@@ -39,7 +43,7 @@
 }
 
 @mixin pattern-mask-text(
-  $grid-size: 1px,
+  $grid-size: var(--halftone-pixel-size),
   $pixel-color: #000,
   $bg-color: transparent
 ) {
@@ -82,5 +86,6 @@
 @mixin pattern-scroll {
   background-color: transparent;
   background-image: url("data:image/svg+xml,%3Csvg width='4' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='black'/%3E%3Crect x='2' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
-  background-size: 4px 2px;
+  background-size: calc(var(--halftone-pixel-size) * 4)
+    calc(var(--halftone-pixel-size) * 2);
 }
