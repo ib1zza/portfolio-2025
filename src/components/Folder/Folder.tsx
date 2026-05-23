@@ -15,6 +15,7 @@ import {
   getTopbarHeight,
   type WindowAppId,
 } from "../../constants/windowLayout";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface FolderProps {
   id: string;
@@ -65,7 +66,8 @@ export const Folder = memo(function Folder({
   const [draftPosition, setDraftPosition] = useState(position);
   const isOpenedInactive = isOpened && !isActive;
 
-  console.log(icon, id);
+  const { fileOpen } = useHaptics();
+
   useEffect(() => {
     setDraftPosition(position);
   }, [position]);
@@ -126,6 +128,7 @@ export const Folder = memo(function Folder({
   );
 
   const openItem = useCallback(() => {
+    fileOpen();
     const item = getItemById(id);
     if (item?.type === "link") {
       setActive(id);

@@ -1,7 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
 import { BadgeSharePage } from "./components/BadgeSharePage";
-import { useHaptics } from "./hooks/useHaptics";
 import { HapticsTester } from "./components/HapticsTester/HapticsTester";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
@@ -17,7 +16,6 @@ function App() {
 
   const isTestRoute = window.location.pathname.startsWith("/test");
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
-  const { siteLoaded } = useHaptics();
 
   useEffect(() => {
     document.body.classList.toggle("native-cursor", isBadgeRoute);
@@ -71,7 +69,6 @@ function App() {
           revealTimer = window.setTimeout(() => {
             if (isCancelled) return;
             setIsLoaderVisible(false);
-            siteLoaded();
           }, LOADER_AFTER_CONTENT_READY_MS);
         });
       });

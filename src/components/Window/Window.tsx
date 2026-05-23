@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { motion } from "framer-motion";
 import { memo, useCallback, useState, useRef, useEffect } from "react";
 import type {
+  MouseEventHandler,
   DragEvent as ReactDragEvent,
   MouseEvent as ReactMouseEvent,
 } from "react";
@@ -25,6 +26,7 @@ import { WindowResizeLayer } from "./WindowResizeLayer";
 import { WindowScrollbars } from "./WindowScrollbars";
 import { WindowTitleBar } from "./WindowTitleBar";
 import { getWindowMinSize } from "../../constants/windowLayout";
+import { useHaptics } from "../../hooks/useHaptics";
 
 interface WindowProps {
   data: WindowInstance;
@@ -58,6 +60,8 @@ export const Window = memo(function Window({ data }: WindowProps) {
 
   const isFile = currentItem?.type === "file" || currentItem?.type === "app";
   const minSize = getWindowMinSize();
+
+  const { fileOpen, fileClose } = useHaptics();
 
   const { commitWindowDimensions, handleZoomToFit } = useWindowFitToContent({
     contentRef,
@@ -97,7 +101,16 @@ export const Window = memo(function Window({ data }: WindowProps) {
 
   const handleCloseWindow = useCallback(() => {
     closeWindowAnimated(id);
+    fileClose();
   }, [closeWindowAnimated, id]);
+
+  const handleFitWindow = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    (e) => {
+      fileOpen();
+      handleZoomToFit(e);
+    },
+    [fileOpen, handleZoomToFit],
+  );
 
   useEffect(() => {
     commitWindowDimensions(size);
@@ -159,7 +172,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
       >
         <WindowTitleBar
           onClose={handleCloseWindow}
-          onZoomToFit={handleZoomToFit}
+          onZoomToFit={handleFitWindow}
           title={title}
         />
 

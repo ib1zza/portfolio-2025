@@ -43,4 +43,3 @@ export const WindowTitleBar = memo(function WindowTitleBar({
     </div>
   );
 });
-
