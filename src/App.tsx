@@ -2,6 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
 import { BadgeSharePage } from "./components/BadgeSharePage";
 import { useHaptics } from "./hooks/useHaptics";
+import { HapticsTester } from "./components/HapticsTester/HapticsTester";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
@@ -14,6 +15,7 @@ function App() {
   const [isLoaderVisible, setIsLoaderVisible] = useState(true);
   const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
 
+  const isTestRoute = window.location.pathname.startsWith("/test");
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
   const { siteLoaded } = useHaptics();
 
@@ -88,6 +90,13 @@ function App() {
     };
   }, [isBadgeRoute]);
 
+  if (isTestRoute) {
+    return (
+      <div>
+        <HapticsTester />
+      </div>
+    );
+  }
   if (isBadgeRoute) {
     return <BadgeSharePage />;
   }
