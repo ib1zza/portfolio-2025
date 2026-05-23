@@ -13,6 +13,7 @@ import {
   getProjectModelWindowSize,
   type WindowAppId,
 } from "../../constants/windowLayout";
+import type { FinderIconType } from "../Folder/FinderIcon";
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -37,7 +38,7 @@ const getSpatialItems = (items: Array<{ id: string }>) =>
   items
     .map((item) => {
       const element = document.querySelector<HTMLElement>(
-        `[data-finder-item-id="${CSS.escape(item.id)}"]`
+        `[data-finder-item-id="${CSS.escape(item.id)}"]`,
       );
       const rect = element?.getBoundingClientRect();
 
@@ -53,12 +54,14 @@ const getSpatialItems = (items: Array<{ id: string }>) =>
     .filter((item): item is SpatialItem => item !== null);
 
 const getFirstSpatialItem = (items: SpatialItem[]) =>
-  [...items].sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left)[0];
+  [...items].sort(
+    (a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left,
+  )[0];
 
 const getSpatialScore = (
   current: SpatialItem,
   candidate: SpatialItem,
-  direction: NavigationDirection
+  direction: NavigationDirection,
 ) => {
   const dx = candidate.centerX - current.centerX;
   const dy = candidate.centerY - current.centerY;
@@ -79,7 +82,7 @@ const getSpatialScore = (
 const getNextSpatialItem = (
   items: SpatialItem[],
   activeItemId: string | null,
-  direction: NavigationDirection
+  direction: NavigationDirection,
 ) => {
   if (!items.length) return undefined;
 
@@ -100,7 +103,7 @@ const getNextSpatialItem = (
       (a, b) =>
         a.score - b.score ||
         a.item.rect.top - b.item.rect.top ||
-        a.item.rect.left - b.item.rect.left
+        a.item.rect.left - b.item.rect.left,
     )[0]?.item;
 
   return nextItem ?? current;
@@ -111,14 +114,14 @@ function DesktopContent() {
   const setActive = useFileSystem((state) => state.setActive);
   const activeItemId = useFileSystem((state) => state.activeItemId);
   const desktopItems = useFileSystem(
-    useShallow((state) => getChildItems(state.items, "root"))
+    useShallow((state) => getChildItems(state.items, "root")),
   );
   const windowIds = useWindowManager((state) => state.windowIds);
   const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
   const focusedWindowFileId = useWindowManager((state) =>
     state.focusedWindowId
       ? state.windows[state.focusedWindowId]?.fileId
-      : undefined
+      : undefined,
   );
   const keyboardItems = useFileSystem(
     useShallow((state) => {
@@ -132,9 +135,9 @@ function DesktopContent() {
           item.type === "folder" ||
           item.type === "file" ||
           item.type === "link" ||
-          item.type === "app"
+          item.type === "app",
       );
-    })
+    }),
   );
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
@@ -155,7 +158,7 @@ function DesktopContent() {
       const nextItem = getNextSpatialItem(
         getSpatialItems(keyboardItems),
         activeItemId,
-        direction
+        direction,
       );
 
       if (!nextItem) return;
@@ -174,7 +177,7 @@ function DesktopContent() {
       keyboardItems,
       setActive,
       unfocusAll,
-    ]
+    ],
   );
 
   const openActiveItem = useCallback(() => {
@@ -209,7 +212,7 @@ function DesktopContent() {
           : undefined;
 
     const sourceElement = document.querySelector<HTMLElement>(
-      `[data-finder-item-id="${CSS.escape(item.id)}"]`
+      `[data-finder-item-id="${CSS.escape(item.id)}"]`,
     );
 
     openWindowAnimated({
@@ -266,12 +269,7 @@ function DesktopContent() {
     document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [
-    navigateActiveItem,
-    openActiveItem,
-    removeActive,
-    unfocusAll,
-  ]);
+  }, [navigateActiveItem, openActiveItem, removeActive, unfocusAll]);
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
@@ -279,7 +277,9 @@ function DesktopContent() {
 
       {/* Папки на рабочем столе */}
       {desktopItems.map((item) =>
-        item.type === "folder" || item.type === "app" || item.type === "file" ? (
+        item.type === "folder" ||
+        item.type === "app" ||
+        item.type === "file" ? (
           <Folder
             key={item.id}
             id={item.id}
@@ -290,16 +290,16 @@ function DesktopContent() {
               item.type === "app"
                 ? item.savedIconId
                   ? "saved-icon"
-                  : "app"
+                  : (("app-" + item.id) as FinderIconType)
                 : item.type === "file"
                   ? "file"
                   : item.id === "trash"
                     ? "trash"
-                  : "folder"
+                    : "folder"
             }
             savedIconId={item.type === "app" ? item.savedIconId : undefined}
           />
-        ) : null
+        ) : null,
       )}
 
       {/* Окна */}

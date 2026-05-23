@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build --configLoader native",
     "build:github": "tsc -b && vite build --mode github --configLoader native",
     "lint": "eslint .",
-    "preview": "vite preview --configLoader native"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview --configLoader native",
+    "prepare": "husky"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.1",
@@ -34,6 +36,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
+    "husky": "^9.1.7",
     "sass-embedded": "^1.93.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",

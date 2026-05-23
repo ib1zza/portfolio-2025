@@ -10,13 +10,17 @@ import {
 export type FinderIconType =
   | "folder"
   | "file"
-  | "app"
   | "saved-icon"
   | "trash"
   | "vk"
   | "telegram"
   | "email"
-  | "github";
+  | "github"
+  | "app"
+  | "app-iconPainter"
+  | "app-modelViewer"
+  | "app-badgeGenerator"
+  | "app-ditherStudio";
 
 interface FinderIconProps {
   id: string;
@@ -35,15 +39,42 @@ export const FinderIcon = memo(function FinderIcon({
   const folderClipId = `folder-clip-${id}`;
   const openedFill = isOpenedInactive ? `url(#${patternId})` : "white";
 
-  if (type === "app") {
+  if (type === "app-iconPainter") {
     return (
       <img
-        src={getAssetPath("/icons/icon-drawer.svg")}
+        src={getAssetPath("/icons/icon-painter.svg")}
         alt=""
         draggable={false}
       />
     );
   }
+
+  if (type === "app-ditherStudio")
+    return (
+      <img
+        src={getAssetPath("/icons/dither-studio.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
+
+  if (type === "app-modelViewer")
+    return (
+      <img
+        src={getAssetPath("/icons/model-viewer.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
+
+  if (type === "app-badgeGenerator")
+    return (
+      <img
+        src={getAssetPath("/icons/badge-generator.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;
@@ -61,15 +92,29 @@ export const FinderIcon = memo(function FinderIcon({
       >
         <path d="M13 1H19V2H13V1Z" fill="white" />
         <path d="M6 3H26V4H6V3Z" fill="white" />
-        <path d="M25 5H7V8H6V10H5V12H4V23H5V25H6V28H7V31H25V28H26V25H27V23H28V12H27V10H26V8H25V5Z" fill="white" />
-        <path fillRule="evenodd" clipRule="evenodd" d="M19 0H13V1H12V2H6V3H5V5H6V8H5V10H4V12H3V23H4V25H5V28H6V31H7V32H25V31H26V28H27V25H28V23H29V12H28V10H27V8H26V5H27V3H26V2H20V1H19V0ZM26 3V4H6V3H26ZM26 8V10H27V12H28V23H27V25H26V28H25V31H7V28H6V25H5V23H4V12H5V10H6V8H7V5H25V8H26ZM19 1V2H13V1H19Z" fill="black" />
+        <path
+          d="M25 5H7V8H6V10H5V12H4V23H5V25H6V28H7V31H25V28H26V25H27V23H28V12H27V10H26V8H25V5Z"
+          fill="white"
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M19 0H13V1H12V2H6V3H5V5H6V8H5V10H4V12H3V23H4V25H5V28H6V31H7V32H25V31H26V28H27V25H28V23H29V12H28V10H27V8H26V5H27V3H26V2H20V1H19V0ZM26 3V4H6V3H26ZM26 8V10H27V12H28V23H27V25H26V28H25V31H7V28H6V25H5V23H4V12H5V10H6V8H7V5H25V8H26ZM19 1V2H13V1H19Z"
+          fill="black"
+        />
         <path d="M14 8H15V10H14V8Z" fill="black" />
         <path d="M13 12V10H14V12H13Z" fill="black" />
         <path d="M13 23H12V12H13V23Z" fill="black" />
         <path d="M14 25V23H13V25H14Z" fill="black" />
         <path d="M14 25V28H15V25H14Z" fill="black" />
-        <path d="M19 8H18V10H19V12H20V23H19V25H18V28H19V25H20V23H21V12H20V10H19V8Z" fill="black" />
-        <path d="M22 7H21V8H22V10H23V12H24V23H23V25H22V28H23V25H24V23H25V12H24V10H23V8H22V7Z" fill="black" />
+        <path
+          d="M19 8H18V10H19V12H20V23H19V25H18V28H19V25H20V23H21V12H20V10H19V8Z"
+          fill="black"
+        />
+        <path
+          d="M22 7H21V8H22V10H23V12H24V23H23V25H22V28H23V25H24V23H25V12H24V10H23V8H22V7Z"
+          fill="black"
+        />
         <path d="M11 7H12V8H11V7Z" fill="black" />
         <path d="M10 10V8H11V10H10Z" fill="black" />
         <path d="M9 12V10H10V12H9Z" fill="black" />

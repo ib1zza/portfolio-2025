@@ -1,0 +1,53 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2133_9358)">
+<path d="M2 6H29V8H31V31H4V29H2V27H1V8H2V6Z" fill="white"/>
+<path d="M27 27V28H26V27H27Z" fill="black"/>
+<path d="M27 27V26H28V27H27Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 7V5H30V7H32V32H2V30H1V29H0V26H1V27H2V29H24V24H29V6H2V8H1V9H0V7H1ZM3 30V31H31V8H30V25H29V26H28V25H25V28H26V29H25V30H3Z" fill="black"/>
+<path d="M1 10H0V13H1V12H2V11H1V10Z" fill="black"/>
+<path d="M1 14H0V17H1V16H2V15H1V14Z" fill="black"/>
+<path d="M1 18H0V21H1V20H2V19H1V18Z" fill="black"/>
+<path d="M1 22H0V25H1V24H2V23H1V22Z" fill="black"/>
+<rect x="1" y="25" width="1" height="1" fill="black"/>
+<rect x="1" y="21" width="1" height="1" fill="black"/>
+<rect x="1" y="13" width="1" height="1" fill="black"/>
+<rect x="1" y="9" width="1" height="1" fill="black"/>
+<rect x="2" y="10" width="2" height="1" fill="black"/>
+<path d="M5 8H3V9H4V10H5V8Z" fill="black"/>
+<path d="M5 12H3V13H4V14H5V12Z" fill="black"/>
+<path d="M5 16H3V17H4V18H5V16Z" fill="black"/>
+<path d="M5 20H3V21H4V22H5V20Z" fill="black"/>
+<path d="M5 24H3V25H4V26H5V24Z" fill="black"/>
+<rect x="2" y="14" width="2" height="1" fill="black"/>
+<rect x="2" y="18" width="2" height="1" fill="black"/>
+<rect x="2" y="22" width="2" height="1" fill="black"/>
+<rect x="2" y="26" width="2" height="1" fill="black"/>
+<rect x="1" y="17" width="1" height="1" fill="black"/>
+<path d="M8 12V23H16V18H17V12H8Z" fill="white"/>
+<path d="M14 21H13V20H14V21Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M17 11H8V12H7V23H8V24H16V23H17V19H18V12H17V11ZM14 21V22H16V23H8V12H17V18H15V19H16V21H14Z" fill="black"/>
+<rect x="14" y="13" width="1" height="2" fill="black"/>
+<g clip-path="url(#clip1_2133_9358)">
+<path d="M27 11H19V12H27V11Z" fill="black"/>
+</g>
+<g clip-path="url(#clip2_2133_9358)">
+<path d="M27 13H19V14H27V13Z" fill="black"/>
+<path d="M27 13H19V14H27V13Z" fill="black"/>
+</g>
+<path d="M27 15H19V16H27V15Z" fill="black"/>
+<path d="M27 17H19V18H27V17Z" fill="black"/>
+<path d="M27 19H19V20H27V19Z" fill="black"/>
+<path d="M23 21H19V22H23V21Z" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_2133_9358">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+<clipPath id="clip1_2133_9358">
+<rect width="8" height="1" fill="white" transform="translate(19 11)"/>
+</clipPath>
+<clipPath id="clip2_2133_9358">
+<rect width="8" height="1" fill="white" transform="translate(19 13)"/>
+</clipPath>
+</defs>
+</svg>

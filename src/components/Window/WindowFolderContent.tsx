@@ -5,6 +5,7 @@ import type { FileSystemItem } from "../../store/useFileSystem";
 import { scaleUiValue } from "../../utils/uiScale";
 import Folder from "../Folder";
 import s from "./Window.module.scss";
+import type { FinderIconType } from "../Folder/FinderIcon";
 
 interface WindowFolderContentProps {
   childItems: FileSystemItem[];
@@ -26,8 +27,7 @@ const getDefaultPosition = (index: number) => ({
     (index % DEFAULT_GRID.columns) * scaleUiValue(DEFAULT_GRID.stepX),
   y:
     scaleUiValue(DEFAULT_GRID.startY) +
-    Math.floor(index / DEFAULT_GRID.columns) *
-      scaleUiValue(DEFAULT_GRID.stepY),
+    Math.floor(index / DEFAULT_GRID.columns) * scaleUiValue(DEFAULT_GRID.stepY),
 });
 
 export const WindowFolderContent = memo(function WindowFolderContent({
@@ -90,7 +90,7 @@ export const WindowFolderContent = memo(function WindowFolderContent({
               position={itemPosition}
               parentWindowId={parentWindowId}
               constraintRef={constraintRef}
-              icon="app"
+              icon={("app-" + child.id) as FinderIconType}
             />
           );
         }

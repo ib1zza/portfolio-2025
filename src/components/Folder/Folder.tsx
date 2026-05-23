@@ -54,7 +54,9 @@ export const Folder = memo(function Folder({
   const setActive = useFileSystem((state) => state.setActive);
   const isActive = useFileSystem((state) => state.activeItemId === id);
   const moveItem = useFileSystem((state) => state.moveItem);
-  const deleteSavedIconItem = useFileSystem((state) => state.deleteSavedIconItem);
+  const deleteSavedIconItem = useFileSystem(
+    (state) => state.deleteSavedIconItem,
+  );
   const getItemById = useFileSystem((state) => state.getItemById);
   const folderRef = useRef<HTMLDivElement | null>(null);
   const dragStateRef = useRef<DragState | null>(null);
@@ -63,6 +65,7 @@ export const Folder = memo(function Folder({
   const [draftPosition, setDraftPosition] = useState(position);
   const isOpenedInactive = isOpened && !isActive;
 
+  console.log(icon, id);
   useEffect(() => {
     setDraftPosition(position);
   }, [position]);
