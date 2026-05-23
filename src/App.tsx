@@ -5,7 +5,7 @@ import { BadgeSharePage } from "./components/BadgeSharePage";
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
 
-const MIN_LOADER_DURATION_MS = 3000;
+const MIN_LOADER_DURATION_MS = import.meta.env.DEV ? 0 : 3000;
 const LOADER_AFTER_CONTENT_READY_MS = 100;
 
 function App() {
