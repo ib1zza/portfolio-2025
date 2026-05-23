@@ -156,7 +156,15 @@ export const Folder = memo(function Folder({
       preferredSize,
       openerWindowId: parentWindowId,
     });
-  }, [getItemById, id, name, openWindowAnimated, parentWindowId, setActive]);
+  }, [
+    getItemById,
+    id,
+    name,
+    openWindowAnimated,
+    parentWindowId,
+    setActive,
+    fileOpen,
+  ]);
 
   const handleDoubleClick = () => {
     if (didDragRef.current) return;

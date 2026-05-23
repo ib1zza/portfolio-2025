@@ -12,6 +12,7 @@ import {
 } from "./visualizers";
 import s from "./AudioPlayer.module.scss";
 
+const VISUALIZER_FRAME_MS = 45;
 const ACCEPTED_TYPES = ["audio/mpeg", "audio/ogg", "audio/wav", "audio/mp3"];
 
 const formatTime = (seconds: number) => {
@@ -60,7 +61,12 @@ export const AudioPlayer = memo(function AudioPlayer({
     audioCtxRef.current = audioCtx;
 
     const analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 256;
+
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.82;
+    analyser.minDecibels = -90;
+    analyser.maxDecibels = -10;
+
     analyserRef.current = analyser;
   }, []);
 
@@ -223,6 +229,8 @@ export const AudioPlayer = memo(function AudioPlayer({
   }, [file, connectAudioNode]);
 
   useEffect(() => {
+    if (!isInitialized || !file) return;
+
     const canvas = canvasRef.current;
     const analyser = analyserRef.current;
     if (!canvas || !analyser) return;
@@ -230,32 +238,56 @@ export const AudioPlayer = memo(function AudioPlayer({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
+    const waveformData = new Uint8Array(analyser.fftSize);
 
-    const draw = () => {
+    let lastDrawAt = 0;
+    let wasPaused = false;
+
+    const clear = () => {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    };
+
+    const draw = (time: number) => {
       animFrameRef.current = requestAnimationFrame(draw);
 
       const audio = audioRef.current;
+
       if (!audio || audio.paused) {
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (!wasPaused) {
+          clear();
+          wasPaused = true;
+        }
+
         return;
       }
 
-      if (visualizerMode === "waveform") {
-        analyser.getByteTimeDomainData(dataArray);
-        drawPixelWaveform(ctx, dataArray, canvas.width, canvas.height);
-      } else {
-        analyser.getByteFrequencyData(dataArray);
-        if (visualizerMode === "circle") {
-          drawPixelCircle(ctx, dataArray, canvas.width, canvas.height);
-        } else {
-          drawPixelBars(ctx, dataArray, canvas.width, canvas.height);
-        }
+      wasPaused = false;
+
+      if (time - lastDrawAt < VISUALIZER_FRAME_MS) {
+        return;
       }
+
+      lastDrawAt = time;
+
+      if (visualizerMode === "waveform") {
+        analyser.getByteTimeDomainData(waveformData);
+        drawPixelWaveform(ctx, waveformData, canvas.width, canvas.height);
+        return;
+      }
+
+      analyser.getByteFrequencyData(frequencyData);
+
+      if (visualizerMode === "circle") {
+        drawPixelCircle(ctx, frequencyData, canvas.width, canvas.height);
+        return;
+      }
+
+      drawPixelBars(ctx, frequencyData, canvas.width, canvas.height);
     };
 
+    clear();
     animFrameRef.current = requestAnimationFrame(draw);
 
     return () => {
@@ -264,7 +296,7 @@ export const AudioPlayer = memo(function AudioPlayer({
         animFrameRef.current = null;
       }
     };
-  }, [visualizerMode]);
+  }, [file, isInitialized, visualizerMode]);
 
   useEffect(() => {
     return () => {
