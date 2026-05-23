@@ -1,6 +1,6 @@
 .modelViewerApp {
   display: grid;
-  grid-template-columns: ui(374px) minmax(ui(220px), 1fr);
+  grid-template-columns: ui(374px) minmax(ui(258px), 1fr);
   gap: var(--app-gap);
   width: 100%;
   min-width: var(--model-viewer-min-width);

@@ -25,6 +25,7 @@
 .popupControl {
   position: relative;
   width: max(ui(96px), calc(var(--popup-option-ch, 8) * 1ch + #{ui(42px)}));
+  flex-shrink: 0;
 }
 
 .popupSurface {
@@ -42,18 +43,15 @@
 
   &::before {
     top: ui(3px);
-    right: 0;
-    bottom: 0;
+    right: ui(-1px);
+    bottom: ui(-1px);
     left: ui(3px);
     z-index: -2;
     background: $black;
   }
 
   &::after {
-    top: 0;
-    right: ui(1px);
-    bottom: ui(1px);
-    left: 0;
+    inset: 0;
     z-index: -1;
     background: $white;
     border: $border;
@@ -135,7 +133,7 @@
   height: auto;
   min-height: ui(35px);
   box-sizing: border-box;
-  padding: ui(1px) ui(1px) ui(2px);
+  padding: ui(1px);
 }
 
 .popupItem {
@@ -146,7 +144,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  width: calc(100% - #{ui(1px)});
+  width: 100%;
   height: var(--mac-popup-item-height);
   border: 0;
   padding: 0 ui(4px) ui(2px) ui(15px);
