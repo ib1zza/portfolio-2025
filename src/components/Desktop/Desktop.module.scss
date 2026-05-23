@@ -34,10 +34,13 @@
     gap: var(--desktop-mobile-gap-y) var(--desktop-mobile-gap-x);
     height: 100dvh;
     padding: var(--desktop-mobile-padding-top)
-      var(--desktop-mobile-padding-inline)
-      var(--desktop-mobile-padding-bottom);
+      var(--desktop-mobile-padding-inline) var(--desktop-mobile-padding-bottom);
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
   }
 }
 

@@ -7,7 +7,7 @@ import s from "./Window.module.scss";
 const ProjectModelViewer = lazy(() =>
   import("../ProjectModelViewer").then((module) => ({
     default: module.ProjectModelViewer,
-  }))
+  })),
 );
 
 interface WindowDocumentContentProps {

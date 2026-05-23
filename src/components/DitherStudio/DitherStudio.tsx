@@ -19,7 +19,9 @@ import {
 import s from "./DitherStudio.module.scss";
 
 export const DitherStudio = memo(function DitherStudio() {
-  const upsertSavedIconItem = useFileSystem((state) => state.upsertSavedIconItem);
+  const upsertSavedIconItem = useFileSystem(
+    (state) => state.upsertSavedIconItem,
+  );
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("No image");
   const [mode, setMode] = useState<DitherMode>("bayer");
@@ -113,29 +115,40 @@ export const DitherStudio = memo(function DitherStudio() {
     setStatus("copied png");
   }, [exportFormat]);
 
-  const saveIcon = useCallback((name: string) => {
-    if (!image) return;
+  const saveIcon = useCallback(
+    (name: string) => {
+      if (!image) return;
 
-    if (!name?.trim()) return;
+      if (!name?.trim()) return;
 
-    const iconCanvas = document.createElement("canvas");
-    drawDitheredImage(iconCanvas, image, mode, threshold, contrast, invert, 32);
+      const iconCanvas = document.createElement("canvas");
+      drawDitheredImage(
+        iconCanvas,
+        image,
+        mode,
+        threshold,
+        contrast,
+        invert,
+        32,
+      );
 
-    const context = iconCanvas.getContext("2d");
-    if (!context) return;
+      const context = iconCanvas.getContext("2d");
+      if (!context) return;
 
-    const { data } = context.getImageData(0, 0, 32, 32);
-    const pixels = Array.from({ length: 32 * 32 }, (_, index) => {
-      const dataIndex = index * 4;
+      const { data } = context.getImageData(0, 0, 32, 32);
+      const pixels = Array.from({ length: 32 * 32 }, (_, index) => {
+        const dataIndex = index * 4;
 
-      return data[dataIndex] < 128;
-    });
-    const savedIcon = saveIconToDesktop({ name, pixels });
+        return data[dataIndex] < 128;
+      });
+      const savedIcon = saveIconToDesktop({ name, pixels });
 
-    upsertSavedIconItem(savedIcon);
-    setIsSaveIconDialogOpen(false);
-    setStatus("saved 32 px icon");
-  }, [contrast, image, invert, mode, threshold, upsertSavedIconItem]);
+      upsertSavedIconItem(savedIcon);
+      setIsSaveIconDialogOpen(false);
+      setStatus("saved 32 px icon");
+    },
+    [contrast, image, invert, mode, threshold, upsertSavedIconItem],
+  );
 
   const clearImage = useCallback(() => {
     setImage(null);
@@ -227,7 +240,10 @@ export const DitherStudio = memo(function DitherStudio() {
         </label>
 
         <div className={s.actions}>
-          <MacButton isPressed={invert} onClick={() => setInvert((value) => !value)}>
+          <MacButton
+            isPressed={invert}
+            onClick={() => setInvert((value) => !value)}
+          >
             invert
           </MacButton>
         </div>
@@ -239,7 +255,11 @@ export const DitherStudio = memo(function DitherStudio() {
             options={EXPORT_FORMATS}
             onChange={setExportFormat}
           />
-          <MacButton variant="default" onClick={exportCurrent} disabled={!image}>
+          <MacButton
+            variant="default"
+            onClick={exportCurrent}
+            disabled={!image}
+          >
             export
           </MacButton>
           <MacButton onClick={copyCurrent} disabled={!image}>
@@ -257,7 +277,9 @@ export const DitherStudio = memo(function DitherStudio() {
           <span>{fileName}</span>
           <span>1-bit black / white</span>
           <span>{mode} mode</span>
-          <span>{outputSize} x {outputSize} pixels</span>
+          <span>
+            {outputSize} x {outputSize} pixels
+          </span>
           <span>{status}</span>
         </div>
       </section>

@@ -7,6 +7,7 @@
   flex-direction: column;
   align-items: center;
   touch-action: none;
+  min-width: ui(82px);
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     position: static !important;
@@ -20,6 +21,19 @@
 
   &.opened {
     filter: none;
+  }
+
+  &.trash {
+    @media (max-width: 768px), (hover: none), (pointer: coarse) {
+      grid-column: 4;
+      justify-self: center;
+
+      position: sticky !important;
+      bottom: var(--desktop-mobile-padding-bottom);
+      margin-top: auto;
+
+      z-index: 2;
+    }
   }
 }
 

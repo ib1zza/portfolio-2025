@@ -34,18 +34,16 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const { id, position, title, zIndex, fileId, size } = data;
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const updateWindowBounds = useWindowManager(
-    (state) => state.updateWindowBounds
+    (state) => state.updateWindowBounds,
   );
   const { closeWindowAnimated } = useWindowOpenAnimation();
   const isFocused = useWindowManager((state) => state.focusedWindowId === id);
   const removeActive = useFileSystem((state) => state.removeActive);
   const currentItem = useFileSystem((state) =>
-    fileId ? state.items[fileId] : undefined
+    fileId ? state.items[fileId] : undefined,
   );
   const childItems = useFileSystem(
-    useShallow((state) =>
-      fileId ? getChildItems(state.items, fileId) : []
-    )
+    useShallow((state) => (fileId ? getChildItems(state.items, fileId) : [])),
   );
 
   const windowRef = useRef<HTMLDivElement>(null);

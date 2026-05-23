@@ -9,10 +9,7 @@ import {
   type WindowInstance,
 } from "../../store/useWindowManager";
 import s from "./Window.module.scss";
-import {
-  arePositionsEqual,
-  getContainedPosition,
-} from "./windowGeometry";
+import { arePositionsEqual, getContainedPosition } from "./windowGeometry";
 import {
   getWindowTitlebarButtonSafeArea,
   getWindowTitlebarHeight,
@@ -56,7 +53,7 @@ export const WindowDragLayer = memo(function WindowDragLayer({
       setCurrentDragOffset((currentOffset) =>
         arePositionsEqual(currentOffset, dragOffsetRef.current)
           ? currentOffset
-          : dragOffsetRef.current
+          : dragOffsetRef.current,
       );
     });
   }, []);
@@ -67,7 +64,7 @@ export const WindowDragLayer = memo(function WindowDragLayer({
         window.cancelAnimationFrame(dragFrameRef.current);
       }
     },
-    []
+    [],
   );
 
   const handleDragStartProxy = () => {
@@ -84,14 +81,14 @@ export const WindowDragLayer = memo(function WindowDragLayer({
 
   const handleDragProxy = (
     _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
+    info: PanInfo,
   ) => {
     scheduleDragOffset({ x: info.offset.x, y: info.offset.y });
   };
 
   const handleDragEndProxy = (
     _event: MouseEvent | TouchEvent | PointerEvent,
-    info: PanInfo
+    info: PanInfo,
   ) => {
     if (dragFrameRef.current !== null) {
       window.cancelAnimationFrame(dragFrameRef.current);
@@ -107,8 +104,8 @@ export const WindowDragLayer = memo(function WindowDragLayer({
           x: position.x + info.offset.x,
           y: position.y + info.offset.y,
         },
-        size
-      )
+        size,
+      ),
     );
     focusOwner();
   };

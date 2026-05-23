@@ -75,25 +75,23 @@ export function Topbar() {
   const focusedFileId = useWindowManager((state) =>
     state.focusedWindowId
       ? state.windows[state.focusedWindowId]?.fileId
-      : undefined
+      : undefined,
   );
-  const hasWindows = useWindowManager(
-    (state) => state.windowIds.length > 0
-  );
+  const hasWindows = useWindowManager((state) => state.windowIds.length > 0);
   const openWindow = useWindowManager((state) => state.openWindow);
   const closeAllWindows = useWindowManager((state) => state.closeAllWindows);
   const resetWindows = useWindowManager((state) => state.resetWindows);
   const { closeWindowAnimated } = useWindowOpenAnimation();
   const setActive = useFileSystem((state) => state.setActive);
   const focusedItem = useFileSystem((state) =>
-    focusedFileId ? state.items[focusedFileId] : undefined
+    focusedFileId ? state.items[focusedFileId] : undefined,
   );
   const cleanUpChildren = useFileSystem((state) => state.cleanUpChildren);
   const resetLayout = useFileSystem((state) => state.resetLayout);
   const cleanUpTarget =
     focusedItem?.type === "folder"
       ? focusedItem.id
-      : focusedItem?.parentId ?? "root";
+      : (focusedItem?.parentId ?? "root");
 
   useEffect(() => {
     const timerId = window.setInterval(() => setClock(formatClock()), 1000);
@@ -106,7 +104,7 @@ export function Topbar() {
       openWindow(id, title, id);
       setActive(id);
     },
-    [openWindow, setActive]
+    [openWindow, setActive],
   );
 
   const closeFocusedWindowAnimated = useCallback(() => {
@@ -191,7 +189,7 @@ export function Topbar() {
       openPortfolioWindow,
       resetLayout,
       resetWindows,
-    ]
+    ],
   );
 
   const handleSubmenuItemClick = useCallback((action: () => void) => {
@@ -206,7 +204,7 @@ export function Topbar() {
 
       const target = event.target as Node;
       const hoveredTabIndex = tabRefs.current.findIndex(
-        (tab) => tab && tab.contains(target)
+        (tab) => tab && tab.contains(target),
       );
 
       if (
@@ -217,30 +215,33 @@ export function Topbar() {
         setActiveMenuIndex(hoveredTabIndex);
       }
     },
-    [isMousePressed, activeMenuIndex, tabs]
+    [isMousePressed, activeMenuIndex, tabs],
   );
 
-  const handleGlobalPointerUp = useCallback((event: MouseEvent | PointerEvent) => {
-    const target = event.target as Node;
-    const clickedOnSubmenu = submenuRef.current?.contains(target);
-    const clickedOnTabTitle = tabRefs.current.some((tab) => {
-      if (!tab) return false;
-      const tabTitle = tab.querySelector(`.${s.tabTitle}`);
-      return tabTitle && tabTitle.contains(target);
-    });
+  const handleGlobalPointerUp = useCallback(
+    (event: MouseEvent | PointerEvent) => {
+      const target = event.target as Node;
+      const clickedOnSubmenu = submenuRef.current?.contains(target);
+      const clickedOnTabTitle = tabRefs.current.some((tab) => {
+        if (!tab) return false;
+        const tabTitle = tab.querySelector(`.${s.tabTitle}`);
+        return tabTitle && tabTitle.contains(target);
+      });
 
-    if (clickedOnSubmenu) {
+      if (clickedOnSubmenu) {
+        setIsMousePressed(false);
+        return;
+      }
+
+      if (isTouchLikePointer(event) || isMobilePointerMode()) {
+        if (!clickedOnTabTitle) setActiveMenuIndex(null);
+      } else {
+        setActiveMenuIndex(null);
+      }
       setIsMousePressed(false);
-      return;
-    }
-
-    if (isTouchLikePointer(event) || isMobilePointerMode()) {
-      if (!clickedOnTabTitle) setActiveMenuIndex(null);
-    } else {
-      setActiveMenuIndex(null);
-    }
-    setIsMousePressed(false);
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     document.addEventListener("mouseover", handleMouseOver);
@@ -256,27 +257,32 @@ export function Topbar() {
     };
   }, [handleMouseOver, handleGlobalPointerUp]);
 
-  const handlePointerDownOnTab = useCallback((event: ReactPointerEvent, index: number) => {
-    event.preventDefault();
-    if (
-      event.pointerType === "touch" ||
-      event.pointerType === "pen" ||
-      isMobilePointerMode()
-    ) {
-      setIsMousePressed(false);
-      setActiveMenuIndex((currentIndex) => currentIndex === index ? null : index);
-      return;
-    }
+  const handlePointerDownOnTab = useCallback(
+    (event: ReactPointerEvent, index: number) => {
+      event.preventDefault();
+      if (
+        event.pointerType === "touch" ||
+        event.pointerType === "pen" ||
+        isMobilePointerMode()
+      ) {
+        setIsMousePressed(false);
+        setActiveMenuIndex((currentIndex) =>
+          currentIndex === index ? null : index,
+        );
+        return;
+      }
 
-    setIsMousePressed(true);
-    setActiveMenuIndex(index);
-  }, []);
+      setIsMousePressed(true);
+      setActiveMenuIndex(index);
+    },
+    [],
+  );
 
   const setTabRef = useCallback(
     (index: number) => (el: HTMLDivElement | null) => {
       tabRefs.current[index] = el;
     },
-    []
+    [],
   );
 
   const setSubmenuRef = useCallback((el: HTMLDivElement | null) => {

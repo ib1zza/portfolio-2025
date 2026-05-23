@@ -26,7 +26,7 @@ export const useWindowOpenAnimation = () => {
 
   if (!context) {
     throw new Error(
-      "useWindowOpenAnimation must be used inside WindowOpenAnimationProvider"
+      "useWindowOpenAnimation must be used inside WindowOpenAnimationProvider",
     );
   }
 

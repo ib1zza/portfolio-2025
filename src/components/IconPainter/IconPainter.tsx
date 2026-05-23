@@ -10,10 +10,7 @@ import {
   readVersionedStorage,
   writeVersionedStorage,
 } from "../../utils/storage";
-import {
-  readSavedIcon,
-  saveIconToDesktop,
-} from "./iconPainterDesktop";
+import { readSavedIcon, saveIconToDesktop } from "./iconPainterDesktop";
 import s from "./IconPainter.module.scss";
 
 type Tool = "pencil" | "eraser" | "fill";
@@ -84,7 +81,7 @@ const readStoredPixels = () => {
 
 const readInitialPixels = (savedIconId: string | undefined) =>
   savedIconId
-    ? readSavedIcon(savedIconId)?.pixels ?? createBlankPixels()
+    ? (readSavedIcon(savedIconId)?.pixels ?? createBlankPixels())
     : readStoredPixels();
 
 const getIndexFromEvent = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -318,7 +315,9 @@ export const IconPainter = memo(function IconPainter({
   savedIconId,
   savedIconName,
 }: IconPainterProps) {
-  const upsertSavedIconItem = useFileSystem((state) => state.upsertSavedIconItem);
+  const upsertSavedIconItem = useFileSystem(
+    (state) => state.upsertSavedIconItem,
+  );
   const [tool, setTool] = useState<Tool>("pencil");
   const [pixels, setPixels] = useState(() => readInitialPixels(savedIconId));
   const [undoStack, setUndoStack] = useState<boolean[][]>([]);
@@ -393,63 +392,81 @@ export const IconPainter = memo(function IconPainter({
     });
   }, []);
 
-  const pushHistory = useCallback((previousPixels: boolean[], nextPixels: boolean[]) => {
-    if (arePixelsEqual(previousPixels, nextPixels)) return;
+  const pushHistory = useCallback(
+    (previousPixels: boolean[], nextPixels: boolean[]) => {
+      if (arePixelsEqual(previousPixels, nextPixels)) return;
 
-    setUndoStack((currentStack) => [
-      ...currentStack.slice(-(MAX_HISTORY_LENGTH - 1)),
-      previousPixels,
-    ]);
-    setRedoStack([]);
-  }, []);
+      setUndoStack((currentStack) => [
+        ...currentStack.slice(-(MAX_HISTORY_LENGTH - 1)),
+        previousPixels,
+      ]);
+      setRedoStack([]);
+    },
+    [],
+  );
 
-  const updatePixels = useCallback((updater: (currentPixels: boolean[]) => boolean[]) => {
-    const nextPixels = updater(pixelsRef.current);
-    if (nextPixels === pixelsRef.current) return;
+  const updatePixels = useCallback(
+    (updater: (currentPixels: boolean[]) => boolean[]) => {
+      const nextPixels = updater(pixelsRef.current);
+      if (nextPixels === pixelsRef.current) return;
 
-    pixelsRef.current = nextPixels;
-    drawAllPixels(nextPixels);
-    syncPixelsState();
-  }, [drawAllPixels, syncPixelsState]);
+      pixelsRef.current = nextPixels;
+      drawAllPixels(nextPixels);
+      syncPixelsState();
+    },
+    [drawAllPixels, syncPixelsState],
+  );
 
-  const commitPixels = useCallback((updater: (currentPixels: boolean[]) => boolean[]) => {
-    const previousPixels = pixelsRef.current;
-    const nextPixels = updater(previousPixels);
+  const commitPixels = useCallback(
+    (updater: (currentPixels: boolean[]) => boolean[]) => {
+      const previousPixels = pixelsRef.current;
+      const nextPixels = updater(previousPixels);
 
-    if (arePixelsEqual(previousPixels, nextPixels)) return;
+      if (arePixelsEqual(previousPixels, nextPixels)) return;
 
-    pixelsRef.current = nextPixels;
-    drawAllPixels(nextPixels);
-    setPixels(nextPixels);
-    pushHistory(previousPixels, nextPixels);
-  }, [drawAllPixels, pushHistory]);
+      pixelsRef.current = nextPixels;
+      drawAllPixels(nextPixels);
+      setPixels(nextPixels);
+      pushHistory(previousPixels, nextPixels);
+    },
+    [drawAllPixels, pushHistory],
+  );
 
-  const applyTool = useCallback((index: number | null) => {
-    if (index === null || index < 0 || index >= PIXEL_COUNT) return;
+  const applyTool = useCallback(
+    (index: number | null) => {
+      if (index === null || index < 0 || index >= PIXEL_COUNT) return;
 
-    const previousIndex = lastPaintedIndexRef.current;
+      const previousIndex = lastPaintedIndexRef.current;
 
-    updatePixels((currentPixels) =>
-      previousIndex === null || tool === "fill"
-        ? paintPixel(currentPixels, index, tool)
-        : paintLine(currentPixels, previousIndex, index, tool),
-    );
-    lastPaintedIndexRef.current = index;
-  }, [tool, updatePixels]);
+      updatePixels((currentPixels) =>
+        previousIndex === null || tool === "fill"
+          ? paintPixel(currentPixels, index, tool)
+          : paintLine(currentPixels, previousIndex, index, tool),
+      );
+      lastPaintedIndexRef.current = index;
+    },
+    [tool, updatePixels],
+  );
 
-  const handlePointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.currentTarget.setPointerCapture(event.pointerId);
-    isDrawingRef.current = true;
-    lastPaintedIndexRef.current = null;
-    strokeStartPixelsRef.current = pixelsRef.current;
-    applyTool(getIndexFromEvent(event));
-  }, [applyTool]);
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.currentTarget.setPointerCapture(event.pointerId);
+      isDrawingRef.current = true;
+      lastPaintedIndexRef.current = null;
+      strokeStartPixelsRef.current = pixelsRef.current;
+      applyTool(getIndexFromEvent(event));
+    },
+    [applyTool],
+  );
 
-  const handlePointerMove = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!isDrawingRef.current || tool === "fill") return;
-    applyTool(getIndexFromEvent(event));
-  }, [applyTool, tool]);
+  const handlePointerMove = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!isDrawingRef.current || tool === "fill") return;
+      applyTool(getIndexFromEvent(event));
+    },
+    [applyTool, tool],
+  );
 
   const stopDrawing = useCallback(() => {
     if (strokeStartPixelsRef.current) {
@@ -627,7 +644,9 @@ export const IconPainter = memo(function IconPainter({
           label="Label"
           initialValue={
             pendingSaveMode === "overwrite"
-              ? readSavedIcon(savedIconId)?.name || savedIconName || "Badge Icon"
+              ? readSavedIcon(savedIconId)?.name ||
+                savedIconName ||
+                "Badge Icon"
               : savedIconName || "Badge Icon"
           }
           onCancel={() => setPendingSaveMode(null)}

@@ -6,31 +6,31 @@ import s from "./Window.module.scss";
 const IconPainter = lazy(() =>
   import("../IconPainter").then((module) => ({
     default: module.IconPainter,
-  }))
+  })),
 );
 
 const DitherStudio = lazy(() =>
   import("../DitherStudio").then((module) => ({
     default: module.DitherStudio,
-  }))
+  })),
 );
 
 const ModelViewerApp = lazy(() =>
   import("../ModelViewerApp").then((module) => ({
     default: module.ModelViewerApp,
-  }))
+  })),
 );
 
 const BadgeGenerator = lazy(() =>
   import("../BadgeGenerator").then((module) => ({
     default: module.BadgeGenerator,
-  }))
+  })),
 );
 
 const AudioPlayer = lazy(() =>
   import("../AudioPlayer").then((module) => ({
     default: module.AudioPlayer,
-  }))
+  })),
 );
 
 interface WindowAppContentProps {

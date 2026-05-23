@@ -36,7 +36,7 @@ export const FinderItem = memo(function FinderItem({
     <div
       ref={itemRef}
       data-finder-item-id={id}
-      className={clsx(s.folder, {
+      className={clsx(s.folder, s[id], {
         [s.active]: isActive,
         [s.opened]: isOpenedInactive,
       })}
@@ -54,4 +54,3 @@ export const FinderItem = memo(function FinderItem({
     </div>
   );
 });
-

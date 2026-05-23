@@ -56,7 +56,12 @@ export interface LinkItem extends BaseItem {
 
 export interface AppItem extends BaseItem {
   type: "app";
-  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator" | "audio-player";
+  app:
+    | "icon-painter"
+    | "dither-studio"
+    | "model-viewer"
+    | "badge-generator"
+    | "audio-player";
   savedIconId?: string;
 }
 
@@ -405,22 +410,61 @@ const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
 );
 
 const STORAGE_KEY = "portfolio-2025-file-system";
-const savedIconItemId = (iconId: string) => `saved-icon-${iconId}`;
+const STORAGE_VERSION = 3;
+const GENERATED_FILE_ID_PREFIX = "saved-icon-";
+const savedIconItemId = (iconId: string) =>
+  `${GENERATED_FILE_ID_PREFIX}${iconId}`;
 const MOBILE_LAYOUT_BREAKPOINT = 768;
 const FALLBACK_VIEWPORT_WIDTH = 1280;
+const FALLBACK_VIEWPORT_HEIGHT = 800;
 const MIN_VIEWPORT_WIDTH = 320;
-const SAVED_ICON_START_INDEX = 11;
+const MIN_VIEWPORT_HEIGHT = 480;
+const ROOT_FOLDER_ITEM_IDS: readonly string[] = [
+  "about",
+  "projects",
+  "education",
+  "contact",
+];
+const ROOT_APP_ITEM_IDS: readonly string[] = [
+  "iconPainter",
+  "ditherStudio",
+  "modelViewer",
+  "badgeGenerator",
+  "audioPlayer",
+];
+const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
+const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
+  ...ROOT_FOLDER_ITEM_IDS,
+  ...ROOT_APP_ITEM_IDS,
+  ...ROOT_FILE_ITEM_IDS,
+  "trash",
+]);
 const DESKTOP_GRID = {
-  startX: 72,
-  startY: 132,
+  startX: 32,
+  startY: 110,
   stepX: 104,
   stepY: 70,
+} as const;
+const DESKTOP_TRASH = {
+  right: 32,
+  bottom: 42,
+  width: 72,
+  height: 64,
 } as const;
 const MOBILE_GRID = {
   startX: 12,
   startY: 36,
-  stepX: 84,
+  itemWidth: 64,
   stepY: 58,
+  columns: 4,
+} as const;
+const MOBILE_APP_ROW_COUNTS = [3, 2] as const;
+const MOBILE_GENERATED_START_ROW = 1 + MOBILE_APP_ROW_COUNTS.length;
+const MOBILE_TRASH = {
+  right: 12,
+  bottom: 16,
+  width: 64,
+  height: 58,
 } as const;
 const WINDOW_GRID = {
   columns: 3,
@@ -430,18 +474,51 @@ const WINDOW_GRID = {
   stepY: 58,
 } as const;
 
-const getDesktopGridPosition = (index: number) => {
-  const viewportWidth =
+const getViewportMetrics = () => {
+  const width =
     typeof window === "undefined"
       ? FALLBACK_VIEWPORT_WIDTH
       : Math.max(MIN_VIEWPORT_WIDTH, window.innerWidth);
-  const isMobileGrid = viewportWidth < MOBILE_LAYOUT_BREAKPOINT;
-  const grid = isMobileGrid ? MOBILE_GRID : DESKTOP_GRID;
-  const startX = isMobileGrid ? grid.startX : scaleUiValue(grid.startX);
-  const startY = isMobileGrid ? grid.startY : scaleUiValue(grid.startY);
-  const stepX = isMobileGrid ? grid.stepX : scaleUiValue(grid.stepX);
-  const stepY = isMobileGrid ? grid.stepY : scaleUiValue(grid.stepY);
-  const columns = Math.max(1, Math.floor((viewportWidth - startX * 2) / stepX));
+  const height =
+    typeof window === "undefined"
+      ? FALLBACK_VIEWPORT_HEIGHT
+      : Math.max(MIN_VIEWPORT_HEIGHT, window.innerHeight);
+
+  return {
+    width,
+    height,
+    isMobile: width < MOBILE_LAYOUT_BREAKPOINT,
+  };
+};
+
+const isGeneratedFileItemId = (id: string) =>
+  id.startsWith(GENERATED_FILE_ID_PREFIX);
+
+const getRootChildren = (
+  generatedFileIds: string[] = [],
+  extraItemIds: string[] = [],
+) => [
+  ...ROOT_FOLDER_ITEM_IDS,
+  ...ROOT_APP_ITEM_IDS,
+  ...generatedFileIds,
+  ...ROOT_FILE_ITEM_IDS,
+  ...extraItemIds,
+  "trash",
+];
+
+const getExtraRootItemIds = (children: string[]) =>
+  children.filter(
+    (childId) =>
+      !ROOT_LAYOUT_ITEM_IDS.has(childId) && !isGeneratedFileItemId(childId),
+  );
+
+const getDesktopGridPosition = (index: number) => {
+  const { width } = getViewportMetrics();
+  const startX = scaleUiValue(DESKTOP_GRID.startX);
+  const startY = scaleUiValue(DESKTOP_GRID.startY);
+  const stepX = scaleUiValue(DESKTOP_GRID.stepX);
+  const stepY = scaleUiValue(DESKTOP_GRID.stepY);
+  const columns = Math.max(1, Math.floor((width - startX * 2) / stepX));
 
   return {
     x: startX + (index % columns) * stepX,
@@ -449,8 +526,147 @@ const getDesktopGridPosition = (index: number) => {
   };
 };
 
-const getSavedIconPosition = (index: number) =>
-  getDesktopGridPosition(SAVED_ICON_START_INDEX + index);
+const getMobileColumnX = (columnIndex: number, columnCount: number) => {
+  const { width } = getViewportMetrics();
+  const safeColumnCount = Math.max(1, columnCount);
+  const availableWidth = Math.max(
+    0,
+    width - MOBILE_GRID.startX * 2 - MOBILE_GRID.itemWidth,
+  );
+
+  if (safeColumnCount === 1) {
+    return Math.round(MOBILE_GRID.startX + availableWidth / 2);
+  }
+
+  return Math.round(
+    MOBILE_GRID.startX + (availableWidth * columnIndex) / (safeColumnCount - 1),
+  );
+};
+
+const getMobileRowPosition = (
+  rowIndex: number,
+  columnIndex: number,
+  columnCount: number = MOBILE_GRID.columns,
+) => ({
+  x: getMobileColumnX(columnIndex, columnCount),
+  y: MOBILE_GRID.startY + rowIndex * MOBILE_GRID.stepY,
+});
+
+const getFolderPosition = (index: number) =>
+  getViewportMetrics().isMobile
+    ? getMobileRowPosition(0, index, ROOT_FOLDER_ITEM_IDS.length)
+    : getDesktopGridPosition(index);
+
+const getMobileAppPosition = (index: number) => {
+  let remainingIndex = index;
+
+  for (
+    let rowIndex = 0;
+    rowIndex < MOBILE_APP_ROW_COUNTS.length;
+    rowIndex += 1
+  ) {
+    const rowCount = MOBILE_APP_ROW_COUNTS[rowIndex];
+
+    if (remainingIndex < rowCount) {
+      return getMobileRowPosition(1 + rowIndex, remainingIndex, rowCount);
+    }
+
+    remainingIndex -= rowCount;
+  }
+
+  return getMobileRowPosition(
+    1 +
+      MOBILE_APP_ROW_COUNTS.length +
+      Math.floor(remainingIndex / MOBILE_GRID.columns),
+    remainingIndex % MOBILE_GRID.columns,
+  );
+};
+
+const getAppPosition = (index: number) =>
+  getViewportMetrics().isMobile
+    ? getMobileAppPosition(index)
+    : getDesktopGridPosition(ROOT_FOLDER_ITEM_IDS.length + index);
+
+const getGeneratedFilePosition = (index: number) =>
+  getViewportMetrics().isMobile
+    ? getMobileRowPosition(
+        MOBILE_GENERATED_START_ROW + Math.floor(index / MOBILE_GRID.columns),
+        index % MOBILE_GRID.columns,
+      )
+    : getDesktopGridPosition(
+        ROOT_FOLDER_ITEM_IDS.length + ROOT_APP_ITEM_IDS.length + index,
+      );
+
+const getSavedIconPosition = (index: number) => getGeneratedFilePosition(index);
+
+const getCreditsPosition = (generatedFileCount: number) =>
+  getGeneratedFilePosition(generatedFileCount);
+
+const getTrashPosition = () => {
+  const { width, height, isMobile } = getViewportMetrics();
+  const trash = isMobile ? MOBILE_TRASH : DESKTOP_TRASH;
+  const iconWidth = isMobile ? trash.width : scaleUiValue(trash.width);
+  const iconHeight = isMobile ? trash.height : scaleUiValue(trash.height);
+  const right = isMobile ? trash.right : scaleUiValue(trash.right);
+  const bottom = isMobile ? trash.bottom : scaleUiValue(trash.bottom);
+
+  return {
+    x: Math.max(0, Math.round(width - right - iconWidth)),
+    y: Math.max(0, Math.round(height - bottom - iconHeight)),
+  };
+};
+
+const getCleanRootPosition = (
+  item: FileSystemItem,
+  siblings: FileSystemItem[],
+) => {
+  if (item.id === "trash") return getTrashPosition();
+
+  const folderIndex = ROOT_FOLDER_ITEM_IDS.indexOf(item.id);
+  if (folderIndex >= 0) return getFolderPosition(folderIndex);
+
+  const appIndex = ROOT_APP_ITEM_IDS.indexOf(item.id);
+  if (appIndex >= 0) return getAppPosition(appIndex);
+
+  const generatedFiles = siblings.filter((sibling) =>
+    isGeneratedFileItemId(sibling.id),
+  );
+
+  if (isGeneratedFileItemId(item.id)) {
+    return getSavedIconPosition(
+      Math.max(
+        0,
+        generatedFiles.findIndex(
+          (generatedFile) => generatedFile.id === item.id,
+        ),
+      ),
+    );
+  }
+
+  if (item.id === "credits") {
+    return getCreditsPosition(generatedFiles.length);
+  }
+
+  return getGeneratedFilePosition(
+    generatedFiles.length + ROOT_FILE_ITEM_IDS.length,
+  );
+};
+
+const isAutoLayoutRootItemId = (id: string) =>
+  ROOT_LAYOUT_ITEM_IDS.has(id) || isGeneratedFileItemId(id);
+
+const sanitizeStoredPositions = (
+  itemPositions: Record<string, Position> = {},
+  version = STORAGE_VERSION,
+) => {
+  const shouldDropAllPositions = version < 2;
+
+  if (shouldDropAllPositions) return {};
+
+  return Object.fromEntries(
+    Object.entries(itemPositions).filter(([id]) => !isAutoLayoutRootItemId(id)),
+  );
+};
 
 const readStoredPositions = () => {
   if (typeof window === "undefined") return {};
@@ -459,7 +675,10 @@ const readStoredPositions = () => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return {};
 
-    return JSON.parse(stored).state?.itemPositions ?? {};
+    const parsed = JSON.parse(stored);
+    const version = typeof parsed.version === "number" ? parsed.version : 0;
+
+    return sanitizeStoredPositions(parsed.state?.itemPositions ?? {}, version);
   } catch {
     return {};
   }
@@ -492,27 +711,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Desktop",
       type: "folder",
       parentId: null,
-      children: [
-        "about",
-        "projects",
-        "education",
-        "contact",
-        "iconPainter",
-        "ditherStudio",
-        "modelViewer",
-        "badgeGenerator",
-        "audioPlayer",
-        "credits",
-        ...savedIconIds,
-        "trash",
-      ],
+      children: getRootChildren(savedIconIds),
     },
     projects: {
       id: "projects",
       name: "Projects",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(1),
+      position: getFolderPosition(1),
       children: portfolio.projectSections.map(
         (section) => `project-section-${section.id}`,
       ),
@@ -522,7 +728,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "About Me",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(0),
+      position: getFolderPosition(0),
       children: ["aboutReadme"],
     },
     aboutReadme: {
@@ -537,7 +743,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Education",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(2),
+      position: getFolderPosition(2),
       children: ["educationReadme"],
     },
     educationReadme: {
@@ -552,7 +758,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Contact",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(3),
+      position: getFolderPosition(3),
       children: [
         "contact-telegram",
         "contact-vk",
@@ -573,7 +779,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Icon Painter",
       type: "app",
       parentId: "root",
-      position: getDesktopGridPosition(4),
+      position: getAppPosition(0),
       app: "icon-painter",
     },
     ditherStudio: {
@@ -581,7 +787,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Dither Studio",
       type: "app",
       parentId: "root",
-      position: getDesktopGridPosition(5),
+      position: getAppPosition(1),
       app: "dither-studio",
     },
     modelViewer: {
@@ -589,7 +795,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Model Viewer",
       type: "app",
       parentId: "root",
-      position: getDesktopGridPosition(6),
+      position: getAppPosition(2),
       app: "model-viewer",
     },
     badgeGenerator: {
@@ -597,7 +803,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Badge Generator",
       type: "app",
       parentId: "root",
-      position: getDesktopGridPosition(7),
+      position: getAppPosition(3),
       app: "badge-generator",
     },
     audioPlayer: {
@@ -605,7 +811,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Audio Player",
       type: "app",
       parentId: "root",
-      position: getDesktopGridPosition(8),
+      position: getAppPosition(4),
       app: "audio-player",
     },
     credits: {
@@ -613,7 +819,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Credits",
       type: "file",
       parentId: "root",
-      position: getDesktopGridPosition(9),
+      position: getCreditsPosition(savedIconIds.length),
       content: creditsContent,
     },
     trash: {
@@ -621,7 +827,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Trash",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(10),
+      position: getTrashPosition(),
       children: [],
     },
     ...savedIconItems,
@@ -633,14 +839,25 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
   return Object.fromEntries(
     Object.entries(items).map(([id, item]) => [
       id,
-      { ...item, position: itemPositions[id] ?? item.position },
+      {
+        ...item,
+        position:
+          item.parentId === "root" && isAutoLayoutRootItemId(id)
+            ? item.position
+            : (itemPositions[id] ?? item.position),
+      },
     ]),
   ) as Record<string, FileSystemItem>;
 };
 
-const getCleanPosition = (parentId: string | null, index: number) =>
+const getCleanPosition = (
+  parentId: string | null,
+  item: FileSystemItem,
+  index: number,
+  siblings: FileSystemItem[],
+) =>
   parentId === "root"
-    ? getDesktopGridPosition(index)
+    ? getCleanRootPosition(item, siblings)
     : {
         x:
           scaleUiValue(WINDOW_GRID.startX) +
@@ -667,6 +884,9 @@ interface FileSystemStore {
 }
 
 const storedPositions = readStoredPositions();
+
+const shouldPersistItemPosition = (item: FileSystemItem) =>
+  item.parentId !== "root" || !isAutoLayoutRootItemId(item.id);
 
 export const useFileSystem = create<FileSystemStore>()(
   persist(
@@ -700,6 +920,10 @@ export const useFileSystem = create<FileSystemStore>()(
             return state;
           }
 
+          const shouldPersistPosition = shouldPersistItemPosition(item);
+          const { [id]: _removedPosition, ...positionsWithoutItem } =
+            state.itemPositions;
+
           return {
             items: {
               ...state.items,
@@ -708,10 +932,12 @@ export const useFileSystem = create<FileSystemStore>()(
                 position,
               },
             },
-            itemPositions: {
-              ...state.itemPositions,
-              [id]: position,
-            },
+            itemPositions: shouldPersistPosition
+              ? {
+                  ...state.itemPositions,
+                  [id]: position,
+                }
+              : positionsWithoutItem,
           };
         });
       },
@@ -721,29 +947,38 @@ export const useFileSystem = create<FileSystemStore>()(
           const root = state.items.root;
           if (root?.type !== "folder") return state;
 
-          const savedIconCount = root.children.filter((childId) =>
-            childId.startsWith("saved-icon-"),
-          ).length;
+          const currentGeneratedFileIds = root.children.filter((childId) =>
+            isGeneratedFileItemId(childId),
+          );
+          const generatedFileIds = currentGeneratedFileIds.includes(itemId)
+            ? currentGeneratedFileIds
+            : [...currentGeneratedFileIds, itemId];
+          const generatedFileIndex = generatedFileIds.indexOf(itemId);
           const existingItem = state.items[itemId];
           const position =
             existingItem?.position ??
             state.itemPositions[itemId] ??
-            getSavedIconPosition(savedIconCount);
-          const children = root.children.includes(itemId)
-            ? root.children
-            : [
-                ...root.children.filter((childId) => childId !== "trash"),
-                itemId,
-                "trash",
-              ];
+            getSavedIconPosition(generatedFileIndex);
+          const credits = state.items.credits;
 
           return {
             items: {
               ...state.items,
               root: {
                 ...root,
-                children,
+                children: getRootChildren(
+                  generatedFileIds,
+                  getExtraRootItemIds(root.children),
+                ),
               },
+              ...(credits
+                ? {
+                    credits: {
+                      ...credits,
+                      position: getCreditsPosition(generatedFileIds.length),
+                    },
+                  }
+                : {}),
               [itemId]: {
                 id: itemId,
                 name: icon.name,
@@ -762,7 +997,11 @@ export const useFileSystem = create<FileSystemStore>()(
           const item = state.items[id];
           const root = state.items.root;
 
-          if (item?.type !== "app" || !item.savedIconId || root?.type !== "folder") {
+          if (
+            item?.type !== "app" ||
+            !item.savedIconId ||
+            root?.type !== "folder"
+          ) {
             return state;
           }
 
@@ -771,14 +1010,29 @@ export const useFileSystem = create<FileSystemStore>()(
           const { [id]: _removed, ...nextItems } = state.items;
           const { [id]: _removedPosition, ...nextPositions } =
             state.itemPositions;
+          const generatedFileIds = root.children.filter(
+            (childId) => isGeneratedFileItemId(childId) && childId !== id,
+          );
+          const credits = nextItems.credits;
 
           return {
             items: {
               ...nextItems,
               root: {
                 ...root,
-                children: root.children.filter((childId) => childId !== id),
+                children: getRootChildren(
+                  generatedFileIds,
+                  getExtraRootItemIds(root.children),
+                ),
               },
+              ...(credits
+                ? {
+                    credits: {
+                      ...credits,
+                      position: getCreditsPosition(generatedFileIds.length),
+                    },
+                  }
+                : {}),
             },
             itemPositions: nextPositions,
             activeItemId: state.activeItemId === id ? null : state.activeItemId,
@@ -793,7 +1047,7 @@ export const useFileSystem = create<FileSystemStore>()(
           let hasChanges = false;
 
           children.forEach((item, index) => {
-            const position = getCleanPosition(parentId, index);
+            const position = getCleanPosition(parentId, item, index, children);
 
             if (
               item.position?.x === position.x &&
@@ -812,7 +1066,12 @@ export const useFileSystem = create<FileSystemStore>()(
               ...item,
               position,
             };
-            nextPositions[item.id] = position;
+
+            if (shouldPersistItemPosition(item)) {
+              nextPositions[item.id] = position;
+            } else {
+              delete nextPositions[item.id];
+            }
           });
 
           return hasChanges
@@ -830,17 +1089,14 @@ export const useFileSystem = create<FileSystemStore>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 2,
+      version: STORAGE_VERSION,
       storage: createJSONStorage(() => createThrottledLocalStorage()),
       migrate: (persistedState, version) => {
         const state = persistedState as Partial<FileSystemStore> | undefined;
-
-        if (version < 2) {
-          return { itemPositions: {} } as Partial<FileSystemStore>;
-        }
+        const itemPositions = version < 2 ? {} : (state?.itemPositions ?? {});
 
         return {
-          itemPositions: state?.itemPositions ?? {},
+          itemPositions: sanitizeStoredPositions(itemPositions, version),
         } as Partial<FileSystemStore>;
       },
       partialize: (state) => ({ itemPositions: state.itemPositions }),
