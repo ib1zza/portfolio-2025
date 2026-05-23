@@ -13,7 +13,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@capacitor/haptics": "^8.0.2",
     "@react-three/fiber": "^9.6.1",
     "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
@@ -23,6 +22,7 @@
     "react-dom": "^19.1.1",
     "three": "^0.184.0",
     "vite-plugin-svgr": "^4.5.0",
+    "web-haptics": "^0.0.6",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

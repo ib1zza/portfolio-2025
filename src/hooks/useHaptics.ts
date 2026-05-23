@@ -1,67 +1,58 @@
-// src/hooks/useHaptics.ts
+// src/hooks/useWebHapticsEffects.ts
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Haptics, ImpactStyle, NotificationType } from "@capacitor/haptics";
+import { useWebHaptics } from "web-haptics/react";
 
-type HapticEasterEgg =
+type WebHapticEasterEgg =
   | "happyMac"
-  | "sadMac"
   | "startupChime"
+  | "sadMac"
   | "finderClick"
-  | "systemError";
+  | "systemBomb"
+  | "sos"
+  | "bootSequence";
 
-interface UseHapticsOptions {
-  /**
-   * Запустить haptic при монтировании хука.
-   * Удобно для "сайт загрузился".
-   */
+interface UseWebHapticsEffectsOptions {
   playOnMount?: boolean;
-
-  /**
-   * Небольшая задержка перед стартовой вибрацией,
-   * чтобы она не сработала слишком рано во время hydration/loading.
-   */
   startupDelayMs?: number;
-
-  /**
-   * Отключить haptics полностью.
-   */
   disabled?: boolean;
-
-  /**
-   * Минимальная пауза между одиночными haptic-событиями.
-   */
+  debug?: boolean;
+  showSwitch?: boolean;
+  defaultIntensity?: number;
   throttleMs?: number;
-
-  /**
-   * Использовать navigator.vibrate как fallback в браузере.
-   */
-  enableBrowserFallback?: boolean;
 }
 
-const wait = (ms: number) =>
-  new Promise<void>((resolve) => {
-    window.setTimeout(resolve, ms);
-  });
+type WebHapticsPatternStep = {
+  duration: number;
+  delay?: number;
+  intensity?: number;
+};
 
-const canUseBrowserVibrate = () =>
-  typeof window !== "undefined" &&
-  typeof navigator !== "undefined" &&
-  "vibrate" in navigator &&
-  typeof navigator.vibrate === "function";
+type WebHapticsPreset = {
+  pattern: WebHapticsPatternStep[];
+  description: string;
+};
 
-export const useHaptics = (options: UseHapticsOptions = {}) => {
+const clampIntensity = (value: number) => Math.min(1, Math.max(0, value));
+
+export const useHaptics = (options: UseWebHapticsEffectsOptions = {}) => {
   const {
     playOnMount = false,
     startupDelayMs = 450,
     disabled = false,
-    throttleMs = 80,
-    enableBrowserFallback = true,
+    debug = false,
+    showSwitch = false,
+    defaultIntensity = 0.55,
+    throttleMs = 60,
   } = options;
 
-  const lastPlayedAtRef = useRef(0);
-  const sequencePlayingRef = useRef(false);
+  const { trigger, cancel } = useWebHaptics({
+    debug,
+    showSwitch,
+  });
 
-  const isAllowed = useCallback(() => {
+  const lastPlayedAtRef = useRef(0);
+
+  const canPlay = useCallback(() => {
     if (disabled) return false;
     if (typeof window === "undefined") return false;
 
@@ -75,249 +66,273 @@ export const useHaptics = (options: UseHapticsOptions = {}) => {
     return true;
   }, [disabled, throttleMs]);
 
-  const vibrateFallback = useCallback(
-    (pattern: number | number[] = 24) => {
-      if (!enableBrowserFallback) return;
+  const play = useCallback(
+    async (
+      input:
+        | "success"
+        | "nudge"
+        | "error"
+        | "buzz"
+        | number
+        | number[]
+        | WebHapticsPatternStep[]
+        | WebHapticsPreset,
+      intensity = defaultIntensity,
+    ) => {
+      if (!canPlay()) return;
 
-      if (canUseBrowserVibrate()) {
-        navigator.vibrate(pattern);
-      }
+      await trigger(input, {
+        intensity: clampIntensity(intensity),
+      });
     },
-    [enableBrowserFallback],
-  );
-
-  const safeImpact = useCallback(
-    async (style: ImpactStyle = ImpactStyle.Light) => {
-      if (!isAllowed()) return;
-
-      try {
-        await Haptics.impact({ style });
-      } catch {
-        vibrateFallback(
-          style === ImpactStyle.Heavy
-            ? 45
-            : style === ImpactStyle.Medium
-              ? 32
-              : 18,
-        );
-      }
-    },
-    [isAllowed, vibrateFallback],
-  );
-
-  const safeNotification = useCallback(
-    async (type: NotificationType = NotificationType.Success) => {
-      if (!isAllowed()) return;
-
-      try {
-        await Haptics.notification({ type });
-      } catch {
-        vibrateFallback(
-          type === NotificationType.Success
-            ? [18, 35, 28]
-            : type === NotificationType.Warning
-              ? [24, 45, 24]
-              : [45, 35, 45],
-        );
-      }
-    },
-    [isAllowed, vibrateFallback],
-  );
-
-  const safeSelectionStart = useCallback(async () => {
-    if (!isAllowed()) return;
-
-    try {
-      await Haptics.selectionStart();
-    } catch {
-      vibrateFallback(10);
-    }
-  }, [isAllowed, vibrateFallback]);
-
-  const safeSelectionChanged = useCallback(async () => {
-    if (!isAllowed()) return;
-
-    try {
-      await Haptics.selectionChanged();
-    } catch {
-      vibrateFallback(8);
-    }
-  }, [isAllowed, vibrateFallback]);
-
-  const safeSelectionEnd = useCallback(async () => {
-    if (!isAllowed()) return;
-
-    try {
-      await Haptics.selectionEnd();
-    } catch {
-      vibrateFallback(10);
-    }
-  }, [isAllowed, vibrateFallback]);
-
-  const playSequence = useCallback(
-    async (steps: Array<() => Promise<void> | void>, gapMs = 70) => {
-      if (disabled || sequencePlayingRef.current) return;
-
-      sequencePlayingRef.current = true;
-
-      try {
-        for (const step of steps) {
-          await step();
-          await wait(gapMs);
-        }
-      } finally {
-        sequencePlayingRef.current = false;
-      }
-    },
-    [disabled],
+    [canPlay, defaultIntensity, trigger],
   );
 
   /**
-   * 1. Вибрация при открытии сайта / завершении загрузки.
-   * Мягкий "загрузился Finder".
+   * 1. Завершение загрузки сайта.
+   * Короткий мягкий success.
    */
   const siteLoaded = useCallback(async () => {
-    await playSequence(
-      [
-        () => safeImpact(ImpactStyle.Light),
-        () => safeNotification(NotificationType.Success),
-      ],
-      120,
+    await play(
+      {
+        description: "Site loaded",
+        pattern: [
+          { duration: 35, intensity: 0.35 },
+          { delay: 55, duration: 45, intensity: 0.65 },
+        ],
+      },
+      0.55,
     );
-  }, [playSequence, safeImpact, safeNotification]);
+  }, [play]);
 
   /**
    * 2. Открытие файла.
    */
   const fileOpen = useCallback(async () => {
-    await safeImpact(ImpactStyle.Light);
-  }, [safeImpact]);
+    await play([{ duration: 35, intensity: 0.45 }], 0.45);
+  }, [play]);
 
   /**
    * 2. Закрытие файла.
    */
   const fileClose = useCallback(async () => {
-    await safeSelectionChanged();
-  }, [safeSelectionChanged]);
+    await play([{ duration: 25, intensity: 0.3 }], 0.35);
+  }, [play]);
 
   /**
    * 2. Открытие папки.
-   * Чуть плотнее, чем файл.
+   * Чуть более выразительно, чем файл.
    */
   const folderOpen = useCallback(async () => {
-    await playSequence(
+    await play(
       [
-        () => safeSelectionStart(),
-        () => safeImpact(ImpactStyle.Light),
-        () => safeSelectionEnd(),
+        { duration: 35, intensity: 0.35 },
+        { delay: 35, duration: 55, intensity: 0.65 },
       ],
-      45,
+      0.6,
     );
-  }, [playSequence, safeImpact, safeSelectionEnd, safeSelectionStart]);
+  }, [play]);
 
   /**
    * 2. Закрытие папки.
    */
   const folderClose = useCallback(async () => {
-    await playSequence(
-      [() => safeSelectionChanged(), () => safeImpact(ImpactStyle.Light)],
-      50,
+    await play(
+      [
+        { duration: 45, intensity: 0.45 },
+        { delay: 45, duration: 25, intensity: 0.25 },
+      ],
+      0.45,
     );
-  }, [playSequence, safeImpact, safeSelectionChanged]);
+  }, [play]);
 
   /**
-   * Для клика по desktop icon, menu item, button.
+   * Обычный UI click.
    */
   const uiClick = useCallback(async () => {
-    await safeSelectionChanged();
-  }, [safeSelectionChanged]);
+    await play("nudge", 0.35);
+  }, [play]);
 
   /**
-   * Для drag start / drop.
+   * Drag & drop.
    */
   const dragStart = useCallback(async () => {
-    await safeSelectionStart();
-  }, [safeSelectionStart]);
+    await play([{ duration: 45, intensity: 0.45 }], 0.45);
+  }, [play]);
 
   const dragEnd = useCallback(async () => {
-    await safeSelectionEnd();
-  }, [safeSelectionEnd]);
+    await play(
+      [
+        { duration: 25, intensity: 0.3 },
+        { delay: 40, duration: 35, intensity: 0.55 },
+      ],
+      0.55,
+    );
+  }, [play]);
 
   /**
-   * 3. Пасхалки.
-   *
-   * happyMac — мягкий happy boot.
-   * startupChime — попытка передать "Mac startup chime" как тактильный аккорд.
-   * sadMac — ошибка / Sad Mac.
-   * finderClick — ретро Finder double click.
-   * systemError — более драматичная "system bomb" вибрация.
+   * Built-in эффекты из web-haptics.
    */
+  const success = useCallback(async () => {
+    await play("success", 0.6);
+  }, [play]);
+
+  const nudge = useCallback(async () => {
+    await play("nudge", 0.6);
+  }, [play]);
+
+  const error = useCallback(async () => {
+    await play("error", 0.75);
+  }, [play]);
+
+  const buzz = useCallback(async () => {
+    await play("buzz", 0.45);
+  }, [play]);
+
+  /**
+   * Простые кастомные эффекты.
+   */
+  const softTap = useCallback(async () => {
+    await play(25, 0.25);
+  }, [play]);
+
+  const hardTap = useCallback(async () => {
+    await play(70, 0.85);
+  }, [play]);
+
+  const doubleTap = useCallback(async () => {
+    await play([35, 45, 35], 0.55);
+  }, [play]);
+
+  const tripleTap = useCallback(async () => {
+    await play([30, 40, 30, 40, 30], 0.65);
+  }, [play]);
+
   const easterEgg = useCallback(
-    async (type: HapticEasterEgg = "happyMac") => {
+    async (type: WebHapticEasterEgg = "startupChime") => {
       if (type === "happyMac") {
-        await playSequence(
-          [
-            () => safeImpact(ImpactStyle.Light),
-            () => safeImpact(ImpactStyle.Medium),
-            () => safeNotification(NotificationType.Success),
-          ],
-          95,
+        await play(
+          {
+            description: "Happy Mac",
+            pattern: [
+              { duration: 25, intensity: 0.25 },
+              { delay: 45, duration: 35, intensity: 0.45 },
+              { delay: 55, duration: 55, intensity: 0.7 },
+              { delay: 70, duration: 35, intensity: 0.35 },
+            ],
+          },
+          0.65,
         );
         return;
       }
 
       if (type === "startupChime") {
-        await playSequence(
-          [
-            () => safeImpact(ImpactStyle.Light),
-            () => safeImpact(ImpactStyle.Light),
-            () => safeImpact(ImpactStyle.Medium),
-            () => safeImpact(ImpactStyle.Heavy),
-            () => safeNotification(NotificationType.Success),
-          ],
-          115,
+        await play(
+          {
+            description: "Mac-like startup chime",
+            pattern: [
+              { duration: 30, intensity: 0.25 },
+              { delay: 70, duration: 45, intensity: 0.45 },
+              { delay: 85, duration: 70, intensity: 0.75 },
+              { delay: 120, duration: 100, intensity: 1 },
+              { delay: 160, duration: 45, intensity: 0.35 },
+            ],
+          },
+          0.8,
         );
         return;
       }
 
       if (type === "sadMac") {
-        await playSequence(
-          [
-            () => safeImpact(ImpactStyle.Heavy),
-            () => safeImpact(ImpactStyle.Medium),
-            () => safeImpact(ImpactStyle.Light),
-            () => safeNotification(NotificationType.Error),
-          ],
-          140,
+        await play(
+          {
+            description: "Sad Mac",
+            pattern: [
+              { duration: 90, intensity: 0.9 },
+              { delay: 90, duration: 70, intensity: 0.65 },
+              { delay: 90, duration: 45, intensity: 0.4 },
+              { delay: 130, duration: 120, intensity: 1 },
+            ],
+          },
+          0.85,
         );
         return;
       }
 
       if (type === "finderClick") {
-        await playSequence(
-          [
-            () => safeSelectionChanged(),
-            () => safeSelectionChanged(),
-            () => safeImpact(ImpactStyle.Light),
-          ],
-          55,
+        await play(
+          {
+            description: "Finder double click",
+            pattern: [
+              { duration: 22, intensity: 0.35 },
+              { delay: 42, duration: 22, intensity: 0.35 },
+              { delay: 70, duration: 40, intensity: 0.55 },
+            ],
+          },
+          0.5,
         );
         return;
       }
 
-      if (type === "systemError") {
-        await playSequence(
-          [
-            () => safeNotification(NotificationType.Warning),
-            () => safeImpact(ImpactStyle.Heavy),
-            () => safeImpact(ImpactStyle.Heavy),
-            () => safeNotification(NotificationType.Error),
-          ],
-          130,
+      if (type === "systemBomb") {
+        await play(
+          {
+            description: "Classic system bomb",
+            pattern: [
+              { duration: 55, intensity: 0.7 },
+              { delay: 45, duration: 55, intensity: 0.7 },
+              { delay: 90, duration: 130, intensity: 1 },
+              { delay: 120, duration: 45, intensity: 0.45 },
+              { delay: 45, duration: 45, intensity: 0.45 },
+            ],
+          },
+          0.9,
+        );
+        return;
+      }
+
+      if (type === "sos") {
+        await play(
+          {
+            description: "SOS",
+            pattern: [
+              { duration: 35, intensity: 0.6 },
+              { delay: 45, duration: 35, intensity: 0.6 },
+              { delay: 45, duration: 35, intensity: 0.6 },
+
+              { delay: 100, duration: 100, intensity: 0.9 },
+              { delay: 65, duration: 100, intensity: 0.9 },
+              { delay: 65, duration: 100, intensity: 0.9 },
+
+              { delay: 100, duration: 35, intensity: 0.6 },
+              { delay: 45, duration: 35, intensity: 0.6 },
+              { delay: 45, duration: 35, intensity: 0.6 },
+            ],
+          },
+          0.8,
+        );
+        return;
+      }
+
+      if (type === "bootSequence") {
+        await play(
+          {
+            description: "Retro boot sequence",
+            pattern: [
+              { duration: 20, intensity: 0.2 },
+              { delay: 80, duration: 20, intensity: 0.25 },
+              { delay: 80, duration: 25, intensity: 0.35 },
+              { delay: 90, duration: 35, intensity: 0.45 },
+              { delay: 110, duration: 70, intensity: 0.8 },
+              { delay: 180, duration: 40, intensity: 0.35 },
+              { delay: 55, duration: 40, intensity: 0.6 },
+            ],
+          },
+          0.75,
         );
       }
     },
-    [playSequence, safeImpact, safeNotification, safeSelectionChanged],
+    [play],
   );
 
   useEffect(() => {
@@ -346,15 +361,20 @@ export const useHaptics = (options: UseHapticsOptions = {}) => {
       dragStart,
       dragEnd,
 
+      success,
+      nudge,
+      error,
+      buzz,
+
+      softTap,
+      hardTap,
+      doubleTap,
+      tripleTap,
+
       easterEgg,
 
-      impactLight: () => safeImpact(ImpactStyle.Light),
-      impactMedium: () => safeImpact(ImpactStyle.Medium),
-      impactHeavy: () => safeImpact(ImpactStyle.Heavy),
-
-      success: () => safeNotification(NotificationType.Success),
-      warning: () => safeNotification(NotificationType.Warning),
-      error: () => safeNotification(NotificationType.Error),
+      cancel,
+      play,
     }),
     [
       siteLoaded,
@@ -365,9 +385,17 @@ export const useHaptics = (options: UseHapticsOptions = {}) => {
       uiClick,
       dragStart,
       dragEnd,
+      success,
+      nudge,
+      error,
+      buzz,
+      softTap,
+      hardTap,
+      doubleTap,
+      tripleTap,
       easterEgg,
-      safeImpact,
-      safeNotification,
+      cancel,
+      play,
     ],
   );
 };

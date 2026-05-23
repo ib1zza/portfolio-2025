@@ -1,47 +1,29 @@
-// src/components/HapticsTester/HapticsTester.tsx
+// src/pages/WebHapticsTestPage.tsx
 import { useState } from "react";
 import { useHaptics } from "../../hooks/useHaptics";
 
-type HapticButton = {
+type TestButton = {
   label: string;
-  description?: string;
-  onClick: () => Promise<void> | void;
+  description: string;
+  run: () => Promise<void> | void;
 };
 
-type HapticGroup = {
+type TestGroup = {
   title: string;
-  items: HapticButton[];
+  buttons: TestButton[];
 };
 
 export const HapticsTester = () => {
-  const [lastEffect, setLastEffect] = useState<string | null>(null);
+  const [lastEffect, setLastEffect] = useState<string>("—");
   const [isRunning, setIsRunning] = useState(false);
+  const [debug, setDebug] = useState(false);
+  const [showSwitch, setShowSwitch] = useState(false);
 
-  const {
-    siteLoaded,
-
-    fileOpen,
-    fileClose,
-
-    folderOpen,
-    folderClose,
-
-    uiClick,
-    dragStart,
-    dragEnd,
-
-    easterEgg,
-
-    impactLight,
-    impactMedium,
-    impactHeavy,
-
-    success,
-    warning,
-    error,
-  } = useHaptics({
+  const haptics = useHaptics({
+    debug,
+    showSwitch,
     throttleMs: 40,
-    enableBrowserFallback: true,
+    defaultIntensity: 0.6,
   });
 
   const runEffect = async (
@@ -58,255 +40,338 @@ export const HapticsTester = () => {
     } finally {
       window.setTimeout(() => {
         setIsRunning(false);
-      }, 160);
+      }, 180);
     }
   };
 
-  const groups: HapticGroup[] = [
+  const groups: TestGroup[] = [
     {
-      title: "Site / Loading",
-      items: [
+      title: "Project Effects",
+      buttons: [
         {
           label: "Site Loaded",
-          description: "Мягкий сигнал завершения загрузки сайта",
-          onClick: siteLoaded,
+          description: "Эффект завершения загрузки сайта",
+          run: haptics.siteLoaded,
         },
-      ],
-    },
-    {
-      title: "Files & Folders",
-      items: [
         {
           label: "File Open",
           description: "Открытие файла",
-          onClick: fileOpen,
+          run: haptics.fileOpen,
         },
         {
           label: "File Close",
           description: "Закрытие файла",
-          onClick: fileClose,
+          run: haptics.fileClose,
         },
         {
           label: "Folder Open",
           description: "Открытие папки",
-          onClick: folderOpen,
+          run: haptics.folderOpen,
         },
         {
           label: "Folder Close",
           description: "Закрытие папки",
-          onClick: folderClose,
+          run: haptics.folderClose,
         },
-      ],
-    },
-    {
-      title: "UI",
-      items: [
         {
           label: "UI Click",
-          description: "Обычный клик по кнопке / меню / иконке",
-          onClick: uiClick,
+          description: "Обычный клик по UI",
+          run: haptics.uiClick,
         },
         {
           label: "Drag Start",
           description: "Начало перетаскивания",
-          onClick: dragStart,
+          run: haptics.dragStart,
         },
         {
           label: "Drag End",
-          description: "Конец перетаскивания",
-          onClick: dragEnd,
+          description: "Завершение перетаскивания",
+          run: haptics.dragEnd,
         },
       ],
     },
     {
-      title: "Impact",
-      items: [
-        {
-          label: "Impact Light",
-          description: "Лёгкий удар",
-          onClick: impactLight,
-        },
-        {
-          label: "Impact Medium",
-          description: "Средний удар",
-          onClick: impactMedium,
-        },
-        {
-          label: "Impact Heavy",
-          description: "Сильный удар",
-          onClick: impactHeavy,
-        },
-      ],
-    },
-    {
-      title: "Notification",
-      items: [
+      title: "WebHaptics Built-in Presets",
+      buttons: [
         {
           label: "Success",
-          description: "Успешное действие",
-          onClick: success,
+          description: "Built-in success: два коротких тапа",
+          run: haptics.success,
         },
         {
-          label: "Warning",
-          description: "Предупреждение",
-          onClick: warning,
+          label: "Nudge",
+          description: "Built-in nudge: сильный тап + мягкий тап",
+          run: haptics.nudge,
         },
         {
           label: "Error",
-          description: "Ошибка",
-          onClick: error,
+          description: "Built-in error: три резких тапа",
+          run: haptics.error,
+        },
+        {
+          label: "Buzz",
+          description: "Built-in buzz: длинная вибрация",
+          run: haptics.buzz,
+        },
+      ],
+    },
+    {
+      title: "Custom Basic Patterns",
+      buttons: [
+        {
+          label: "Soft Tap",
+          description: "Очень лёгкий короткий тап",
+          run: haptics.softTap,
+        },
+        {
+          label: "Hard Tap",
+          description: "Сильный одиночный тап",
+          run: haptics.hardTap,
+        },
+        {
+          label: "Double Tap",
+          description: "Два коротких тапа",
+          run: haptics.doubleTap,
+        },
+        {
+          label: "Triple Tap",
+          description: "Три коротких тапа",
+          run: haptics.tripleTap,
         },
       ],
     },
     {
       title: "Easter Eggs",
-      items: [
+      buttons: [
         {
           label: "Happy Mac",
-          description: "Мягкая позитивная пасхалка",
-          onClick: () => easterEgg("happyMac"),
+          description: "Позитивная ретро-пасхалка",
+          run: () => haptics.easterEgg("happyMac"),
         },
         {
           label: "Startup Chime",
           description: "Тактильная отсылка к Mac startup chime",
-          onClick: () => easterEgg("startupChime"),
+          run: () => haptics.easterEgg("startupChime"),
         },
         {
           label: "Sad Mac",
           description: "Ошибка / Sad Mac вайб",
-          onClick: () => easterEgg("sadMac"),
+          run: () => haptics.easterEgg("sadMac"),
         },
         {
           label: "Finder Click",
-          description: "Быстрый Finder double click",
-          onClick: () => easterEgg("finderClick"),
+          description: "Finder double click",
+          run: () => haptics.easterEgg("finderClick"),
         },
         {
-          label: "System Error",
-          description: "Более драматичная system bomb вибрация",
-          onClick: () => easterEgg("systemError"),
+          label: "System Bomb",
+          description: "Классическая system bomb / crash пасхалка",
+          run: () => haptics.easterEgg("systemBomb"),
+        },
+        {
+          label: "SOS",
+          description: "SOS-паттерн: короткие, длинные, короткие",
+          run: () => haptics.easterEgg("sos"),
+        },
+        {
+          label: "Boot Sequence",
+          description: "Ретро-последовательность загрузки",
+          run: () => haptics.easterEgg("bootSequence"),
         },
       ],
     },
   ];
 
   return (
-    <section
+    <main
       style={{
-        display: "grid",
-        gap: "16px",
-        width: "min(720px, 100%)",
-        padding: "16px",
+        minHeight: "100dvh",
+        padding: "24px",
         color: "#000",
+        background: "#c0c0c0",
+        fontFamily: "inherit",
       }}
     >
-      <header>
-        <h2
+      <section
+        style={{
+          display: "grid",
+          gap: "18px",
+          maxWidth: "920px",
+          margin: "0 auto",
+        }}
+      >
+        <header
           style={{
-            margin: 0,
-            fontSize: "20px",
-            lineHeight: 1.2,
+            display: "grid",
+            gap: "8px",
+            padding: "16px",
+            border: "2px solid #000",
+            background: "#fff",
+            boxShadow: "4px 4px 0 #000",
           }}
         >
-          Haptics Tester
-        </h2>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "24px",
+              lineHeight: 1.1,
+            }}
+          >
+            WebHaptics Test Page
+          </h1>
 
-        <p
-          style={{
-            margin: "6px 0 0",
-            fontSize: "14px",
-            lineHeight: 1.35,
-          }}
-        >
-          Нажимай кнопки, чтобы проверить все текущие haptic-эффекты.
-        </p>
-
-        {lastEffect && (
           <p
             style={{
-              margin: "8px 0 0",
+              margin: 0,
+              fontSize: "14px",
+              lineHeight: 1.4,
+            }}
+          >
+            Тестовая страница для проверки всех haptic-эффектов из
+            <code> useWebHapticsEffects</code>.
+          </p>
+
+          <p
+            style={{
+              margin: 0,
               fontSize: "13px",
-              lineHeight: 1.3,
+              lineHeight: 1.4,
             }}
           >
             Last effect: <strong>{lastEffect}</strong>
           </p>
-        )}
-      </header>
-
-      {groups.map((group) => (
-        <div
-          key={group.title}
-          style={{
-            display: "grid",
-            gap: "8px",
-          }}
-        >
-          <h3
-            style={{
-              margin: 0,
-              fontSize: "15px",
-              lineHeight: 1.2,
-            }}
-          >
-            {group.title}
-          </h3>
 
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-              gap: "8px",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "12px",
+              marginTop: "4px",
             }}
           >
-            {group.items.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                disabled={isRunning}
-                onClick={() => runEffect(item.label, item.onClick)}
-                title={item.description}
-                style={{
-                  appearance: "none",
-                  display: "grid",
-                  gap: "4px",
-                  minHeight: "64px",
-                  padding: "10px",
-                  border: "2px solid #000",
-                  borderRadius: 0,
-                  background: isRunning ? "#d8d8d8" : "#fff",
-                  color: "#000",
-                  font: "inherit",
-                  textAlign: "left",
-                  cursor: isRunning ? "default" : "pointer",
-                  boxShadow: "2px 2px 0 #000",
-                }}
-              >
-                <strong
+            <label
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={debug}
+                onChange={(event) => setDebug(event.target.checked)}
+              />
+              Debug audio
+            </label>
+
+            <label
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "13px",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={showSwitch}
+                onChange={(event) => setShowSwitch(event.target.checked)}
+              />
+              Show WebHaptics switch
+            </label>
+
+            <button
+              type="button"
+              onClick={() => haptics.cancel()}
+              style={{
+                padding: "6px 10px",
+                border: "2px solid #000",
+                background: "#fff",
+                color: "#000",
+                font: "inherit",
+                fontSize: "13px",
+                boxShadow: "2px 2px 0 #000",
+                cursor: "pointer",
+              }}
+            >
+              Cancel current vibration
+            </button>
+          </div>
+        </header>
+
+        {groups.map((group) => (
+          <section
+            key={group.title}
+            style={{
+              display: "grid",
+              gap: "10px",
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                fontSize: "17px",
+                lineHeight: 1.2,
+              }}
+            >
+              {group.title}
+            </h2>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "10px",
+              }}
+            >
+              {group.buttons.map((button) => (
+                <button
+                  key={button.label}
+                  type="button"
+                  disabled={isRunning}
+                  title={button.description}
+                  onClick={() => runEffect(button.label, button.run)}
                   style={{
-                    fontSize: "14px",
-                    lineHeight: 1.2,
+                    appearance: "none",
+                    display: "grid",
+                    gap: "6px",
+                    minHeight: "82px",
+                    padding: "12px",
+                    border: "2px solid #000",
+                    borderRadius: 0,
+                    background: isRunning ? "#d8d8d8" : "#fff",
+                    color: "#000",
+                    font: "inherit",
+                    textAlign: "left",
+                    cursor: isRunning ? "default" : "pointer",
+                    boxShadow: "3px 3px 0 #000",
                   }}
                 >
-                  {item.label}
-                </strong>
+                  <strong
+                    style={{
+                      fontSize: "14px",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {button.label}
+                  </strong>
 
-                {item.description && (
                   <span
                     style={{
                       fontSize: "12px",
-                      lineHeight: 1.25,
+                      lineHeight: 1.3,
                       opacity: 0.75,
                     }}
                   >
-                    {item.description}
+                    {button.description}
                   </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
+                </button>
+              ))}
+            </div>
+          </section>
+        ))}
+      </section>
+    </main>
   );
 };
