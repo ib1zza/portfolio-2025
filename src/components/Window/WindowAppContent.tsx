@@ -27,6 +27,12 @@ const BadgeGenerator = lazy(() =>
   }))
 );
 
+const AudioPlayer = lazy(() =>
+  import("../AudioPlayer").then((module) => ({
+    default: module.AudioPlayer,
+  }))
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -52,6 +58,7 @@ export const WindowAppContent = memo(function WindowAppContent({
         <ModelViewerApp isActive={isActive} windowId={windowId} />
       )}
       {app === "badge-generator" && <BadgeGenerator windowId={windowId} />}
+      {app === "audio-player" && <AudioPlayer windowId={windowId} />}
     </Suspense>
   );
 });

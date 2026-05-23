@@ -20,7 +20,8 @@ export type FinderIconType =
   | "app-iconPainter"
   | "app-modelViewer"
   | "app-badgeGenerator"
-  | "app-ditherStudio";
+  | "app-ditherStudio"
+  | "app-audioPlayer";
 
 interface FinderIconProps {
   id: string;
@@ -71,6 +72,15 @@ export const FinderIcon = memo(function FinderIcon({
     return (
       <img
         src={getAssetPath("/icons/badge-generator.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
+
+  if (type === "app-audioPlayer")
+    return (
+      <img
+        src={getAssetPath("/icons/audio-player.svg")}
         alt=""
         draggable={false}
       />

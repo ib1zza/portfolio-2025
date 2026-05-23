@@ -1,0 +1,176 @@
+@use "@/global/styles/vars" as *;
+@use "@/global/styles/mixins" as *;
+
+.audioPlayer {
+  display: flex;
+  flex-direction: column;
+  gap: ui(8px);
+  padding: ui(12px);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.dropTarget {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: ui(8px);
+  flex: 1;
+  min-height: 0;
+}
+
+.dropOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+  border: $border;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+
+  &.visible {
+    opacity: 0.95;
+  }
+}
+
+.dropText {
+  @include textTitle(ui(12px), ui(20px));
+  color: $black;
+  text-align: center;
+}
+
+.welcomeScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ui(12px);
+  flex: 1;
+  border: $border;
+  background: $white;
+  padding: ui(16px);
+}
+
+.welcomeTitle {
+  @include textTitle(ui(14px), ui(24px));
+  color: $black;
+}
+
+.welcomeText {
+  @include textMain(ui(12px), ui(18px));
+  color: $black;
+  text-align: center;
+}
+
+.fileInput {
+  display: none;
+}
+
+.canvas {
+  display: block;
+  border: $border;
+  background: $white;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  image-rendering: crisp-edges;
+}
+
+.visualizerWrap {
+  display: grid;
+  grid-template-columns: 1fr 22px;
+  gap: ui(8px);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: ui(6px);
+  border: $border;
+  background: $white;
+  padding: ui(8px);
+}
+
+.trackInfo {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transportRow {
+  display: flex;
+  align-items: center;
+  gap: ui(4px);
+}
+
+.timeDisplay {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+  min-width: ui(80px);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.seekRow {
+  display: flex;
+  align-items: center;
+  gap: ui(8px);
+}
+
+.seekSlider {
+  flex: 1;
+}
+
+.volumeRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: ui(4px);
+}
+
+.volumeSlider {
+  flex: 1;
+}
+
+.volumeLabel {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+  // min-width: ui(40px);
+}
+
+.visualizerRow {
+  display: flex;
+  align-items: center;
+  gap: ui(8px);
+}
+
+.controlBtn {
+  @include textTitle(ui(10px), ui(14px));
+  min-width: ui(28px);
+  height: ui(20px);
+  border: $border;
+  background: $white;
+  color: $black;
+  cursor: pointer;
+  padding: 0 ui(4px);
+
+  &:active {
+    background: $black;
+    color: $white;
+  }
+}
+
+.loopBtn {
+  composes: controlBtn;
+
+  &.active {
+    background: $black;
+    color: $white;
+  }
+}

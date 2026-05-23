@@ -6,7 +6,8 @@ export type WindowAppId =
   | "icon-painter"
   | "dither-studio"
   | "model-viewer"
-  | "badge-generator";
+  | "badge-generator"
+  | "audio-player";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -59,7 +60,7 @@ export const getWindowOpenStartWidth = () =>
 
 export const getAppWindowSize = (app: WindowAppId) =>
   scaleUiSize(
-    app === "model-viewer" || app === "badge-generator"
+    app === "model-viewer" || app === "badge-generator" || app === "audio-player"
       ? WINDOW_BASE_METRICS.largeAppSize
       : WINDOW_BASE_METRICS.appSize,
   );

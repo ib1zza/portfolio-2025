@@ -15,3 +15,17 @@
   width: calc(var(--progress-value) * 100%);
   background: $black;
 }
+
+.vertical {
+  width: var(--mac-progress-vertical-width, var(--mac-progress-height));
+  height: var(--mac-progress-vertical-height, var(--mac-progress-width));
+
+  .fill {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    height: calc(var(--progress-value) * 100%);
+  }
+}

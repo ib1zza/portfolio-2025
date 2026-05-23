@@ -4,6 +4,8 @@ import type { CSSProperties, HTMLAttributes } from "react";
 
 import s from "./MacProgress.module.scss";
 
+type MacProgressOrientation = "horizontal" | "vertical";
+
 type ProgressStyle = CSSProperties & {
   "--progress-value"?: number;
 };
@@ -13,6 +15,7 @@ interface MacProgressProps extends HTMLAttributes<HTMLDivElement> {
   min?: number;
   max?: number;
   className?: string;
+  orientation?: MacProgressOrientation;
   "aria-label"?: string;
 }
 
@@ -23,6 +26,7 @@ function MacProgressComponent({
   className,
   style,
   role = "progressbar",
+  orientation = "horizontal",
   "aria-label": ariaLabel = "Progress",
   ...props
 }: MacProgressProps) {
@@ -38,7 +42,11 @@ function MacProgressComponent({
   return (
     <div
       {...props}
-      className={clsx(s.progress, className)}
+      className={clsx(
+        s.progress,
+        orientation === "vertical" && s.vertical,
+        className,
+      )}
       role={role}
       aria-label={ariaLabel}
       aria-valuemin={min}

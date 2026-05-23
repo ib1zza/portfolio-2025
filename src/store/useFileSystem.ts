@@ -56,7 +56,7 @@ export interface LinkItem extends BaseItem {
 
 export interface AppItem extends BaseItem {
   type: "app";
-  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator";
+  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator" | "audio-player";
   savedIconId?: string;
 }
 
@@ -409,7 +409,7 @@ const savedIconItemId = (iconId: string) => `saved-icon-${iconId}`;
 const MOBILE_LAYOUT_BREAKPOINT = 768;
 const FALLBACK_VIEWPORT_WIDTH = 1280;
 const MIN_VIEWPORT_WIDTH = 320;
-const SAVED_ICON_START_INDEX = 10;
+const SAVED_ICON_START_INDEX = 11;
 const DESKTOP_GRID = {
   startX: 72,
   startY: 132,
@@ -501,6 +501,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
         "ditherStudio",
         "modelViewer",
         "badgeGenerator",
+        "audioPlayer",
         "credits",
         ...savedIconIds,
         "trash",
@@ -599,12 +600,20 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       position: getDesktopGridPosition(7),
       app: "badge-generator",
     },
+    audioPlayer: {
+      id: "audioPlayer",
+      name: "Audio Player",
+      type: "app",
+      parentId: "root",
+      position: getDesktopGridPosition(8),
+      app: "audio-player",
+    },
     credits: {
       id: "credits",
       name: "Credits",
       type: "file",
       parentId: "root",
-      position: getDesktopGridPosition(8),
+      position: getDesktopGridPosition(9),
       content: creditsContent,
     },
     trash: {
@@ -612,7 +621,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Trash",
       type: "folder",
       parentId: "root",
-      position: getDesktopGridPosition(9),
+      position: getDesktopGridPosition(10),
       children: [],
     },
     ...savedIconItems,

@@ -3,12 +3,17 @@ import type { HTMLAttributes, KeyboardEvent, PointerEvent } from "react";
 
 import { MacProgress } from "../MacProgress";
 
-interface MacSliderProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, "onChange"> {
+type MacSliderOrientation = "horizontal" | "vertical";
+
+interface MacSliderProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   value: number;
   min?: number;
   max?: number;
   step?: number;
+  orientation?: MacSliderOrientation;
   onChange: (value: number) => void;
   "aria-label"?: string;
 }
@@ -24,6 +29,7 @@ function MacSliderComponent({
   min = 0,
   max = 100,
   step = 1,
+  orientation = "horizontal",
   onChange,
   tabIndex = 0,
   role = "slider",
@@ -33,15 +39,20 @@ function MacSliderComponent({
   onKeyDown,
   ...props
 }: MacSliderProps) {
-  const setValueFromClientX = useCallback(
-    (clientX: number, element: HTMLElement) => {
-      const rect = element.getBoundingClientRect();
-      const ratio = clamp((clientX - rect.left) / rect.width, 0, 1);
+  const setValueFromPointer = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+
+      const ratio =
+        orientation === "vertical"
+          ? clamp((rect.bottom - event.clientY) / rect.height, 0, 1)
+          : clamp((event.clientX - rect.left) / rect.width, 0, 1);
+
       const nextValue = snapToStep(min + ratio * (max - min), min, step);
 
       onChange(clamp(nextValue, min, max));
     },
-    [max, min, onChange, step],
+    [max, min, onChange, orientation, step],
   );
 
   const handlePointerDown = useCallback(
@@ -50,14 +61,15 @@ function MacSliderComponent({
       if (event.defaultPrevented) return;
 
       event.currentTarget.setPointerCapture(event.pointerId);
-      setValueFromClientX(event.clientX, event.currentTarget);
+      setValueFromPointer(event);
     },
-    [onPointerDown, setValueFromClientX],
+    [onPointerDown, setValueFromPointer],
   );
 
   const handlePointerMove = useCallback(
     (event: PointerEvent<HTMLDivElement>) => {
       onPointerMove?.(event);
+
       if (
         event.defaultPrevented ||
         !event.currentTarget.hasPointerCapture(event.pointerId)
@@ -65,9 +77,9 @@ function MacSliderComponent({
         return;
       }
 
-      setValueFromClientX(event.clientX, event.currentTarget);
+      setValueFromPointer(event);
     },
-    [onPointerMove, setValueFromClientX],
+    [onPointerMove, setValueFromPointer],
   );
 
   const handleKeyDown = useCallback(
@@ -87,17 +99,28 @@ function MacSliderComponent({
         return;
       }
 
-      if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      const decrementKeys =
+        orientation === "vertical"
+          ? ["ArrowDown", "ArrowLeft"]
+          : ["ArrowLeft", "ArrowDown"];
+
+      const incrementKeys =
+        orientation === "vertical"
+          ? ["ArrowUp", "ArrowRight"]
+          : ["ArrowRight", "ArrowUp"];
+
+      if (decrementKeys.includes(event.key)) {
         event.preventDefault();
         onChange(clamp(value - step, min, max));
+        return;
       }
 
-      if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      if (incrementKeys.includes(event.key)) {
         event.preventDefault();
         onChange(clamp(value + step, min, max));
       }
     },
-    [max, min, onChange, onKeyDown, step, value],
+    [max, min, onChange, onKeyDown, orientation, step, value],
   );
 
   return (
@@ -106,9 +129,11 @@ function MacSliderComponent({
       role={role}
       tabIndex={tabIndex}
       aria-label={ariaLabel}
+      aria-orientation={orientation}
       value={value}
       min={min}
       max={max}
+      orientation={orientation}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onKeyDown={handleKeyDown}
