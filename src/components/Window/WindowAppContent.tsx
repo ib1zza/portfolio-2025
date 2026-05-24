@@ -33,6 +33,12 @@ const AudioPlayer = lazy(() =>
   })),
 );
 
+const VideoPlayer = lazy(() =>
+  import("../VideoPlayer").then((module) => ({
+    default: module.VideoPlayer,
+  })),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -59,6 +65,7 @@ export const WindowAppContent = memo(function WindowAppContent({
       )}
       {app === "badge-generator" && <BadgeGenerator windowId={windowId} />}
       {app === "audio-player" && <AudioPlayer windowId={windowId} />}
+      {app === "video-player" && <VideoPlayer windowId={windowId} />}
     </Suspense>
   );
 });

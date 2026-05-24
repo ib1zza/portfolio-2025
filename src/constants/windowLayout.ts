@@ -7,7 +7,8 @@ export type WindowAppId =
   | "dither-studio"
   | "model-viewer"
   | "badge-generator"
-  | "audio-player";
+  | "audio-player"
+  | "video-player";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -26,6 +27,7 @@ const WINDOW_BASE_METRICS = {
   openStartWidth: 28,
   appSize: { width: 580, height: 384 },
   largeAppSize: { width: 660, height: 420 },
+  videoPlayerSize: { width: 720, height: 520 },
   projectModelSize: { width: 900, height: 440 },
 } as const;
 
@@ -62,8 +64,13 @@ export const getAppWindowSize = (app: WindowAppId) =>
   scaleUiSize(
     app === "model-viewer" || app === "badge-generator" || app === "audio-player"
       ? WINDOW_BASE_METRICS.largeAppSize
-      : WINDOW_BASE_METRICS.appSize,
+      : app === "video-player"
+        ? WINDOW_BASE_METRICS.videoPlayerSize
+        : WINDOW_BASE_METRICS.appSize,
   );
+
+export const getVideoPlayerWindowSize = () =>
+  scaleUiSize(WINDOW_BASE_METRICS.videoPlayerSize);
 
 export const getProjectModelWindowSize = () => ({
   width: Math.min(

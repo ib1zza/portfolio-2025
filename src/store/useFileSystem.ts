@@ -61,7 +61,8 @@ export interface AppItem extends BaseItem {
     | "dither-studio"
     | "model-viewer"
     | "badge-generator"
-    | "audio-player";
+    | "audio-player"
+    | "video-player";
   savedIconId?: string;
 }
 
@@ -431,6 +432,7 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "modelViewer",
   "badgeGenerator",
   "audioPlayer",
+  "videoPlayer",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
 const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
@@ -813,6 +815,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: getAppPosition(4),
       app: "audio-player",
+    },
+    videoPlayer: {
+      id: "videoPlayer",
+      name: "Video Player",
+      type: "app",
+      parentId: "root",
+      position: getAppPosition(5),
+      app: "video-player",
     },
     credits: {
       id: "credits",
