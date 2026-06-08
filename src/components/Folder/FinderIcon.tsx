@@ -22,7 +22,8 @@ export type FinderIconType =
   | "app-badgeGenerator"
   | "app-ditherStudio"
   | "app-audioPlayer"
-  | "app-videoPlayer";
+  | "app-videoPlayer"
+  | "app-spaceInvaders";
 
 interface FinderIconProps {
   id: string;
@@ -91,6 +92,15 @@ export const FinderIcon = memo(function FinderIcon({
     return (
       <img
         src={getAssetPath("/icons/video-player.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
+
+  if (type === "app-spaceInvaders")
+    return (
+      <img
+        src={getAssetPath("/icons/space-invaders.svg")}
         alt=""
         draggable={false}
       />

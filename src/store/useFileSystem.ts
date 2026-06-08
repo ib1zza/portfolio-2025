@@ -62,7 +62,8 @@ export interface AppItem extends BaseItem {
     | "model-viewer"
     | "badge-generator"
     | "audio-player"
-    | "video-player";
+    | "video-player"
+    | "space-invaders";
   savedIconId?: string;
 }
 
@@ -433,6 +434,7 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "badgeGenerator",
   "audioPlayer",
   "videoPlayer",
+  "spaceInvaders",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
 const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
@@ -823,6 +825,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: getAppPosition(5),
       app: "video-player",
+    },
+    spaceInvaders: {
+      id: "spaceInvaders",
+      name: "Space Invaders",
+      type: "app",
+      parentId: "root",
+      position: getAppPosition(6),
+      app: "space-invaders",
     },
     credits: {
       id: "credits",

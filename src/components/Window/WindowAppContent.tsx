@@ -39,6 +39,12 @@ const VideoPlayer = lazy(() =>
   })),
 );
 
+const SpaceInvaders = lazy(() =>
+  import("../SpaceInvaders").then((module) => ({
+    default: module.SpaceInvaders,
+  })),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -66,6 +72,7 @@ export const WindowAppContent = memo(function WindowAppContent({
       {app === "badge-generator" && <BadgeGenerator windowId={windowId} />}
       {app === "audio-player" && <AudioPlayer windowId={windowId} />}
       {app === "video-player" && <VideoPlayer windowId={windowId} />}
+      {app === "space-invaders" && <SpaceInvaders windowId={windowId} />}
     </Suspense>
   );
 });

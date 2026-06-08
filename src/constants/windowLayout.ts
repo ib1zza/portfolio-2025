@@ -8,7 +8,8 @@ export type WindowAppId =
   | "model-viewer"
   | "badge-generator"
   | "audio-player"
-  | "video-player";
+  | "video-player"
+  | "space-invaders";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -28,6 +29,7 @@ const WINDOW_BASE_METRICS = {
   appSize: { width: 580, height: 384 },
   largeAppSize: { width: 660, height: 420 },
   videoPlayerSize: { width: 720, height: 520 },
+  gameSize: { width: 520, height: 480 },
   projectModelSize: { width: 900, height: 440 },
 } as const;
 
@@ -62,11 +64,13 @@ export const getWindowOpenStartWidth = () =>
 
 export const getAppWindowSize = (app: WindowAppId) =>
   scaleUiSize(
-    app === "model-viewer" || app === "badge-generator" || app === "audio-player"
-      ? WINDOW_BASE_METRICS.largeAppSize
-      : app === "video-player"
-        ? WINDOW_BASE_METRICS.videoPlayerSize
-        : WINDOW_BASE_METRICS.appSize,
+    app === "space-invaders"
+      ? WINDOW_BASE_METRICS.gameSize
+      : app === "model-viewer" || app === "badge-generator" || app === "audio-player"
+        ? WINDOW_BASE_METRICS.largeAppSize
+        : app === "video-player"
+          ? WINDOW_BASE_METRICS.videoPlayerSize
+          : WINDOW_BASE_METRICS.appSize,
   );
 
 export const getVideoPlayerWindowSize = () =>

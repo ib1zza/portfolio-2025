@@ -1,0 +1,133 @@
+@use "@/global/styles/vars" as *;
+@use "@/global/styles/mixins" as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: ui(8px);
+  height: 100%;
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+.gameWrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: ui(520px);
+  gap: ui(6px);
+  touch-action: none;
+}
+
+.canvasWrap {
+  position: relative;
+  width: 100%;
+  touch-action: none;
+}
+
+.canvas {
+  display: block;
+  border: $border;
+  background: $white;
+  image-rendering: pixelated;
+  width: 100%;
+  aspect-ratio: 320 / 280;
+  touch-action: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ui(8px);
+  background: $white;
+  z-index: 1;
+}
+
+.title {
+  @include textTitle(ui(18px), ui(28px));
+  color: $black;
+  text-align: center;
+}
+
+.subtitle {
+  @include textMain(ui(12px), ui(18px));
+  color: $black;
+  text-align: center;
+}
+
+.hint {
+  @include textMain(ui(10px), ui(16px));
+  color: $black;
+  text-align: center;
+}
+
+.pausedText {
+  @include textTitle(ui(16px), ui(24px));
+  color: $black;
+  text-align: center;
+}
+
+.resultText {
+  @include textTitle(ui(16px), ui(24px));
+  color: $black;
+  text-align: center;
+}
+
+.scoreText {
+  @include textMain(ui(14px), ui(20px));
+  color: $black;
+  text-align: center;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  @include textMain(ui(10px), ui(14px));
+  color: $black;
+  border: $border;
+  background: $white;
+  padding: ui(4px) ui(8px);
+  box-sizing: border-box;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: ui(12px);
+  margin-top: ui(2px);
+
+  @media (pointer: fine) {
+    display: none;
+  }
+}
+
+.btn {
+  width: ui(48px);
+  height: ui(48px);
+  border: ui(1.5px) solid $black;
+  background: $white;
+  font-family: var(--font-main);
+  font-size: ui(18px);
+  color: $black;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+
+  &:active {
+    background: $black;
+    color: $white;
+  }
+}
+
+.btnFire {
+  width: ui(80px);
+}
