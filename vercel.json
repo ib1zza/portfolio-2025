@@ -75,6 +75,10 @@
   ],
   "rewrites": [
     {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

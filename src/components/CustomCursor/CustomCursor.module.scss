@@ -1,5 +1,3 @@
-$public-base: "/" !default;
-
 .cursor {
   position: fixed;
   pointer-events: none;
@@ -13,56 +11,54 @@ $public-base: "/" !default;
   transform: none;
 }
 
-// Устанавливаем arrow как курсор по умолчанию
 .default {
-  background-image: url("#{$public-base}cursors/arrow.svg");
+  background-image: var(--cursor-default);
 }
 
-// Custom cursors
 .arrow {
-  background-image: url("#{$public-base}cursors/arrow.svg");
+  background-image: var(--cursor-arrow);
 }
 
 .background {
-  background-image: url("#{$public-base}cursors/background.svg");
+  background-image: var(--cursor-background);
 }
 
 .beam {
-  background-image: url("#{$public-base}cursors/beam.svg");
+  background-image: var(--cursor-beam);
 }
 
 .busy {
-  background-image: url("#{$public-base}cursors/busy.svg");
+  background-image: var(--cursor-busy);
 }
 
 .grab {
-  background-image: url("#{$public-base}cursors/grab.svg");
+  background-image: var(--cursor-grab);
 }
 
 .grab_02 {
-  background-image: url("#{$public-base}cursors/grab_02.svg");
+  background-image: var(--cursor-grab_02);
 }
 
 .hand {
-  background-image: url("#{$public-base}cursors/hand.svg");
+  background-image: var(--cursor-hand);
 }
 
 .pencil {
-  background-image: url("#{$public-base}cursors/pencil.svg");
+  background-image: var(--cursor-pencil);
 }
 
 .precision {
-  background-image: url("#{$public-base}cursors/precision.svg");
+  background-image: var(--cursor-precision);
 }
 
 .resize {
-  background-image: url("#{$public-base}cursors/resize.svg");
+  background-image: var(--cursor-resize);
 }
 
 .resize_02 {
-  background-image: url("#{$public-base}cursors/resize_02.svg");
+  background-image: var(--cursor-resize_02);
 }
 
 .watch {
-  background-image: url("#{$public-base}cursors/watch.svg");
+  background-image: var(--cursor-watch);
 }

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { FINE_POINTER_QUERY } from "../../constants/responsive";
 import { useCursor } from "../../contexts/cursor";
+import { injectCursorDataUris } from "../../utils/cursors";
 import s from "./CustomCursor.module.scss";
 
 export const CustomCursor: React.FC = () => {
@@ -10,6 +11,8 @@ export const CustomCursor: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    injectCursorDataUris();
+
     const mediaQuery = window.matchMedia(FINE_POINTER_QUERY);
     if (!mediaQuery.matches) return;
 

@@ -1,0 +1,35 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_2133_9224)">
+<path d="M21 2H11V14H21V2Z" fill="white"/>
+<path d="M20 3H12V9H13V4H20V3Z" fill="black"/>
+<path d="M20 12H16V13H20V12Z" fill="black"/>
+<path d="M20 4H19V9H13V10H20V4Z" fill="black"/>
+<path d="M13 9H12V10H13V9Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M21 1H11V2H10V14H11V16H21V14H22V2H21V1ZM21 2V14H11V2H21Z" fill="black"/>
+<path d="M15 6H14V5H15V6Z" fill="black"/>
+<path d="M17 6H16V5H17V6Z" fill="black"/>
+<path d="M15 8H14V7H15V8Z" fill="black"/>
+<rect x="2" y="16" width="28" height="1" fill="white"/>
+<path d="M8 18V19H9V21H10V18H8Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M12 18H11V23H13V24H14V25H16V26H18V27H19V29H23V26H22V25H23V23H21V22H20V23H18V22H15V21H14V18H13V21H12V18ZM14 22H13V21H14V22ZM15 23H14V22H15V23ZM15 23H16V24H15V23ZM21 24V25H22V24H21ZM21 24H20V23H21V24Z" fill="white"/>
+<path d="M22 18H23V22H22V18Z" fill="white"/>
+<path d="M23 18H24V29H25V32H17V29H18V27H19V29H23V18Z" fill="black"/>
+<rect width="1" height="3" transform="matrix(1 0 0 -1 12 21)" fill="black"/>
+<path d="M22 18V22H23V23H21V18H22Z" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 13 22)" fill="black"/>
+<path d="M14 21H15V22H18V21H16V20H15V18H14V21Z" fill="black"/>
+<path d="M21 22H20V23H18V22H19V21H21V22Z" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 14 23)" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 15 24)" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 20 24)" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 21 25)" fill="black"/>
+<rect width="1" height="1" transform="matrix(1 0 0 -1 22 26)" fill="black"/>
+<path d="M7 19H8V21H9V22H10V23H11V24H12V25H14V26H16V27H18V26H16V25H14V24H13V23H11V18H10V21H9V19H8V18H7V19Z" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M32 15H0V16H1V17H2V18H30V17H31V16H32V15ZM30 16V17H2V16H30Z" fill="black"/>
+</g>
+<defs>
+<clipPath id="clip0_2133_9224">
+<rect width="32" height="32" fill="white"/>
+</clipPath>
+</defs>
+</svg>

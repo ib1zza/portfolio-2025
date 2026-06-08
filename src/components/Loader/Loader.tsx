@@ -1,36 +1,5 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import s from "./Loader.module.scss";
-// @ts-ignore
-const LoadingIcon = () => (
-  <svg
-    className={s.helloSketchIcon}
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path d="M26 1H5V2H4V27H5V31H26V27H27V2H26V1Z" fill="white" />
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M26 0H5V1H4V2H3V27H4V32H27V27H28V2H27V1H26V0ZM26 1V2H27V27H4V2H5V1H26ZM26 31H5V28H26V31Z"
-      fill="black"
-    />
-    <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M24 3H7V4H6V17H7V18H24V17H25V4H24V3ZM24 4V17H7V4H24Z"
-      fill="black"
-    />
-    <path d="M13 13H12V14H13V15H17V14H18V13H17V14H13V13Z" fill="black" />
-    <path d="M16 7H15V11H14V12H16V7Z" fill="black" />
-    <rect x="19" y="7" width="1" height="2" fill="black" />
-    <rect x="11" y="7" width="1" height="2" fill="black" />
-    <rect x="6" y="22" width="2" height="1" fill="black" />
-    <rect x="18.5" y="22" width="6" height="1" fill="black" />
-  </svg>
-);
 
 type Pixel = readonly [number, number];
 
@@ -172,67 +141,6 @@ const HELLO_STROKES: Pixel[] = [
   // o — нижняя дуга и завершение росчерка
 ];
 
-const IBIZZA_LOGO_STROKES: Pixel[] = [
-  // левая верхняя штука — поднимаемся по диагонали к верху
-  [2, 2],
-  [3, 1],
-  [4, 0],
-
-  // центральная вертикаль — сверху вниз
-  [4, 1],
-  [4, 2],
-  [4, 3],
-  [4, 4],
-  [4, 5],
-  [4, 6],
-  [4, 7],
-  [4, 8],
-
-  // правая диагональ — из нижней части вправо-вверх
-  [5, 7],
-  [6, 6],
-  [7, 5],
-  [8, 4],
-
-  // горизонталь — справа налево до упора
-  [7, 4],
-  [6, 4],
-  [5, 4],
-  [4, 4],
-  [3, 4],
-  [2, 4],
-  [1, 4],
-  [0, 4],
-];
-
-// @ts-ignore
-const IbizzaLogo = () => (
-  <svg
-    className={s.ibizzaLogo}
-    width="144"
-    height="144"
-    viewBox="0 0 9 9"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    shapeRendering="crispEdges"
-    aria-hidden="true"
-  >
-    {IBIZZA_LOGO_STROKES.map(([x, y], index) => (
-      <rect
-        key={`${x}-${y}-${index}`}
-        className={s.ibizzaLogoPixel}
-        x={x}
-        y={y}
-        width="1"
-        height="1"
-        fill="black"
-        style={{
-          animationDelay: `${index * 45}ms`,
-        }}
-      />
-    ))}
-  </svg>
-);
 const HelloSketch = () => {
   const pixels = useMemo(() => HELLO_STROKES, []);
 
@@ -275,8 +183,6 @@ const Loader: React.FC<LoaderProps> = () => {
   return (
     <div className={s.loaderOverlay}>
       <div className={s.loaderContent}>
-        {/* <IbizzaLogo /> */}
-        {/* <LoadingIcon /> */}
         <HelloSketch />
       </div>
     </div>

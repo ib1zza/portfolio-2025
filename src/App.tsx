@@ -1,10 +1,18 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
-import { BadgeSharePage } from "./components/BadgeSharePage";
-import { HapticsTester } from "./components/HapticsTester/HapticsTester";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
+const LazyBadgeSharePage = lazy(() =>
+  import("./components/BadgeSharePage").then((m) => ({
+    default: m.BadgeSharePage,
+  })),
+);
+const LazyHapticsTester = lazy(() =>
+  import("./components/HapticsTester/HapticsTester").then((m) => ({
+    default: m.HapticsTester,
+  })),
+);
 
 const MIN_LOADER_DURATION_MS = import.meta.env.DEV ? 0 : 3000;
 const LOADER_AFTER_CONTENT_READY_MS = 100;
@@ -89,13 +97,17 @@ function App() {
 
   if (isTestRoute) {
     return (
-      <div>
-        <HapticsTester />
-      </div>
+      <Suspense fallback={null}>
+        <LazyHapticsTester />
+      </Suspense>
     );
   }
   if (isBadgeRoute) {
-    return <BadgeSharePage />;
+    return (
+      <Suspense fallback={null}>
+        <LazyBadgeSharePage />
+      </Suspense>
+    );
   }
 
   return (

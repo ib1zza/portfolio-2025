@@ -3,8 +3,7 @@ import { Topbar } from "../Topbar";
 import { getChildItems, useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import Folder from "../Folder";
-import { WindowContainer } from "../Window";
-import { useCallback, useEffect, useRef, type MouseEventHandler } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
@@ -14,6 +13,10 @@ import {
   type WindowAppId,
 } from "../../constants/windowLayout";
 import type { FinderIconType } from "../Folder/FinderIcon";
+
+const LazyWindowContainer = lazy(() =>
+  import("../Window").then((m) => ({ default: m.WindowContainer })),
+);
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -304,7 +307,9 @@ function DesktopContent() {
 
       {/* Окна */}
       {windowIds.map((windowId) => (
-        <WindowContainer key={windowId} id={windowId} />
+        <Suspense fallback={null} key={windowId}>
+          <LazyWindowContainer id={windowId} />
+        </Suspense>
       ))}
     </div>
   );

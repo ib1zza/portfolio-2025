@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
+import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -14,7 +15,53 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     base,
-    plugins: [react(), svgr()],
+    plugins: [
+      react({
+        babel: {
+          plugins: [["babel-plugin-react-compiler", { target: "19" }]],
+        },
+      }),
+      svgr(),
+      VitePWA({
+        registerType: "autoUpdate",
+        includeAssets: ["favicon.ico", "pwa-icon-192.png", "pwa-icon-512.png", "robots.txt"],
+        manifest: {
+          short_name: "ib1zza",
+          name: "ib1zza portfolio",
+          icons: [
+            {
+              src: "pwa-icon-192.png",
+              type: "image/png",
+              sizes: "192x192",
+              purpose: "any maskable",
+            },
+            {
+              src: "pwa-icon-512.png",
+              type: "image/png",
+              sizes: "512x512",
+              purpose: "any maskable",
+            },
+          ],
+          start_url: ".",
+          theme_color: "#ffffff",
+          background_color: "#ffffff",
+          display: "standalone",
+        },
+        workbox: {
+          globPatterns: ["assets/**/*.{js,css,woff2,svg,png,webp,ico}", "models/**/*.glb"],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/va\.vercel-scripts\.com\/.*/i,
+              handler: "NetworkFirst",
+              options: {
+                cacheName: "vercel-analytics",
+                expiration: { maxEntries: 10, maxAgeSeconds: 86400 },
+              },
+            },
+          ],
+        },
+      }),
+    ],
     css: {
       preprocessorOptions: {
         scss: {
@@ -51,8 +98,6 @@ export default defineConfig(({ command, mode }) => {
             ) {
               return "motion-vendor";
             }
-
-            return "vendor";
           },
         },
       },

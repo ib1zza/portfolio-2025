@@ -1,11 +1,18 @@
 import { memo, useEffect, useState } from "react";
 
-import { getAssetPath } from "../../utils/assets";
 import {
   createBlankIconPixels,
   ICON_DESKTOP_STORAGE_EVENT,
   readSavedIcon,
 } from "../IconPainter/iconPainterDesktop";
+import IconPainterSvg from "../../assets/icons/icon-painter.svg?react";
+import DitherStudioSvg from "../../assets/icons/dither-studio.svg?react";
+import ModelViewerSvg from "../../assets/icons/model-viewer.svg?react";
+import BadgeGeneratorSvg from "../../assets/icons/badge-generator.svg?react";
+import AudioPlayerSvg from "../../assets/icons/audio-player.svg?react";
+import VideoPlayerSvg from "../../assets/icons/video-player.svg?react";
+import SpaceInvadersSvg from "../../assets/icons/space-invaders.svg?react";
+import PortfolioAssistantSvg from "../../assets/icons/portfolio-assistant.svg?react";
 
 export type FinderIconType =
   | "folder"
@@ -44,77 +51,29 @@ export const FinderIcon = memo(function FinderIcon({
   const openedFill = isOpenedInactive ? `url(#${patternId})` : "white";
 
   if (type === "app-iconPainter") {
-    return (
-      <img
-        src={getAssetPath("/icons/icon-painter.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <IconPainterSvg />;
   }
 
   if (type === "app-ditherStudio")
-    return (
-      <img
-        src={getAssetPath("/icons/dither-studio.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <DitherStudioSvg />;
 
   if (type === "app-modelViewer")
-    return (
-      <img
-        src={getAssetPath("/icons/model-viewer.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <ModelViewerSvg />;
 
   if (type === "app-badgeGenerator")
-    return (
-      <img
-        src={getAssetPath("/icons/badge-generator.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <BadgeGeneratorSvg />;
 
   if (type === "app-audioPlayer")
-    return (
-      <img
-        src={getAssetPath("/icons/audio-player.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <AudioPlayerSvg />;
 
   if (type === "app-videoPlayer")
-    return (
-      <img
-        src={getAssetPath("/icons/video-player.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <VideoPlayerSvg />;
 
   if (type === "app-spaceInvaders")
-    return (
-      <img
-        src={getAssetPath("/icons/space-invaders.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <SpaceInvadersSvg />;
 
   if (type === "app-portfolioAssistant")
-    return (
-      <img
-        src={getAssetPath("/icons/portfolio-assistant.svg")}
-        alt=""
-        draggable={false}
-      />
-    );
+    return <PortfolioAssistantSvg />;
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;

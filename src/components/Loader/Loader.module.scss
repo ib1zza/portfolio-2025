@@ -20,22 +20,6 @@
   height: 100%;
 }
 
-.ibizzaLogo {
-  display: block;
-  width: calc(var(--loader-art-size) * 0.28125);
-  height: auto;
-  shape-rendering: crispEdges;
-  image-rendering: pixelated;
-  // transform: translateY(calc(-50% + var(--loader-art-offset)));
-}
-.helloSketchIcon {
-  display: block;
-  width: var(--loader-art-size);
-  height: auto;
-  shape-rendering: crispEdges;
-  image-rendering: pixelated;
-}
-
 .helloSketch {
   display: block;
   width: var(--loader-art-size);
@@ -58,17 +42,6 @@
 @media (prefers-reduced-motion: reduce) {
   .helloSketchPixel {
     animation: none;
-    opacity: 1;
-  }
-}
-
-.ibizzaLogoPixel {
-  opacity: 0;
-  animation: hello-pixel-draw 1ms linear forwards;
-}
-
-@keyframes drawIbizzaLogoPixel {
-  to {
     opacity: 1;
   }
 }

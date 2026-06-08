@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="32" height="32" fill="black"/>
+<path d="M1 1H9V20H5V21H7V26H4V27H7V31H1V1Z" fill="white"/>
+<rect x="4" y="6" width="1" height="3" fill="black"/>
+<path d="M24 5H18V6H16V7H15V8H14V9H13V11H12V25H11V26H9V27H25V26H27V25H28V24H29V22H30V11H29V9H28V8H27V7H26V6H24V5Z" fill="white"/>
+<rect x="15" y="12" width="3" height="1" fill="black"/>
+<rect x="19" y="12" width="3" height="1" fill="black"/>
+<rect x="23" y="12" width="3" height="1" fill="black"/>
+<rect x="15" y="15" width="3" height="1" fill="black"/>
+<rect x="15" y="21" width="4" height="1" fill="black"/>
+<rect x="20" y="21" width="3" height="1" fill="black"/>
+<rect x="24" y="21" width="2" height="1" fill="black"/>
+<rect x="19" y="15" width="3" height="1" fill="black"/>
+<rect x="21" y="18" width="3" height="1" fill="black"/>
+<rect x="15" y="18" width="3" height="1" fill="black"/>
+<rect x="23" y="15" width="1" height="1" fill="black"/>
+<rect x="19" y="18" width="1" height="1" fill="black"/>
+<rect x="25" y="15" width="1" height="1" fill="black"/>
+</svg>

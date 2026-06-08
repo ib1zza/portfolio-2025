@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { memo } from "react";
 import type { MouseEventHandler } from "react";
 
-import { getAssetPath } from "../../utils/assets";
 import s from "./Window.module.scss";
+import SparkleSvg from "../../assets/icons/sparkle.svg?react";
 
 interface WindowTitleBarProps {
   onClose: () => void;
@@ -20,11 +20,7 @@ export const WindowTitleBar = memo(function WindowTitleBar({
     <div className={s.windowTop}>
       <div className={s.buttonContainer}>
         <button className={s.windowTopButton} onClick={onClose}>
-          <img
-            src={getAssetPath("/icons/sparkle.svg")}
-            alt="sparkle"
-            draggable={false}
-          />
+          <SparkleSvg />
         </button>
       </div>
       <div className={s.title}>{title}</div>
@@ -33,11 +29,7 @@ export const WindowTitleBar = memo(function WindowTitleBar({
           className={clsx(s.windowTopButton, s.windowTopButtonClose)}
           onClick={onZoomToFit}
         >
-          <img
-            src={getAssetPath("/icons/sparkle.svg")}
-            alt="sparkle"
-            draggable={false}
-          />
+          <SparkleSvg />
         </button>
       </div>
     </div>

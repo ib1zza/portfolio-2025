@@ -360,7 +360,7 @@ export const portfolio = {
       links: [{ label: "Live", href: "https://xn--b1algdhloc.xn--p1ai/" }],
       images: [
         {
-          src: "/projects/silkworm/preview.png",
+          src: "/projects/silkworm/preview.webp",
           alt: "Silkworm website home screen",
           caption: "Production website reference",
         },
@@ -453,7 +453,7 @@ export const portfolio = {
       ],
       images: [
         {
-          src: "/projects/realtime-chat/preview.png",
+          src: "/projects/realtime-chat/preview.webp",
           alt: "Realtime chat interface",
           caption: "Chat screen preview",
         },
@@ -505,7 +505,7 @@ export const portfolio = {
       ],
       images: [
         {
-          src: "/projects/kanban/preview.png",
+          src: "/projects/kanban/preview.webp",
           alt: "Kanban application interface",
           caption: "Board interface preview",
         },
