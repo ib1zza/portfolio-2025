@@ -45,6 +45,12 @@ const SpaceInvaders = lazy(() =>
   })),
 );
 
+const PortfolioAssistant = lazy(() =>
+  import("../PortfolioAssistant").then((module) => ({
+    default: module.PortfolioAssistant,
+  })),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -73,6 +79,7 @@ export const WindowAppContent = memo(function WindowAppContent({
       {app === "audio-player" && <AudioPlayer windowId={windowId} />}
       {app === "video-player" && <VideoPlayer windowId={windowId} />}
       {app === "space-invaders" && <SpaceInvaders windowId={windowId} />}
+      {app === "portfolio-assistant" && <PortfolioAssistant />}
     </Suspense>
   );
 });

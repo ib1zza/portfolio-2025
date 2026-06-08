@@ -1,0 +1,191 @@
+.assistant {
+  display: grid;
+  grid-template-columns: ui(230px) minmax(ui(300px), 1fr);
+  gap: var(--app-gap);
+  width: 100%;
+  min-width: ui(560px);
+  min-height: 100%;
+  padding: var(--app-padding);
+  color: $black;
+  background: $white;
+  user-select: none;
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    align-content: start;
+    overflow: auto;
+  }
+}
+
+.queryPanel,
+.answerPanel {
+  min-width: 0;
+  border: $border;
+  background: $white;
+}
+
+.queryPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap);
+  padding: var(--panel-padding);
+}
+
+.answerPanel {
+  min-height: ui(320px);
+  overflow: auto;
+}
+
+.title,
+.sectionLabel {
+  @include textTitle(var(--control-title-font-size), ui(18px));
+}
+
+.title {
+  padding-bottom: var(--section-gap);
+  border-bottom: $border;
+}
+
+.searchForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--section-gap);
+  align-items: center;
+}
+
+.quickGroup,
+.history,
+.answerContent,
+.results {
+  display: flex;
+  flex-direction: column;
+}
+
+.quickGroup {
+  gap: ui(5px);
+}
+
+.inputHint {
+  @include textMain(var(--font-main-size), ui(14px));
+  margin-top: calc(var(--section-gap) * -1);
+}
+
+.history {
+  gap: ui(4px);
+  padding-top: var(--panel-gap);
+  margin-top: auto;
+  border-top: $border;
+}
+
+.quickQuestion,
+.historyItem {
+  @include textMain(var(--font-main-size), ui(15px));
+  display: block;
+  width: 100%;
+  min-height: ui(24px);
+  border: $border;
+  padding: ui(3px) ui(5px) ui(4px);
+  color: $black;
+  background: $white;
+  text-align: left;
+  overflow-wrap: anywhere;
+
+  &:hover,
+  &:focus-visible {
+    color: $white;
+    background: $black;
+    outline: none;
+  }
+}
+
+.historyItem {
+  border-style: dotted;
+}
+
+.emptyState {
+  @include textMain(var(--font-main-size), ui(16px));
+  display: grid;
+  min-height: ui(300px);
+  place-items: center;
+  padding: var(--app-gap);
+  text-align: center;
+}
+
+.answerContent {
+  gap: var(--panel-gap);
+  padding: var(--panel-padding);
+}
+
+.answerText {
+  @include textMain(var(--font-main-size), ui(16px));
+  margin: 0;
+  padding-bottom: var(--panel-gap);
+  border-bottom: $border;
+  white-space: pre-line;
+  user-select: text;
+}
+
+.results {
+  gap: var(--panel-padding);
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: ui(5px);
+  padding: ui(7px);
+  border: $border;
+  background: $white;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--panel-padding);
+  padding-bottom: ui(4px);
+  border-bottom: $border;
+
+  h2 {
+    @include textTitle(var(--control-title-font-size), ui(18px));
+    margin: 0;
+  }
+
+  span {
+    @include textMain(var(--font-main-size), ui(14px));
+    white-space: nowrap;
+  }
+}
+
+.result p {
+  @include textMain(var(--font-main-size), ui(15px));
+  margin: 0;
+  user-select: text;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: ui(4px);
+  padding: ui(2px) 0 0;
+  margin: 0;
+  list-style: none;
+
+  a {
+    @include textMain(var(--font-main-size), ui(15px));
+    display: inline-block;
+    border: $border;
+    padding: ui(2px) ui(5px);
+    color: $black;
+    background: $white;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: $white;
+      background: $black;
+      outline: none;
+    }
+  }
+}

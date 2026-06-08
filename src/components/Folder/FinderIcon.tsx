@@ -23,7 +23,8 @@ export type FinderIconType =
   | "app-ditherStudio"
   | "app-audioPlayer"
   | "app-videoPlayer"
-  | "app-spaceInvaders";
+  | "app-spaceInvaders"
+  | "app-portfolioAssistant";
 
 interface FinderIconProps {
   id: string;
@@ -101,6 +102,15 @@ export const FinderIcon = memo(function FinderIcon({
     return (
       <img
         src={getAssetPath("/icons/space-invaders.svg")}
+        alt=""
+        draggable={false}
+      />
+    );
+
+  if (type === "app-portfolioAssistant")
+    return (
+      <img
+        src={getAssetPath("/icons/portfolio-assistant.svg")}
         alt=""
         draggable={false}
       />

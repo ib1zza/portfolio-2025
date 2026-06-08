@@ -63,7 +63,8 @@ export interface AppItem extends BaseItem {
     | "badge-generator"
     | "audio-player"
     | "video-player"
-    | "space-invaders";
+    | "space-invaders"
+    | "portfolio-assistant";
   savedIconId?: string;
 }
 
@@ -435,6 +436,7 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "audioPlayer",
   "videoPlayer",
   "spaceInvaders",
+  "portfolioAssistant",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
 const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
@@ -833,6 +835,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: getAppPosition(6),
       app: "space-invaders",
+    },
+    portfolioAssistant: {
+      id: "portfolioAssistant",
+      name: "Portfolio Assistant",
+      type: "app",
+      parentId: "root",
+      position: getAppPosition(7),
+      app: "portfolio-assistant",
     },
     credits: {
       id: "credits",

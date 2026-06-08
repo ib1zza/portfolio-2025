@@ -9,7 +9,8 @@ export type WindowAppId =
   | "badge-generator"
   | "audio-player"
   | "video-player"
-  | "space-invaders";
+  | "space-invaders"
+  | "portfolio-assistant";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -66,7 +67,10 @@ export const getAppWindowSize = (app: WindowAppId) =>
   scaleUiSize(
     app === "space-invaders"
       ? WINDOW_BASE_METRICS.gameSize
-      : app === "model-viewer" || app === "badge-generator" || app === "audio-player"
+      : app === "model-viewer" ||
+          app === "badge-generator" ||
+          app === "audio-player" ||
+          app === "portfolio-assistant"
         ? WINDOW_BASE_METRICS.largeAppSize
         : app === "video-player"
           ? WINDOW_BASE_METRICS.videoPlayerSize
