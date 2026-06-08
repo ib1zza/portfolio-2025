@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import s from "./Loader.module.scss";
 
 type Pixel = readonly [number, number];
@@ -180,6 +180,11 @@ interface LoaderProps {
 }
 
 const Loader: React.FC<LoaderProps> = () => {
+  useEffect(() => {
+    const el = document.getElementById("preloader");
+    if (el) el.style.display = "none";
+  }, []);
+
   return (
     <div className={s.loaderOverlay}>
       <div className={s.loaderContent}>

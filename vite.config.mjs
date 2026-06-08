@@ -24,6 +24,7 @@ export default defineConfig(({ command, mode }) => {
       svgr(),
       VitePWA({
         registerType: "autoUpdate",
+        injectRegister: "script-defer",
         includeAssets: ["favicon.ico", "pwa-icon-192.png", "pwa-icon-512.png", "robots.txt"],
         manifest: {
           short_name: "ib1zza",
@@ -73,6 +74,8 @@ export default defineConfig(({ command, mode }) => {
       },
     },
     build: {
+      sourcemap: false,
+      modulePreload: { polyfill: false },
       chunkSizeWarningLimit: 850,
       rollupOptions: {
         output: {

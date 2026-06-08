@@ -3,7 +3,6 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { isMobilePointerMode } from "../../constants/responsive";
-import { useCustomCursor } from "../../hooks/useCustomCursor";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
@@ -289,14 +288,11 @@ export function Topbar() {
     submenuRef.current = el;
   }, []);
 
-  const { withCursor } = useCustomCursor();
-
   return (
     <div className={s.topbar}>
       {tabs.map((tab, index) => (
         <div key={tab.title} className={s.tab} ref={setTabRef(index)}>
           <div
-            {...withCursor("hand")}
             className={clsx(s.tabTitle, {
               [s.active]: activeMenuIndex === index,
             })}

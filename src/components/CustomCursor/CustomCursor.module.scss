@@ -11,52 +11,9 @@
   transform: none;
 }
 
-.default {
-  background-image: var(--cursor-default);
-}
-
+.default,
 .arrow {
   background-image: var(--cursor-arrow);
-}
-
-.background {
-  background-image: var(--cursor-background);
-}
-
-.beam {
-  background-image: var(--cursor-beam);
-}
-
-.busy {
-  background-image: var(--cursor-busy);
-}
-
-.grab {
-  background-image: var(--cursor-grab);
-}
-
-.grab_02 {
-  background-image: var(--cursor-grab_02);
-}
-
-.hand {
-  background-image: var(--cursor-hand);
-}
-
-.pencil {
-  background-image: var(--cursor-pencil);
-}
-
-.precision {
-  background-image: var(--cursor-precision);
-}
-
-.resize {
-  background-image: var(--cursor-resize);
-}
-
-.resize_02 {
-  background-image: var(--cursor-resize_02);
 }
 
 .watch {
