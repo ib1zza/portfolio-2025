@@ -55,26 +55,19 @@ export const FinderIcon = memo(function FinderIcon({
     return <IconPainterSvg />;
   }
 
-  if (type === "app-ditherStudio")
-    return <DitherStudioSvg />;
+  if (type === "app-ditherStudio") return <DitherStudioSvg />;
 
-  if (type === "app-modelViewer")
-    return <ModelViewerSvg />;
+  if (type === "app-modelViewer") return <ModelViewerSvg />;
 
-  if (type === "app-badgeGenerator")
-    return <BadgeGeneratorSvg />;
+  if (type === "app-badgeGenerator") return <BadgeGeneratorSvg />;
 
-  if (type === "app-audioPlayer")
-    return <AudioPlayerSvg />;
+  if (type === "app-audioPlayer") return <AudioPlayerSvg />;
 
-  if (type === "app-videoPlayer")
-    return <VideoPlayerSvg />;
+  if (type === "app-videoPlayer") return <VideoPlayerSvg />;
 
-  if (type === "app-spaceInvaders")
-    return <SpaceInvadersSvg />;
+  if (type === "app-spaceInvaders") return <SpaceInvadersSvg />;
 
-  if (type === "app-portfolioAssistant")
-    return <PortfolioAssistantSvg />;
+  if (type === "app-portfolioAssistant") return <PortfolioAssistantSvg />;
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;
@@ -134,18 +127,22 @@ export const FinderIcon = memo(function FinderIcon({
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        shapeRendering="crispEdges"
       >
-        <path d="M5 6H27V7H28V25H27V26H5V25H4V7H5V6Z" fill="black" />
-        <path d="M6 8H26V24H6V8Z" fill={openedFill} />
-        <path d="M8 10H24V11H8V10Z" fill="black" />
-        <path d="M9 13H23V14H9V13Z" fill="black" />
-        <path d="M8 18H24V23H8V18Z" fill="black" />
-        <path d="M10 19H22V22H10V19Z" fill="white" />
-        <path d="M21 20H22V21H21V20Z" fill="black" />
-        <path d="M10 3H22V6H10V3Z" fill="black" />
-        <path d="M11 4H21V6H11V4Z" fill="white" />
-        <OpenedPattern id={patternId} />
+        <rect x="1" y="20" width="30" height="8" fill="white" />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
+          fill="black"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
+          fill="black"
+          fill-opacity="0.2"
+        />
+        <rect x="4" y="25" width="2" height="1" fill="black" />
       </svg>
     );
   }
