@@ -10,6 +10,7 @@ import {
   drawPixelCircle,
   drawPixelWaveform,
 } from "./visualizers";
+import { getAssetPath } from "../../utils/assets";
 import s from "./AudioPlayer.module.scss";
 
 const VISUALIZER_FRAME_MS = 45;
@@ -29,10 +30,12 @@ const VISUALIZER_OPTIONS = [
 
 interface AudioPlayerProps {
   windowId: string;
+  fileUrl?: string;
 }
 
 export const AudioPlayer = memo(function AudioPlayer({
   windowId,
+  fileUrl,
 }: AudioPlayerProps) {
   void windowId;
   const [file, setFile] = useState<File | null>(null);
@@ -86,17 +89,8 @@ export const AudioPlayer = memo(function AudioPlayer({
     sourceRef.current = source;
   }, []);
 
-  const loadFile = useCallback(
-    (nextFile: File | undefined) => {
-      if (!nextFile) return;
-      if (
-        !ACCEPTED_TYPES.includes(nextFile.type) &&
-        !nextFile.name.match(/\.(mp3|ogg|wav)$/i)
-      )
-        return;
-
-      const url = URL.createObjectURL(nextFile);
-      const audio = new Audio(url);
+  const setupAudioElement = useCallback(
+    (audio: HTMLAudioElement, trackName: string) => {
       audio.volume = volume;
       audio.loop = loop;
 
@@ -126,8 +120,7 @@ export const AudioPlayer = memo(function AudioPlayer({
       }
 
       audioRef.current = audio;
-      setFile(nextFile);
-      setFileName(nextFile.name);
+      setFileName(trackName);
       setCurrentTime(0);
       setIsPlaying(false);
       setIsInitialized(true);
@@ -135,9 +128,44 @@ export const AudioPlayer = memo(function AudioPlayer({
     [loop, volume],
   );
 
+  const loadFromUrl = useCallback(
+    (url: string, name: string) => {
+      const audio = new Audio(url);
+      setupAudioElement(audio, name);
+    },
+    [setupAudioElement],
+  );
+
+  const loadFile = useCallback(
+    (nextFile: File | undefined) => {
+      if (!nextFile) return;
+      if (
+        !ACCEPTED_TYPES.includes(nextFile.type) &&
+        !nextFile.name.match(/\.(mp3|ogg|wav)$/i)
+      )
+        return;
+
+      const url = URL.createObjectURL(nextFile);
+      setFile(nextFile);
+      loadFromUrl(url, nextFile.name);
+    },
+    [loadFromUrl],
+  );
+
+  const ensureAudioContext = useCallback(() => {
+    if (audioCtxRef.current) return;
+
+    initAudioContext();
+    if (audioRef.current) {
+      connectAudioNode();
+    }
+  }, [initAudioContext, connectAudioNode]);
+
   const handlePlayPause = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
+
+    ensureAudioContext();
 
     if (audioCtxRef.current?.state === "suspended") {
       await audioCtxRef.current.resume();
@@ -148,7 +176,7 @@ export const AudioPlayer = memo(function AudioPlayer({
     } else {
       audio.pause();
     }
-  }, []);
+  }, [ensureAudioContext]);
 
   const handleStop = useCallback(() => {
     const audio = audioRef.current;
@@ -184,6 +212,12 @@ export const AudioPlayer = memo(function AudioPlayer({
     }
     setLoop(nextLoop);
   }, [loop]);
+
+  useEffect(() => {
+    if (!fileUrl) return;
+    const resolvedUrl = getAssetPath(fileUrl);
+    loadFromUrl(resolvedUrl, fileUrl.split("/").pop() ?? "audio");
+  }, [fileUrl, loadFromUrl]);
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
@@ -224,25 +258,23 @@ export const AudioPlayer = memo(function AudioPlayer({
   }, [initAudioContext]);
 
   useEffect(() => {
-    if (!file) return;
+    if (!isInitialized || !audioCtxRef.current) return;
     connectAudioNode();
-  }, [file, connectAudioNode]);
+  }, [isInitialized, connectAudioNode]);
 
   useEffect(() => {
-    if (!isInitialized || !file) return;
+    if (!isInitialized) return;
 
     const canvas = canvasRef.current;
-    const analyser = analyserRef.current;
-    if (!canvas || !analyser) return;
+    if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const frequencyData = new Uint8Array(analyser.frequencyBinCount);
-    const waveformData = new Uint8Array(analyser.fftSize);
-
     let lastDrawAt = 0;
     let wasPaused = false;
+    let frequencyData: Uint8Array<ArrayBuffer> | null = null;
+    let waveformData: Uint8Array<ArrayBuffer> | null = null;
 
     const clear = () => {
       ctx.fillStyle = "white";
@@ -253,8 +285,9 @@ export const AudioPlayer = memo(function AudioPlayer({
       animFrameRef.current = requestAnimationFrame(draw);
 
       const audio = audioRef.current;
+      const analyser = analyserRef.current;
 
-      if (!audio || audio.paused) {
+      if (!audio || audio.paused || !analyser) {
         if (!wasPaused) {
           clear();
           wasPaused = true;
@@ -270,6 +303,13 @@ export const AudioPlayer = memo(function AudioPlayer({
       }
 
       lastDrawAt = time;
+
+      if (!frequencyData) {
+        frequencyData = new Uint8Array(analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>;
+      }
+      if (!waveformData) {
+        waveformData = new Uint8Array(analyser.fftSize) as Uint8Array<ArrayBuffer>;
+      }
 
       if (visualizerMode === "waveform") {
         analyser.getByteTimeDomainData(waveformData);
@@ -296,7 +336,7 @@ export const AudioPlayer = memo(function AudioPlayer({
         animFrameRef.current = null;
       }
     };
-  }, [file, isInitialized, visualizerMode]);
+  }, [file, fileUrl, isInitialized, visualizerMode]);
 
   useEffect(() => {
     return () => {

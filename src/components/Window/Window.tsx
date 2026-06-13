@@ -142,6 +142,18 @@ export const Window = memo(function Window({ data }: WindowProps) {
     }
 
     if (currentItem.type === "file") {
+      if (currentItem.openWithApp) {
+        return (
+          <WindowAppContent
+            app={currentItem.openWithApp}
+            isActive={isFocused}
+            title={currentItem.name}
+            windowId={id}
+            fileUrl={currentItem.fileUrl}
+          />
+        );
+      }
+
       return (
         <WindowDocumentContent
           content={currentItem.content}

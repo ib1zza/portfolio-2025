@@ -1,0 +1,56 @@
+@use "@/global/styles/vars" as *;
+@use "@/global/styles/mixins" as *;
+
+.imageViewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ui(8px);
+  padding: ui(12px);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.statusWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  border: $border;
+  background: $white;
+  width: 100%;
+}
+
+.statusText {
+  @include textMain(ui(12px), ui(18px));
+  color: $black;
+}
+
+.previewPanel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: $border;
+  background: $white;
+  overflow: hidden;
+}
+
+.preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: $white;
+}
+
+.meta {
+  @include textMain(ui(11px), ui(16px));
+  display: flex;
+  gap: ui(12px);
+  color: $black;
+  padding: ui(4px) 0;
+}

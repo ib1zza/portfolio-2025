@@ -18,6 +18,9 @@ export type FinderIconType =
   | "folder"
   | "disk"
   | "file"
+  | "file-audio"
+  | "file-video"
+  | "file-image"
   | "saved-icon"
   | "trash"
   | "vk"
@@ -143,6 +146,66 @@ export const FinderIcon = memo(function FinderIcon({
           fill-opacity="0.2"
         />
         <rect x="4" y="25" width="2" height="1" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-audio") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="3" width="18" height="20" fill="black" />
+        <rect x="11" y="10" width="8" height="2" fill="white" />
+        <rect x="11" y="13" width="6" height="2" fill="white" />
+        <rect x="24" y="24" width="2" height="2" fill="black" />
+        <rect x="22" y="26" width="2" height="2" fill="black" />
+        <rect x="20" y="24" width="2" height="4" fill="black" />
+        <rect x="22" y="22" width="2" height="2" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-video") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="8" width="14" height="16" fill="black" />
+        <polygon points="20,12 26,16 26,16 20,20" fill="white" />
+        <rect x="22" y="24" width="2" height="2" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-image") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="3" width="18" height="18" fill="black" />
+        <rect x="10" y="7" width="4" height="4" fill="white" />
+        <polygon points="6,21 14,13 22,21" fill="white" />
+        <polygon points="14,17 22,9 22,21 14,17" fill="white" />
+        <rect x="24" y="24" width="2" height="2" fill="black" />
       </svg>
     );
   }

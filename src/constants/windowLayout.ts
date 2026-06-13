@@ -11,7 +11,9 @@ export type WindowAppId =
   | "video-player"
   | "space-invaders"
   | "portfolio-assistant"
-  | "hypercard-stack";
+  | "hypercard-stack"
+  | "image-viewer"
+  | "video-viewer";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -77,8 +79,10 @@ export const getAppWindowSize = (app: WindowAppId) =>
         ? WINDOW_BASE_METRICS.largeAppSize
         : app === "hypercard-stack"
           ? WINDOW_BASE_METRICS.hyperCardSize
-        : app === "video-player"
+        : app === "video-player" || app === "video-viewer"
           ? WINDOW_BASE_METRICS.videoPlayerSize
+        : app === "image-viewer"
+          ? WINDOW_BASE_METRICS.largeAppSize
           : WINDOW_BASE_METRICS.appSize,
   );
 

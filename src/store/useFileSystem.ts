@@ -14,6 +14,7 @@ import {
 import { EASTER_EGG_LOG_FILE_ID } from "../features/easter-eggs/easterEggDefinitions";
 import { createThrottledLocalStorage } from "../utils/storage";
 import { scaleUiValue } from "../utils/uiScale";
+import type { WindowAppId } from "../constants/windowLayout";
 
 export interface Position {
   x: number;
@@ -48,6 +49,8 @@ export interface FileItem extends BaseItem {
   type: "file";
   content: string | DocumentBlock[];
   documentStyle?: "default" | "centered-note" | "easter-eggs-log";
+  openWithApp?: WindowAppId;
+  fileUrl?: string;
 }
 
 export interface SystemItem extends BaseItem {
@@ -73,7 +76,9 @@ export interface AppItem extends BaseItem {
     | "video-player"
     | "space-invaders"
     | "portfolio-assistant"
-    | "hypercard-stack";
+    | "hypercard-stack"
+    | "image-viewer"
+    | "video-viewer";
   savedIconId?: string;
 }
 
@@ -481,10 +486,12 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "portfolioAssistant",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
+const ROOT_SYSTEM_ITEM_IDS: readonly string[] = ["mediaHd"];
 const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
   ...ROOT_FOLDER_ITEM_IDS,
   ...ROOT_APP_ITEM_IDS,
   ...ROOT_FILE_ITEM_IDS,
+  ...ROOT_SYSTEM_ITEM_IDS,
   "trash",
 ]);
 const DESKTOP_GRID = {
@@ -550,6 +557,7 @@ const getRootChildren = (
   ...ROOT_APP_ITEM_IDS,
   ...generatedFileIds,
   ...ROOT_FILE_ITEM_IDS,
+  ...ROOT_SYSTEM_ITEM_IDS,
   ...extraItemIds,
   "trash",
 ];
@@ -656,6 +664,9 @@ const getCreditsPosition = (generatedFileCount: number) =>
 const getTimeMachinePosition = (generatedFileCount: number) =>
   getGeneratedFilePosition(generatedFileCount + 1);
 
+const getMediaDiskPosition = (generatedFileCount: number) =>
+  getGeneratedFilePosition(generatedFileCount + 2);
+
 const getTrashPosition = () => {
   const { width, height, isMobile } = getViewportMetrics();
   const trash = isMobile ? MOBILE_TRASH : DESKTOP_TRASH;
@@ -677,6 +688,12 @@ const getCleanRootPosition = (
   if (item.id === "trash") return getTrashPosition();
   if (item.id === EASTER_EGG_LOG_FILE_ID) {
     return getEasterEggLogPosition(
+      siblings.filter((sibling) => isGeneratedFileItemId(sibling.id)).length,
+    );
+  }
+
+  if (item.id === "mediaHd") {
+    return getMediaDiskPosition(
       siblings.filter((sibling) => isGeneratedFileItemId(sibling.id)).length,
     );
   }
@@ -951,6 +968,81 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "timeMachineHd",
       content: lastDiskContent,
       documentStyle: "centered-note",
+    },
+    mediaHd: {
+      id: "mediaHd",
+      name: "Media",
+      type: "system",
+      parentId: "root",
+      position: getMediaDiskPosition(savedIconIds.length),
+      systemType: "disk",
+      children: ["mediaPhoto", "mediaVideo", "mediaMusic"],
+    },
+    mediaPhoto: {
+      id: "mediaPhoto",
+      name: "Photo",
+      type: "folder",
+      parentId: "mediaHd",
+      children: ["mediaPhoto8", "mediaPhotoPaul", "mediaPhotoTorretto"],
+    },
+    mediaPhoto8: {
+      id: "mediaPhoto8",
+      name: "8.png",
+      type: "file",
+      parentId: "mediaPhoto",
+      content: "",
+      openWithApp: "image-viewer",
+      fileUrl: "media/photo/8.png",
+    },
+    mediaPhotoPaul: {
+      id: "mediaPhotoPaul",
+      name: "paul.jpg",
+      type: "file",
+      parentId: "mediaPhoto",
+      content: "",
+      openWithApp: "image-viewer",
+      fileUrl: "media/photo/paul.jpg",
+    },
+    mediaPhotoTorretto: {
+      id: "mediaPhotoTorretto",
+      name: "torretto.jpg",
+      type: "file",
+      parentId: "mediaPhoto",
+      content: "",
+      openWithApp: "image-viewer",
+      fileUrl: "media/photo/torretto.jpg",
+    },
+    mediaVideo: {
+      id: "mediaVideo",
+      name: "Video",
+      type: "folder",
+      parentId: "mediaHd",
+      children: ["mediaVideoCliff"],
+    },
+    mediaVideoCliff: {
+      id: "mediaVideoCliff",
+      name: "cliff.mp4",
+      type: "file",
+      parentId: "mediaVideo",
+      content: "",
+      openWithApp: "video-viewer",
+      fileUrl: "media/video/cliff.mp4",
+    },
+    mediaMusic: {
+      id: "mediaMusic",
+      name: "Music",
+      type: "folder",
+      parentId: "mediaHd",
+      children: ["mediaMusicHellrunner"],
+    },
+    mediaMusicHellrunner: {
+      id: "mediaMusicHellrunner",
+      name: "hellrunner.mp3",
+      type: "file",
+      parentId: "mediaMusic",
+      content: "",
+      openWithApp: "audio-player",
+      fileUrl: "media/music/hellrunner.mp3",
     },
     hypercardStack: {
       id: "hypercardStack",

@@ -1,0 +1,138 @@
+@use "@/global/styles/vars" as *;
+@use "@/global/styles/mixins" as *;
+
+.videoPlayer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: ui(8px);
+  padding: ui(12px);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.videoArea {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.videoWrap {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $black;
+  border: $border;
+  overflow: hidden;
+}
+
+.ditherCanvas {
+  display: block;
+  image-rendering: pixelated;
+  opacity: 0;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+.sourceVideo {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $black;
+}
+
+.loadingText {
+  @include textTitle(ui(14px), ui(24px));
+  color: $white;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: ui(6px);
+  border: $border;
+  background: $white;
+  padding: ui(8px);
+}
+
+.trackInfo {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.transportRow {
+  display: flex;
+  align-items: center;
+  gap: ui(4px);
+}
+
+.timeDisplay {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+  min-width: ui(80px);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.seekRow {
+  display: flex;
+  align-items: center;
+  gap: ui(8px);
+}
+
+.seekSlider {
+  flex: 1;
+}
+
+.volumeRow {
+  display: flex;
+  align-items: center;
+  gap: ui(4px);
+}
+
+.volumeSlider {
+  width: ui(80px);
+}
+
+.volumeLabel {
+  @include textMain(ui(11px), ui(16px));
+  color: $black;
+}
+
+.loopBtn {
+  @include textTitle(ui(10px), ui(14px));
+  min-width: ui(28px);
+  height: ui(20px);
+  border: $border;
+  background: $white;
+  color: $black;
+  cursor: pointer;
+  padding: 0 ui(4px);
+
+  &:active {
+    background: $black;
+    color: $white;
+  }
+
+  &.active {
+    background: $black;
+    color: $white;
+  }
+}

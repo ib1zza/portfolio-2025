@@ -68,6 +68,15 @@ export const WindowFolderContent = memo(function WindowFolderContent({
         }
 
         if (child.type === "file") {
+          const fileIcon: FinderIconType =
+            child.fileUrl?.match(/\.(mp3|ogg|wav|m4a)$/i)
+              ? "file-audio"
+              : child.fileUrl?.match(/\.(mp4|webm|mov)$/i)
+                ? "file-video"
+                : child.name.match(/\.(png|jpg|jpeg|gif|webp)$/i)
+                  ? "file-image"
+                  : "file";
+
           return (
             <Folder
               key={child.id}
@@ -76,7 +85,7 @@ export const WindowFolderContent = memo(function WindowFolderContent({
               position={itemPosition}
               parentWindowId={parentWindowId}
               constraintRef={constraintRef}
-              icon="file"
+              icon={fileIcon}
             />
           );
         }

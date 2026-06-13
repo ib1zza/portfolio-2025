@@ -59,12 +59,25 @@ const HyperCardStack = lazy(() =>
   ),
 );
 
+const ImageViewer = lazy(() =>
+  import("../ImageViewer").then((module) => ({
+    default: module.ImageViewer,
+  })),
+);
+
+const SimpleVideoPlayer = lazy(() =>
+  import("../SimpleVideoPlayer").then((module) => ({
+    default: module.SimpleVideoPlayer,
+  })),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
   savedIconId?: string;
   title: string;
   windowId: string;
+  fileUrl?: string;
 }
 
 export const WindowAppContent = memo(function WindowAppContent({
@@ -73,6 +86,7 @@ export const WindowAppContent = memo(function WindowAppContent({
   savedIconId,
   title,
   windowId,
+  fileUrl,
 }: WindowAppContentProps) {
   return (
     <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
@@ -84,11 +98,21 @@ export const WindowAppContent = memo(function WindowAppContent({
         <ModelViewerApp isActive={isActive} windowId={windowId} />
       )}
       {app === "badge-generator" && <BadgeGenerator windowId={windowId} />}
-      {app === "audio-player" && <AudioPlayer windowId={windowId} />}
-      {app === "video-player" && <VideoPlayer windowId={windowId} />}
+      {app === "audio-player" && (
+        <AudioPlayer windowId={windowId} fileUrl={fileUrl} />
+      )}
+      {app === "video-player" && (
+        <VideoPlayer windowId={windowId} fileUrl={fileUrl} />
+      )}
       {app === "space-invaders" && <SpaceInvaders windowId={windowId} />}
       {app === "portfolio-assistant" && <PortfolioAssistant />}
       {app === "hypercard-stack" && <HyperCardStack />}
+      {app === "image-viewer" && (
+        <ImageViewer windowId={windowId} fileUrl={fileUrl} />
+      )}
+      {app === "video-viewer" && (
+        <SimpleVideoPlayer windowId={windowId} fileUrl={fileUrl} />
+      )}
     </Suspense>
   );
 });
