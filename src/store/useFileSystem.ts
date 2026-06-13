@@ -11,6 +11,7 @@ import {
   readSavedIcons,
   type SavedDesktopIcon,
 } from "../components/IconPainter/iconPainterDesktop";
+import { EASTER_EGG_LOG_FILE_ID } from "../features/easter-eggs/easterEggDefinitions";
 import { createThrottledLocalStorage } from "../utils/storage";
 import { scaleUiValue } from "../utils/uiScale";
 
@@ -46,6 +47,13 @@ export type DocumentBlock =
 export interface FileItem extends BaseItem {
   type: "file";
   content: string | DocumentBlock[];
+  documentStyle?: "default" | "centered-note" | "easter-eggs-log";
+}
+
+export interface SystemItem extends BaseItem {
+  type: "system";
+  systemType: "disk";
+  children: string[];
 }
 
 export interface LinkItem extends BaseItem {
@@ -64,11 +72,12 @@ export interface AppItem extends BaseItem {
     | "audio-player"
     | "video-player"
     | "space-invaders"
-    | "portfolio-assistant";
+    | "portfolio-assistant"
+    | "hypercard-stack";
   savedIconId?: string;
 }
 
-export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
+export type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem | SystemItem;
 
 export const getChildItems = (
   items: Record<string, FileSystemItem>,
@@ -76,7 +85,7 @@ export const getChildItems = (
 ) => {
   const parent = parentId ? items[parentId] : undefined;
 
-  if (parent?.type === "folder") {
+  if (parent?.type === "folder" || parent?.type === "system") {
     return parent.children
       .map((childId) => items[childId])
       .filter((item): item is FileSystemItem => Boolean(item));
@@ -222,6 +231,39 @@ const contactsContent = [
   { type: "title", text: "Contact" },
   { type: "links", items: portfolio.contacts },
 ] satisfies DocumentBlock[];
+
+const timeMachineScreenshotContent = [
+  {
+    type: "image",
+    src: "easter-eggs/screenshot_1988.png",
+    alt: "A monochrome Macintosh desktop screenshot from 1988",
+    caption: "Screenshot_1988.png",
+  },
+] satisfies DocumentBlock[];
+
+const futureProjectsContent = `Future Project Ideas
+
+* Build software that feels physical
+* Explore procedural art
+* Make smaller things with more care`;
+
+const readmeFrom2035Content = `React 37 is finally stable.
+
+CSS now has only 14 ways to center a div.
+
+Most AI assistants spend their time helping people rename variables.
+
+Somehow floppy disks are cool again.`;
+
+const lastDiskContent = `Every computer becomes a museum piece eventually.
+
+Some are remembered because of their hardware.
+
+Some because of their software.
+
+The lucky ones are remembered because somebody loved them.
+
+Thanks for visiting.`;
 
 const creditsContent = [
   { type: "title", text: "Credits & Licenses" },
@@ -603,10 +645,16 @@ const getGeneratedFilePosition = (index: number) =>
         ROOT_FOLDER_ITEM_IDS.length + ROOT_APP_ITEM_IDS.length + index,
       );
 
+const getEasterEggLogPosition = (generatedFileCount: number) =>
+  getGeneratedFilePosition(generatedFileCount + 2);
+
 const getSavedIconPosition = (index: number) => getGeneratedFilePosition(index);
 
 const getCreditsPosition = (generatedFileCount: number) =>
   getGeneratedFilePosition(generatedFileCount);
+
+const getTimeMachinePosition = (generatedFileCount: number) =>
+  getGeneratedFilePosition(generatedFileCount + 1);
 
 const getTrashPosition = () => {
   const { width, height, isMobile } = getViewportMetrics();
@@ -627,6 +675,11 @@ const getCleanRootPosition = (
   siblings: FileSystemItem[],
 ) => {
   if (item.id === "trash") return getTrashPosition();
+  if (item.id === EASTER_EGG_LOG_FILE_ID) {
+    return getEasterEggLogPosition(
+      siblings.filter((sibling) => isGeneratedFileItemId(sibling.id)).length,
+    );
+  }
 
   const folderIndex = ROOT_FOLDER_ITEM_IDS.indexOf(item.id);
   if (folderIndex >= 0) return getFolderPosition(folderIndex);
@@ -852,6 +905,61 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       position: getCreditsPosition(savedIconIds.length),
       content: creditsContent,
     },
+    [EASTER_EGG_LOG_FILE_ID]: {
+      id: EASTER_EGG_LOG_FILE_ID,
+      name: "Easter Eggs",
+      type: "file",
+      parentId: "root",
+      position: getEasterEggLogPosition(savedIconIds.length),
+      content: "",
+      documentStyle: "easter-eggs-log",
+    },
+    timeMachineHd: {
+      id: "timeMachineHd",
+      name: "Time Machine HD",
+      type: "system",
+      parentId: "root",
+      position: getTimeMachinePosition(savedIconIds.length),
+      systemType: "disk",
+      children: ["tmScreenshot1988", "tmFutureProjects", "tmReadme2035"],
+    },
+    tmScreenshot1988: {
+      id: "tmScreenshot1988",
+      name: "screenshot_1988.png",
+      type: "file",
+      parentId: "timeMachineHd",
+      content: timeMachineScreenshotContent,
+    },
+    tmFutureProjects: {
+      id: "tmFutureProjects",
+      name: "future_projects.txt",
+      type: "file",
+      parentId: "timeMachineHd",
+      content: futureProjectsContent,
+    },
+    tmReadme2035: {
+      id: "tmReadme2035",
+      name: "README_FROM_2035.txt",
+      type: "file",
+      parentId: "timeMachineHd",
+      content: readmeFrom2035Content,
+    },
+    tmLastDisk: {
+      id: "tmLastDisk",
+      name: "LAST_DISK.img",
+      type: "file",
+      parentId: "timeMachineHd",
+      content: lastDiskContent,
+      documentStyle: "centered-note",
+    },
+    hypercardStack: {
+      id: "hypercardStack",
+      name: "HyperCard Stack",
+      type: "app",
+      parentId: "root",
+      position: { x: 0, y: 0 },
+      app: "hypercard-stack",
+    },
     trash: {
       id: "trash",
       name: "Trash",
@@ -951,8 +1059,8 @@ export const useFileSystem = create<FileSystemStore>()(
           }
 
           const shouldPersistPosition = shouldPersistItemPosition(item);
-          const { [id]: _removedPosition, ...positionsWithoutItem } =
-            state.itemPositions;
+          const positionsWithoutItem = { ...state.itemPositions };
+          delete positionsWithoutItem[id];
 
           return {
             items: {
@@ -1037,9 +1145,10 @@ export const useFileSystem = create<FileSystemStore>()(
 
           deleteSavedIcon(item.savedIconId);
 
-          const { [id]: _removed, ...nextItems } = state.items;
-          const { [id]: _removedPosition, ...nextPositions } =
-            state.itemPositions;
+          const nextItems = { ...state.items };
+          const nextPositions = { ...state.itemPositions };
+          delete nextItems[id];
+          delete nextPositions[id];
           const generatedFileIds = root.children.filter(
             (childId) => isGeneratedFileItemId(childId) && childId !== id,
           );

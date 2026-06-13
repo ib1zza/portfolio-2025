@@ -14,6 +14,8 @@ export interface WindowInstance {
   parentId?: string | null;
   openerWindowId?: string;
   fileId?: string;
+  resizable?: boolean;
+  windowVariant?: "default" | "hypercard" | "note";
   position: Position;
   size: { width: number; height: number };
   zIndex: number;
@@ -32,6 +34,7 @@ interface WindowManagerStore {
     position?: Position,
     preferredSize?: WindowInstance["size"],
     openerWindowId?: string,
+    windowOptions?: Pick<WindowInstance, "resizable" | "windowVariant">,
   ) => void;
   focusWindow: (id: string) => void;
   moveWindow: (id: string, position: Position) => void;
@@ -66,6 +69,7 @@ export const useWindowManager = create<WindowManagerStore>()(
         position = getDefaultWindowPosition(),
         preferredSize,
         openerWindowId,
+        windowOptions,
       ) => {
         const zIndex = get().windowIds.length + 1;
         const savedBounds = get().windowHistory[id];
@@ -78,6 +82,8 @@ export const useWindowManager = create<WindowManagerStore>()(
               parentId,
               openerWindowId,
               fileId: id,
+              resizable: windowOptions?.resizable ?? true,
+              windowVariant: windowOptions?.windowVariant ?? "default",
               position: savedBounds?.position ?? position,
               size:
                 savedBounds?.size ?? preferredSize ?? getDefaultWindowSize(),

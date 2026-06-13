@@ -10,7 +10,8 @@ export type WindowAppId =
   | "audio-player"
   | "video-player"
   | "space-invaders"
-  | "portfolio-assistant";
+  | "portfolio-assistant"
+  | "hypercard-stack";
 
 const MOBILE_WINDOW_METRICS = {
   inset: 6,
@@ -29,9 +30,11 @@ const WINDOW_BASE_METRICS = {
   openStartWidth: 28,
   appSize: { width: 580, height: 384 },
   largeAppSize: { width: 660, height: 420 },
+  hyperCardSize: { width: 360, height: 270 },
   videoPlayerSize: { width: 720, height: 520 },
   gameSize: { width: 520, height: 480 },
   projectModelSize: { width: 900, height: 440 },
+  documentNoteSize: { width: 360, height: 260 },
 } as const;
 
 export const isMobileWindowMode = () =>
@@ -65,13 +68,15 @@ export const getWindowOpenStartWidth = () =>
 
 export const getAppWindowSize = (app: WindowAppId) =>
   scaleUiSize(
-    app === "space-invaders"
+  app === "space-invaders"
       ? WINDOW_BASE_METRICS.gameSize
       : app === "model-viewer" ||
           app === "badge-generator" ||
           app === "audio-player" ||
           app === "portfolio-assistant"
         ? WINDOW_BASE_METRICS.largeAppSize
+        : app === "hypercard-stack"
+          ? WINDOW_BASE_METRICS.hyperCardSize
         : app === "video-player"
           ? WINDOW_BASE_METRICS.videoPlayerSize
           : WINDOW_BASE_METRICS.appSize,
@@ -79,6 +84,9 @@ export const getAppWindowSize = (app: WindowAppId) =>
 
 export const getVideoPlayerWindowSize = () =>
   scaleUiSize(WINDOW_BASE_METRICS.videoPlayerSize);
+
+export const getDocumentNoteWindowSize = () =>
+  scaleUiSize(WINDOW_BASE_METRICS.documentNoteSize);
 
 export const getProjectModelWindowSize = () => ({
   width: Math.min(

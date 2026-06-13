@@ -1,0 +1,60 @@
+.stack {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: ui(12px);
+  padding: ui(18px);
+  background: $white;
+  user-select: text;
+}
+
+.card {
+  position: relative;
+  min-height: ui(150px);
+  border: var(--line-size) solid $black;
+  padding: ui(20px) ui(24px);
+  background: $white;
+  box-shadow: ui(3px) ui(3px) 0 $black;
+
+  h1 {
+    @include textTitle(ui(20px), ui(22px));
+    margin: 0 0 ui(14px);
+    text-align: center;
+  }
+
+  p,
+  li {
+    @include textMain(var(--font-main-size), ui(18px));
+  }
+
+  p {
+    margin: 0;
+    text-align: center;
+  }
+
+  ul {
+    width: max-content;
+    margin: 0 auto;
+    padding-left: ui(18px);
+  }
+}
+
+.cardBadge {
+  @include textTitle(ui(10px), ui(12px));
+  position: absolute;
+  top: ui(6px);
+  right: ui(8px);
+  text-transform: uppercase;
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: auto minmax(ui(56px), 1fr) auto;
+  gap: ui(10px);
+  align-items: center;
+
+  span {
+    @include textTitle(ui(12px), ui(16px));
+    text-align: center;
+  }
+}

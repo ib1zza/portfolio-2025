@@ -53,6 +53,20 @@ export const WindowFolderContent = memo(function WindowFolderContent({
           );
         }
 
+        if (child.type === "system") {
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={itemPosition}
+              parentWindowId={parentWindowId}
+              constraintRef={constraintRef}
+              icon="disk"
+            />
+          );
+        }
+
         if (child.type === "file") {
           return (
             <Folder

@@ -24,6 +24,7 @@ export interface FileItem extends BaseItem {
   type: "file";
   fileType: "text" | "image" | "html" | "binary" | "unknown";
   content: string;
+  documentStyle?: "default" | "centered-note" | "easter-eggs-log";
 }
 
 export interface FolderItem extends BaseItem {

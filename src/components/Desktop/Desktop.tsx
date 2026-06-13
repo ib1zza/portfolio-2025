@@ -8,11 +8,14 @@ import { useShallow } from "zustand/react/shallow";
 import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import {
+  getDocumentNoteWindowSize,
   getAppWindowSize,
   getProjectModelWindowSize,
   type WindowAppId,
 } from "../../constants/windowLayout";
 import type { FinderIconType } from "../Folder/FinderIcon";
+import { EasterEggProvider } from "../../features/easter-eggs/EasterEggProvider";
+import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 
 const LazyWindowContainer = lazy(() =>
   import("../Window").then((m) => ({ default: m.WindowContainer })),
@@ -136,6 +139,7 @@ function DesktopContent() {
       return getChildItems(state.items, parentId).filter(
         (item) =>
           item.type === "folder" ||
+          item.type === "system" ||
           item.type === "file" ||
           item.type === "link" ||
           item.type === "app",
@@ -145,10 +149,13 @@ function DesktopContent() {
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
   const { openWindowAnimated } = useWindowOpenAnimation();
+  const { recordDesktopBackgroundClick, recordItemOpenRequest } =
+    useEasterEggs();
   const desktopRef = useRef<HTMLDivElement | null>(null);
 
   const handleBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
     if (e.target === desktopRef.current) {
+      recordDesktopBackgroundClick(e);
       removeActive();
       unfocusAll();
     }
@@ -190,10 +197,16 @@ function DesktopContent() {
     if (
       !item ||
       (item.type !== "folder" &&
+        item.type !== "system" &&
         item.type !== "file" &&
         item.type !== "link" &&
         item.type !== "app")
     ) {
+      return;
+    }
+
+    if (item.id === "trash") {
+      setActive(item.id);
       return;
     }
 
@@ -207,17 +220,27 @@ function DesktopContent() {
       item.type === "file" &&
       Array.isArray(item.content) &&
       item.content.some((block) => block.type === "projectModel");
+    const isCenteredNote =
+      item.type === "file" && item.documentStyle === "centered-note";
+    const isEggLog =
+      item.type === "file" && item.documentStyle === "easter-eggs-log";
     const preferredSize =
       item.type === "app"
         ? getAppWindowSize(item.app as WindowAppId)
+        : isCenteredNote || isEggLog
+          ? getDocumentNoteWindowSize()
         : hasProjectModel
           ? getProjectModelWindowSize()
           : undefined;
+    const windowOptions = isCenteredNote || isEggLog
+      ? { resizable: false, windowVariant: "note" as const }
+      : undefined;
 
     const sourceElement = document.querySelector<HTMLElement>(
       `[data-finder-item-id="${CSS.escape(item.id)}"]`,
     );
 
+    recordItemOpenRequest(item.id);
     openWindowAnimated({
       id: item.id,
       title: item.name,
@@ -225,9 +248,16 @@ function DesktopContent() {
       sourceRect: sourceElement?.getBoundingClientRect(),
       preferredSize,
       openerWindowId: focusedWindowId,
+      windowOptions,
     });
     setActive(item.id);
-  }, [activeItemId, focusedWindowId, openWindowAnimated, setActive]);
+  }, [
+    activeItemId,
+    focusedWindowId,
+    openWindowAnimated,
+    recordItemOpenRequest,
+    setActive,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -281,6 +311,7 @@ function DesktopContent() {
       {/* Папки на рабочем столе */}
       {desktopItems.map((item) =>
         item.type === "folder" ||
+        item.type === "system" ||
         item.type === "app" ||
         item.type === "file" ? (
           <Folder
@@ -296,6 +327,8 @@ function DesktopContent() {
                   : (("app-" + item.id) as FinderIconType)
                 : item.type === "file"
                   ? "file"
+                  : item.type === "system"
+                    ? "disk"
                   : item.id === "trash"
                     ? "trash"
                     : "folder"
@@ -318,7 +351,9 @@ function DesktopContent() {
 export function Desktop() {
   return (
     <WindowOpenAnimationProvider>
-      <DesktopContent />
+      <EasterEggProvider>
+        <DesktopContent />
+      </EasterEggProvider>
     </WindowOpenAnimationProvider>
   );
 }

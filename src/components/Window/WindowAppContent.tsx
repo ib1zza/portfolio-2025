@@ -51,6 +51,14 @@ const PortfolioAssistant = lazy(() =>
   })),
 );
 
+const HyperCardStack = lazy(() =>
+  import("../../features/easter-eggs/components/HyperCardStack").then(
+    (module) => ({
+      default: module.HyperCardStack,
+    }),
+  ),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -80,6 +88,7 @@ export const WindowAppContent = memo(function WindowAppContent({
       {app === "video-player" && <VideoPlayer windowId={windowId} />}
       {app === "space-invaders" && <SpaceInvaders windowId={windowId} />}
       {app === "portfolio-assistant" && <PortfolioAssistant />}
+      {app === "hypercard-stack" && <HyperCardStack />}
     </Suspense>
   );
 });

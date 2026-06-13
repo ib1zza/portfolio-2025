@@ -1,21 +1,26 @@
-.PHONY: dev lint build build-github lint-fix preview ci
+PACKAGE_MANAGER := yarn
 
-dev:
-	npm run dev
+.PHONY: dev lint build build-github lint-fix preview ci install
+
+dev: install
+	$(PACKAGE_MANAGER) dev
+
+install:
+	$(PACKAGE_MANAGER) install
 
 lint:
-	npm run lint
+	$(PACKAGE_MANAGER) lint
 
 lint-fix:
-	npm run lint:fix
+	$(PACKAGE_MANAGER) lint:fix
 
 build:
-	npm run build
+	$(PACKAGE_MANAGER) build
 
 build-github:
-	npm run build:github
+	$(PACKAGE_MANAGER) build:github
 
 preview:
-	npm run preview
+	$(PACKAGE_MANAGER) preview
 
 ci: lint build

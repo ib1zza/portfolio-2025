@@ -33,7 +33,16 @@ interface WindowProps {
 }
 
 export const Window = memo(function Window({ data }: WindowProps) {
-  const { id, position, title, zIndex, fileId, size } = data;
+  const {
+    id,
+    position,
+    title,
+    zIndex,
+    fileId,
+    size,
+    resizable = true,
+    windowVariant = "default",
+  } = data;
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const updateWindowBounds = useWindowManager(
     (state) => state.updateWindowBounds,
@@ -59,6 +68,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
   });
 
   const isFile = currentItem?.type === "file" || currentItem?.type === "app";
+  const showFinderData = !isFile && windowVariant === "default";
   const minSize = getWindowMinSize();
 
   const { fileOpen, fileClose } = useHaptics();
@@ -102,7 +112,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const handleCloseWindow = useCallback(() => {
     closeWindowAnimated(id);
     fileClose();
-  }, [closeWindowAnimated, id]);
+  }, [closeWindowAnimated, fileClose, id]);
 
   const handleFitWindow = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (e) => {
@@ -135,6 +145,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
       return (
         <WindowDocumentContent
           content={currentItem.content}
+          documentStyle={currentItem.documentStyle}
           isActive={isFocused}
           onImageLoad={updateScrollMetrics}
         />
@@ -155,7 +166,12 @@ export const Window = memo(function Window({ data }: WindowProps) {
       <motion.div
         ref={windowRef}
         data-window-id={id}
-        className={clsx(s.window, { [s.inactive]: !isFocused })}
+        className={clsx(
+          s.window,
+          windowVariant === "hypercard" && s.hypercardWindow,
+          windowVariant === "note" && s.noteWindow,
+          { [s.inactive]: !isFocused },
+        )}
         style={{
           zIndex: isFocused ? Z_INDEX.windowFocused : zIndex,
           position: "absolute",
@@ -173,10 +189,14 @@ export const Window = memo(function Window({ data }: WindowProps) {
         <WindowTitleBar
           onClose={handleCloseWindow}
           onZoomToFit={handleFitWindow}
+          showZoomToFit={resizable}
           title={title}
+          variant={windowVariant}
         />
 
-        {!isFile && <WindowFinderData files={fileId ? childItems.length : 0} />}
+        {showFinderData && (
+          <WindowFinderData files={fileId ? childItems.length : 0} />
+        )}
 
         <WindowScrollbars
           contentRef={contentRef}
@@ -185,6 +205,7 @@ export const Window = memo(function Window({ data }: WindowProps) {
           hasVerticalScroll={hasVerticalScroll}
           horizontalTrackRef={horizontalTrackRef}
           scrollContent={scrollContent}
+          showControls={windowVariant === "default"}
           startThumbDrag={startThumbDrag}
           updateScrollMetrics={updateScrollMetrics}
           verticalTrackRef={verticalTrackRef}
@@ -200,13 +221,15 @@ export const Window = memo(function Window({ data }: WindowProps) {
         zIndex={zIndex}
         isFocused={isFocused}
       />
-      <WindowResizeLayer
-        id={id}
-        position={position}
-        size={windowDimensions}
-        zIndex={zIndex}
-        isFocused={isFocused}
-      />
+      {resizable && (
+        <WindowResizeLayer
+          id={id}
+          position={position}
+          size={windowDimensions}
+          zIndex={zIndex}
+          isFocused={isFocused}
+        />
+      )}
     </>
   );
 });

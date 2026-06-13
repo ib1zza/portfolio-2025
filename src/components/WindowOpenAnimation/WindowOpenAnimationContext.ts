@@ -11,6 +11,7 @@ export interface OpenWindowAnimatedParams {
   position?: Position;
   preferredSize?: WindowInstance["size"];
   openerWindowId?: string;
+  windowOptions?: Pick<WindowInstance, "resizable" | "windowVariant">;
 }
 
 export interface WindowOpenAnimationContextValue {

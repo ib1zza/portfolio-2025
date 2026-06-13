@@ -16,6 +16,7 @@ import PortfolioAssistantSvg from "../../assets/icons/portfolio-assistant.svg?re
 
 export type FinderIconType =
   | "folder"
+  | "disk"
   | "file"
   | "saved-icon"
   | "trash"
@@ -121,6 +122,30 @@ export const FinderIcon = memo(function FinderIcon({
         <path d="M10 25H9V23H10V25Z" fill="black" />
         <path d="M11 28V25H10V28H11Z" fill="black" />
         <path d="M11 28V29H12V28H11Z" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "disk") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <path d="M5 6H27V7H28V25H27V26H5V25H4V7H5V6Z" fill="black" />
+        <path d="M6 8H26V24H6V8Z" fill={openedFill} />
+        <path d="M8 10H24V11H8V10Z" fill="black" />
+        <path d="M9 13H23V14H9V13Z" fill="black" />
+        <path d="M8 18H24V23H8V18Z" fill="black" />
+        <path d="M10 19H22V22H10V19Z" fill="white" />
+        <path d="M21 20H22V21H21V20Z" fill="black" />
+        <path d="M10 3H22V6H10V3Z" fill="black" />
+        <path d="M11 4H21V6H11V4Z" fill="white" />
+        <OpenedPattern id={patternId} />
       </svg>
     );
   }
