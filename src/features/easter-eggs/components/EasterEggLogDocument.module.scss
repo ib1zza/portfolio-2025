@@ -1,0 +1,52 @@
+.document {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: ui(14px);
+  padding: ui(16px) ui(18px) ui(18px);
+  background: $white;
+  user-select: text;
+}
+
+.summary {
+  display: grid;
+  gap: ui(6px);
+}
+
+.progressHeader {
+  @include textTitle(ui(11px), ui(13px));
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.progress {
+  height: ui(12px);
+}
+
+.listSection {
+  display: grid;
+  gap: ui(8px);
+}
+
+.list {
+  margin: 0;
+  padding-left: ui(18px);
+  display: grid;
+  gap: ui(6px);
+
+  li {
+    @include textMain(var(--font-main-size), ui(16px));
+  }
+}
+
+@media (max-width: 768px), (hover: none), (pointer: coarse) {
+  .document {
+    gap: ui(12px);
+    padding: ui(14px) ui(16px) ui(16px);
+  }
+
+  .list {
+    gap: ui(4px);
+  }
+}

@@ -75,6 +75,7 @@ export function WindowOpenAnimationProvider({
       position = getDefaultWindowPosition(),
       preferredSize,
       openerWindowId,
+      windowOptions,
     }: OpenWindowAnimatedParams) => {
       const windowHistory = useWindowManager.getState().windowHistory[id];
       const targetPosition = windowHistory?.position ?? position;
@@ -104,7 +105,8 @@ export function WindowOpenAnimationProvider({
           parentId,
           position,
           preferredSize,
-          openerWindowId
+          openerWindowId,
+          windowOptions
         );
       }, WINDOW_OPEN_ANIMATION_DURATION_MS);
     },

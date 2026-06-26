@@ -17,6 +17,7 @@ interface WindowScrollbarsProps {
   hasVerticalScroll: boolean;
   horizontalTrackRef: RefObject<HTMLDivElement | null>;
   scrollContent: (deltaLeft: number, deltaTop: number) => void;
+  showControls?: boolean;
   startThumbDrag: (
     event: ReactPointerEvent<HTMLDivElement>,
     axis: "x" | "y"
@@ -51,10 +52,25 @@ export const WindowScrollbars = memo(function WindowScrollbars({
   hasVerticalScroll,
   horizontalTrackRef,
   scrollContent,
+  showControls = true,
   startThumbDrag,
   updateScrollMetrics,
   verticalTrackRef,
 }: WindowScrollbarsProps) {
+  if (!showControls) {
+    return (
+      <div className={s.contentPlain}>
+        <div
+          ref={contentRef}
+          onScroll={updateScrollMetrics}
+          className={s.contentWindowPlain}
+        >
+          {children}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={s.content}>
       <div
@@ -136,4 +152,3 @@ export const WindowScrollbars = memo(function WindowScrollbars({
     </div>
   );
 });
-

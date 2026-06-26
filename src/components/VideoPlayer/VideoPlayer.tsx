@@ -5,6 +5,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { MacButton } from "../UIKit/MacButton";
 import { MacSlider } from "../UIKit/MacSlider";
 import { PopupSelect } from "../UIKit/PopupSelect";
+import { getAssetPath } from "../../utils/assets";
 import s from "./VideoPlayer.module.scss";
 
 type DitherMode = "bayer" | "floyd" | "dots" | "ascii";
@@ -38,10 +39,12 @@ const MATRIX_OPTIONS = [
 
 interface VideoPlayerProps {
   windowId: string;
+  fileUrl?: string;
 }
 
 export const VideoPlayer = memo(function VideoPlayer({
   windowId,
+  fileUrl,
 }: VideoPlayerProps) {
   void windowId;
   const [fileName, setFileName] = useState("");
@@ -108,16 +111,8 @@ export const VideoPlayer = memo(function VideoPlayer({
     canvas.style.height = `${ch}px`;
   }, []);
 
-  const loadFile = useCallback(
-    (nextFile: File | undefined) => {
-      if (!nextFile) return;
-      if (
-        !ACCEPTED_TYPES.includes(nextFile.type) &&
-        !nextFile.name.match(/\.(mp4|webm)$/i)
-      )
-        return;
-
-      const url = URL.createObjectURL(nextFile);
+  const loadFromUrl = useCallback(
+    (url: string, name: string) => {
       const video = videoRef.current;
       if (!video) return;
 
@@ -132,13 +127,28 @@ export const VideoPlayer = memo(function VideoPlayer({
         displayRef.current.load();
       }
 
-      setFileName(nextFile.name);
+      setFileName(name);
       setVideoUrl(url);
       setCurrentTime(0);
       setIsPlaying(false);
       setIsInitialized(true);
     },
     [loop, volume],
+  );
+
+  const loadFile = useCallback(
+    (nextFile: File | undefined) => {
+      if (!nextFile) return;
+      if (
+        !ACCEPTED_TYPES.includes(nextFile.type) &&
+        !nextFile.name.match(/\.(mp4|webm)$/i)
+      )
+        return;
+
+      const url = URL.createObjectURL(nextFile);
+      loadFromUrl(url, nextFile.name);
+    },
+    [loadFromUrl],
   );
 
   const syncDisplay = useCallback(() => {
@@ -200,6 +210,12 @@ export const VideoPlayer = memo(function VideoPlayer({
     }
     setLoop(nextLoop);
   }, [loop]);
+
+  useEffect(() => {
+    if (!fileUrl) return;
+    const resolvedUrl = getAssetPath(fileUrl);
+    loadFromUrl(resolvedUrl, fileUrl.split("/").pop() ?? "video");
+  }, [fileUrl, loadFromUrl]);
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {

@@ -3,6 +3,7 @@ import { lazy, memo, Suspense } from "react";
 import type { DocumentBlock } from "../../store/useFileSystem";
 import { getAssetPath } from "../../utils/assets";
 import s from "./Window.module.scss";
+import { EasterEggLogDocument } from "../../features/easter-eggs/components/EasterEggLogDocument";
 
 const ProjectModelViewer = lazy(() =>
   import("../ProjectModelViewer").then((module) => ({
@@ -12,15 +13,33 @@ const ProjectModelViewer = lazy(() =>
 
 interface WindowDocumentContentProps {
   content: string | DocumentBlock[];
+  documentStyle?: "default" | "centered-note" | "easter-eggs-log";
   isActive: boolean;
   onImageLoad: () => void;
 }
 
 export const WindowDocumentContent = memo(function WindowDocumentContent({
   content,
+  documentStyle = "default",
   isActive,
   onImageLoad,
 }: WindowDocumentContentProps) {
+  if (documentStyle === "easter-eggs-log") {
+    return <EasterEggLogDocument />;
+  }
+
+  if (documentStyle === "centered-note" && typeof content === "string") {
+    return (
+      <article className={s.centeredNoteDocument}>
+        <div>
+          {content.split(/\n{2,}/).map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+      </article>
+    );
+  }
+
   if (typeof content === "string") {
     return <div className={s.contentText}>{content}</div>;
   }

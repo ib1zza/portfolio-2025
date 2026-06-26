@@ -24,6 +24,7 @@ export const DitherStudio = memo(function DitherStudio() {
   );
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("No image");
+  void fileName;
   const [mode, setMode] = useState<DitherMode>("bayer");
   const [threshold, setThreshold] = useState(128);
   const [contrast, setContrast] = useState(0);
@@ -32,6 +33,7 @@ export const DitherStudio = memo(function DitherStudio() {
   const [exportFormat, setExportFormat] = useState<ExportFormat>("png");
   const [isSaveIconDialogOpen, setIsSaveIconDialogOpen] = useState(false);
   const [status, setStatus] = useState("ready");
+  void status;
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -248,32 +250,36 @@ export const DitherStudio = memo(function DitherStudio() {
           </MacButton>
         </div>
 
-        <div className={s.exportRow}>
-          <PopupSelect
-            label="Format:"
-            value={exportFormat}
-            options={EXPORT_FORMATS}
-            onChange={setExportFormat}
-          />
-          <MacButton
-            variant="default"
-            onClick={exportCurrent}
-            disabled={!image}
-          >
-            export
-          </MacButton>
-          <MacButton onClick={copyCurrent} disabled={!image}>
-            copy
-          </MacButton>
-          <MacButton
-            onClick={() => setIsSaveIconDialogOpen(true)}
-            disabled={!image}
-          >
-            save icon
-          </MacButton>
+        <div className={s.exportSection}>
+          <div className={s.separator} />
+          <div className={s.exportTitle}>Export</div>
+          <div className={s.exportRow}>
+            <PopupSelect
+              label="Format:"
+              value={exportFormat}
+              options={EXPORT_FORMATS}
+              onChange={setExportFormat}
+            />
+            <MacButton
+              variant="default"
+              onClick={exportCurrent}
+              disabled={!image}
+            >
+              export
+            </MacButton>
+            <MacButton onClick={copyCurrent} disabled={!image}>
+              copy
+            </MacButton>
+            <MacButton
+              onClick={() => setIsSaveIconDialogOpen(true)}
+              disabled={!image}
+            >
+              save as icon
+            </MacButton>
+          </div>
         </div>
 
-        <div className={s.meta}>
+        {/* <div className={s.meta}>
           <span>{fileName}</span>
           <span>1-bit black / white</span>
           <span>{mode} mode</span>
@@ -281,7 +287,7 @@ export const DitherStudio = memo(function DitherStudio() {
             {outputSize} x {outputSize} pixels
           </span>
           <span>{status}</span>
-        </div>
+        </div> */}
       </section>
 
       {isSaveIconDialogOpen && (

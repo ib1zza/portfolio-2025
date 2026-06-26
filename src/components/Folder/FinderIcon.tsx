@@ -16,7 +16,11 @@ import PortfolioAssistantSvg from "../../assets/icons/portfolio-assistant.svg?re
 
 export type FinderIconType =
   | "folder"
+  | "disk"
   | "file"
+  | "file-audio"
+  | "file-video"
+  | "file-image"
   | "saved-icon"
   | "trash"
   | "vk"
@@ -54,26 +58,19 @@ export const FinderIcon = memo(function FinderIcon({
     return <IconPainterSvg />;
   }
 
-  if (type === "app-ditherStudio")
-    return <DitherStudioSvg />;
+  if (type === "app-ditherStudio") return <DitherStudioSvg />;
 
-  if (type === "app-modelViewer")
-    return <ModelViewerSvg />;
+  if (type === "app-modelViewer") return <ModelViewerSvg />;
 
-  if (type === "app-badgeGenerator")
-    return <BadgeGeneratorSvg />;
+  if (type === "app-badgeGenerator") return <BadgeGeneratorSvg />;
 
-  if (type === "app-audioPlayer")
-    return <AudioPlayerSvg />;
+  if (type === "app-audioPlayer") return <AudioPlayerSvg />;
 
-  if (type === "app-videoPlayer")
-    return <VideoPlayerSvg />;
+  if (type === "app-videoPlayer") return <VideoPlayerSvg />;
 
-  if (type === "app-spaceInvaders")
-    return <SpaceInvadersSvg />;
+  if (type === "app-spaceInvaders") return <SpaceInvadersSvg />;
 
-  if (type === "app-portfolioAssistant")
-    return <PortfolioAssistantSvg />;
+  if (type === "app-portfolioAssistant") return <PortfolioAssistantSvg />;
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;
@@ -121,6 +118,94 @@ export const FinderIcon = memo(function FinderIcon({
         <path d="M10 25H9V23H10V25Z" fill="black" />
         <path d="M11 28V25H10V28H11Z" fill="black" />
         <path d="M11 28V29H12V28H11Z" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "disk") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect x="1" y="20" width="30" height="8" fill="white" />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
+          fill="black"
+        />
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
+          fill="black"
+          fill-opacity="0.2"
+        />
+        <rect x="4" y="25" width="2" height="1" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-audio") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="3" width="18" height="20" fill="black" />
+        <rect x="11" y="10" width="8" height="2" fill="white" />
+        <rect x="11" y="13" width="6" height="2" fill="white" />
+        <rect x="24" y="24" width="2" height="2" fill="black" />
+        <rect x="22" y="26" width="2" height="2" fill="black" />
+        <rect x="20" y="24" width="2" height="4" fill="black" />
+        <rect x="22" y="22" width="2" height="2" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-video") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="8" width="14" height="16" fill="black" />
+        <polygon points="20,12 26,16 26,16 20,20" fill="white" />
+        <rect x="22" y="24" width="2" height="2" fill="black" />
+      </svg>
+    );
+  }
+
+  if (type === "file-image") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <rect x="4" y="1" width="22" height="30" fill="white" stroke="black" />
+        <rect x="6" y="3" width="18" height="18" fill="black" />
+        <rect x="10" y="7" width="4" height="4" fill="white" />
+        <polygon points="6,21 14,13 22,21" fill="white" />
+        <polygon points="14,17 22,9 22,21 14,17" fill="white" />
+        <rect x="24" y="24" width="2" height="2" fill="black" />
       </svg>
     );
   }

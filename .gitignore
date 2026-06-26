@@ -27,3 +27,9 @@ dist-ssr
 .codex*
 .playwright*
 .vercel
+
+# local docs
+EASTER_EGGS.md
+
+# future plans
+.plans/

@@ -38,6 +38,8 @@ export const BadgeGenerator = memo(function BadgeGenerator({
 }: BadgeGeneratorProps) {
   const { openWindowAnimated } = useWindowOpenAnimation();
   const setActive = useFileSystem((state) => state.setActive);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const previewRef = useRef<HTMLElement | null>(null);
   const iconPainterButtonRef = useRef<HTMLDivElement | null>(null);
   const [name, setName] = useState(portfolio.profile.name);
   const [role, setRole] = useState(portfolio.profile.role);
@@ -109,6 +111,55 @@ export const BadgeGenerator = memo(function BadgeGenerator({
     };
   }, [badgeUrl]);
 
+  const updatePreviewHeight = useCallback(() => {
+    const container = containerRef.current;
+    const preview = previewRef.current;
+    if (!container || !preview) return;
+
+    if (
+      window.matchMedia(
+        "(max-width: 768px), (hover: none), (pointer: coarse)",
+      ).matches
+    ) {
+      preview.style.height = "";
+      return;
+    }
+
+    let scrollContainer: HTMLElement | null = container;
+    while (scrollContainer) {
+      const overflow = getComputedStyle(scrollContainer).overflow;
+      if (overflow === "auto" || overflow === "scroll") break;
+      scrollContainer = scrollContainer.parentElement;
+    }
+    if (!scrollContainer) return;
+
+    const cs = getComputedStyle(container);
+    const paddingTop = parseFloat(cs.paddingTop);
+    const paddingBottom = parseFloat(cs.paddingBottom);
+    const height = scrollContainer.clientHeight - paddingTop - paddingBottom;
+    preview.style.height = `${Math.max(height, 0)}px`;
+  }, []);
+
+  useEffect(() => {
+    updatePreviewHeight();
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    let scrollContainer: HTMLElement | null = container;
+    while (scrollContainer) {
+      const overflow = getComputedStyle(scrollContainer).overflow;
+      if (overflow === "auto" || overflow === "scroll") break;
+      scrollContainer = scrollContainer.parentElement;
+    }
+    if (!scrollContainer) return;
+
+    const ro = new ResizeObserver(updatePreviewHeight);
+    ro.observe(scrollContainer);
+
+    return () => ro.disconnect();
+  }, [updatePreviewHeight]);
+
   const openIconPainter = useCallback(() => {
     setActive("iconPainter");
     openWindowAnimated({
@@ -173,8 +224,8 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   }, [dialogIconId]);
 
   return (
-    <div className={s.badgeGenerator}>
-      <section className={s.previewPanel}>
+    <div ref={containerRef} className={s.badgeGenerator}>
+      <section ref={previewRef} className={s.previewPanel}>
         <div
           className={s.badgePreview}
           dangerouslySetInnerHTML={{ __html: badgeSvg }}

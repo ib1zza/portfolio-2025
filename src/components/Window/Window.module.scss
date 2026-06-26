@@ -24,6 +24,18 @@
   }
 }
 
+.hypercardWindow {
+  background: $white;
+
+  .content {
+    background: $white;
+  }
+}
+
+.noteWindow {
+  background: $white;
+}
+
 .windowTop {
   --content-height: var(--window-titlebar-content-height);
   --padding-block-pattern: #{ui(3px)};
@@ -59,6 +71,32 @@
     background-size: 100% ui(2px);
     background-repeat: repeat-y;
     z-index: -1;
+  }
+}
+
+.windowTopHypercard {
+  background: $black;
+  color: $white;
+
+  &::before {
+    --pixel-color: #fff;
+    --bg-color: #000;
+  }
+
+  .buttonContainer,
+  .title {
+    background: $black;
+  }
+
+  .windowTopButton {
+    border-color: $white;
+    color: $white;
+  }
+}
+
+.windowTopNote {
+  .title {
+    @include textTitle(ui(13px), var(--content-height));
   }
 }
 
@@ -196,6 +234,21 @@
   flex-grow: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+.contentPlain {
+  flex-grow: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.contentWindowPlain {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
 }
 
 .contentWindow {
@@ -410,6 +463,26 @@
   padding-inline: var(--panel-padding);
   white-space: pre-wrap;
   user-select: text;
+}
+
+.centeredNoteDocument {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: ui(34px) ui(44px);
+  user-select: text;
+
+  > div {
+    display: grid;
+    gap: ui(12px);
+    max-width: ui(340px);
+  }
+
+  p {
+    @include textMain(var(--font-main-size), ui(18px));
+    margin: 0;
+    text-align: center;
+  }
 }
 
 .document {

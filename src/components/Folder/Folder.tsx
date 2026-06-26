@@ -11,11 +11,13 @@ import { FinderItem } from "./FinderItem";
 import { FinderLabel } from "./FinderLabel";
 import {
   getAppWindowSize,
+  getDocumentNoteWindowSize,
   getProjectModelWindowSize,
   getTopbarHeight,
   type WindowAppId,
 } from "../../constants/windowLayout";
 import { useHaptics } from "../../hooks/useHaptics";
+import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 
 interface FolderProps {
   id: string;
@@ -65,6 +67,7 @@ export const Folder = memo(function Folder({
   const pointerCleanupRef = useRef<(() => void) | null>(null);
   const [draftPosition, setDraftPosition] = useState(position);
   const isOpenedInactive = isOpened && !isActive;
+  const { recordItemOpenRequest, recordTrashClick } = useEasterEggs();
 
   const { fileOpen } = useHaptics();
 
@@ -128,6 +131,8 @@ export const Folder = memo(function Folder({
   );
 
   const openItem = useCallback(() => {
+    if (id === "trash") return;
+
     fileOpen();
     const item = getItemById(id);
     if (item?.type === "link") {
@@ -140,14 +145,24 @@ export const Folder = memo(function Folder({
       item?.type === "file" &&
       Array.isArray(item.content) &&
       item.content.some((block) => block.type === "projectModel");
+    const isCenteredNote =
+      item?.type === "file" && item.documentStyle === "centered-note";
+    const isEggLog =
+      item?.type === "file" && item.documentStyle === "easter-eggs-log";
     const preferredSize =
       item?.type === "app"
         ? getAppWindowSize(item.app as WindowAppId)
+        : isCenteredNote || isEggLog
+          ? getDocumentNoteWindowSize()
         : hasProjectModel
           ? getProjectModelWindowSize()
           : undefined;
+    const windowOptions = isCenteredNote || isEggLog
+      ? { resizable: false, windowVariant: "note" as const }
+      : undefined;
 
     setActive(id);
+    recordItemOpenRequest(id);
     openWindowAnimated({
       id,
       title: name,
@@ -155,6 +170,7 @@ export const Folder = memo(function Folder({
       sourceRect: folderRef.current?.getBoundingClientRect(),
       preferredSize,
       openerWindowId: parentWindowId,
+      windowOptions,
     });
   }, [
     getItemById,
@@ -162,12 +178,14 @@ export const Folder = memo(function Folder({
     name,
     openWindowAnimated,
     parentWindowId,
+    recordItemOpenRequest,
     setActive,
     fileOpen,
   ]);
 
   const handleDoubleClick = () => {
     if (didDragRef.current) return;
+    if (id === "trash") return;
 
     openItem();
   };
@@ -186,6 +204,12 @@ export const Folder = memo(function Folder({
     } else {
       unfocusAll();
     }
+
+    if (id === "trash") {
+      recordTrashClick(folderRef.current?.getBoundingClientRect());
+      return;
+    }
+
     if (isCoarsePointerMode()) openItem();
     // TODO: связать папки и окна
     // focusWindowFromFolder(id);

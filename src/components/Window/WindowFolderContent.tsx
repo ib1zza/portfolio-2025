@@ -53,7 +53,7 @@ export const WindowFolderContent = memo(function WindowFolderContent({
           );
         }
 
-        if (child.type === "file") {
+        if (child.type === "system") {
           return (
             <Folder
               key={child.id}
@@ -62,7 +62,30 @@ export const WindowFolderContent = memo(function WindowFolderContent({
               position={itemPosition}
               parentWindowId={parentWindowId}
               constraintRef={constraintRef}
-              icon="file"
+              icon="disk"
+            />
+          );
+        }
+
+        if (child.type === "file") {
+          const fileIcon: FinderIconType =
+            child.fileUrl?.match(/\.(mp3|ogg|wav|m4a)$/i)
+              ? "file-audio"
+              : child.fileUrl?.match(/\.(mp4|webm|mov)$/i)
+                ? "file-video"
+                : child.name.match(/\.(png|jpg|jpeg|gif|webp)$/i)
+                  ? "file-image"
+                  : "file";
+
+          return (
+            <Folder
+              key={child.id}
+              id={child.id}
+              name={child.name}
+              position={itemPosition}
+              parentWindowId={parentWindowId}
+              constraintRef={constraintRef}
+              icon={fileIcon}
             />
           );
         }

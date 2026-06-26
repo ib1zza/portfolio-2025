@@ -6,6 +6,8 @@ import { isMobilePointerMode } from "../../constants/responsive";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
+import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
+import { useEasterEggProgress } from "../../features/easter-eggs/useEasterEggProgress";
 import s from "./Topbar.module.scss";
 
 interface SubmenuItemData {
@@ -67,6 +69,8 @@ const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => (
 export function Topbar() {
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const [isMousePressed, setIsMousePressed] = useState(false);
+  const [isAppleSpecialMenuActive, setIsAppleSpecialMenuActive] =
+    useState(false);
   const [clock, setClock] = useState(formatClock);
   const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
   const submenuRef = useRef<HTMLDivElement | null>(null);
@@ -87,10 +91,17 @@ export function Topbar() {
   );
   const cleanUpChildren = useFileSystem((state) => state.cleanUpChildren);
   const resetLayout = useFileSystem((state) => state.resetLayout);
+  const {
+    canRevealLastDisk,
+    isShiftHeld,
+    revealLastDiskFromSpecial,
+    runSpecialAction,
+  } = useEasterEggs();
   const cleanUpTarget =
     focusedItem?.type === "folder"
       ? focusedItem.id
       : (focusedItem?.parentId ?? "root");
+  const markFound = useEasterEggProgress((state) => state.markFound);
 
   useEffect(() => {
     const timerId = window.setInterval(() => setClock(formatClock()), 1000);
@@ -114,23 +125,42 @@ export function Topbar() {
     () => [
       {
         title: "¤",
-        submenu: [
-          {
-            title: "About This Portfolio...",
-            action: () => openPortfolioWindow("about", "About Me"),
-          },
-          null,
-          {
-            title: "Close Window",
-            action: closeFocusedWindowAnimated,
-            disabled: !focusedWindowId,
-          },
-          {
-            title: "Close All",
-            action: closeAllWindows,
-            disabled: !hasWindows,
-          },
-        ],
+        submenu: isAppleSpecialMenuActive
+          ? [
+              {
+                title: "Defragment Reality",
+                action: () => runSpecialAction("defragment-reality"),
+              },
+              {
+                title: "Increase Creativity",
+                action: () => runSpecialAction("increase-creativity"),
+              },
+              {
+                title: "Reboot Universe",
+                action: () => runSpecialAction("reboot-universe"),
+              },
+              {
+                title: "Calibrate Inspiration",
+                action: () => runSpecialAction("calibrate-inspiration"),
+              },
+            ]
+          : [
+              {
+                title: "About This Portfolio...",
+                action: () => openPortfolioWindow("about", "About Me"),
+              },
+              null,
+              {
+                title: "Close Window",
+                action: closeFocusedWindowAnimated,
+                disabled: !focusedWindowId,
+              },
+              {
+                title: "Close All",
+                action: closeAllWindows,
+                disabled: !hasWindows,
+              },
+            ],
       },
       {
         title: "File",
@@ -175,19 +205,32 @@ export function Topbar() {
               resetWindows();
             },
           },
+          ...(canRevealLastDisk
+            ? [
+                null,
+                {
+                  title: "Reveal Last Disk",
+                  action: revealLastDiskFromSpecial,
+                },
+              ]
+            : []),
         ],
       },
     ],
     [
+      canRevealLastDisk,
       cleanUpChildren,
       cleanUpTarget,
       closeAllWindows,
       closeFocusedWindowAnimated,
       focusedWindowId,
       hasWindows,
+      isAppleSpecialMenuActive,
       openPortfolioWindow,
+      revealLastDiskFromSpecial,
       resetLayout,
       resetWindows,
+      runSpecialAction,
     ],
   );
 
@@ -195,6 +238,7 @@ export function Topbar() {
     action();
     setActiveMenuIndex(null);
     setIsMousePressed(false);
+    setIsAppleSpecialMenuActive(false);
   }, []);
 
   const handleMouseOver = useCallback(
@@ -211,10 +255,11 @@ export function Topbar() {
         hoveredTabIndex !== activeMenuIndex &&
         tabs[hoveredTabIndex].submenu
       ) {
+        setIsAppleSpecialMenuActive(hoveredTabIndex === 0 && isShiftHeld);
         setActiveMenuIndex(hoveredTabIndex);
       }
     },
-    [isMousePressed, activeMenuIndex, tabs],
+    [isMousePressed, activeMenuIndex, isShiftHeld, tabs],
   );
 
   const handleGlobalPointerUp = useCallback(
@@ -238,6 +283,7 @@ export function Topbar() {
         setActiveMenuIndex(null);
       }
       setIsMousePressed(false);
+      if (!clickedOnSubmenu) setIsAppleSpecialMenuActive(false);
     },
     [],
   );
@@ -256,9 +302,22 @@ export function Topbar() {
     };
   }, [handleMouseOver, handleGlobalPointerUp]);
 
+  useEffect(() => {
+    if (activeMenuIndex !== 0) return;
+
+    setIsAppleSpecialMenuActive(isShiftHeld);
+  }, [activeMenuIndex, isShiftHeld]);
+
+  useEffect(() => {
+    if (isAppleSpecialMenuActive) {
+      markFound("special-menu");
+    }
+  }, [isAppleSpecialMenuActive, markFound]);
+
   const handlePointerDownOnTab = useCallback(
     (event: ReactPointerEvent, index: number) => {
       event.preventDefault();
+      setIsAppleSpecialMenuActive(index === 0 && isShiftHeld);
       if (
         event.pointerType === "touch" ||
         event.pointerType === "pen" ||
@@ -274,7 +333,7 @@ export function Topbar() {
       setIsMousePressed(true);
       setActiveMenuIndex(index);
     },
-    [],
+    [isShiftHeld],
   );
 
   const setTabRef = useCallback(
