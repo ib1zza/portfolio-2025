@@ -30,3 +30,6 @@ dist-ssr
 
 # local docs
 EASTER_EGGS.md
+
+# future plans
+.plans/
