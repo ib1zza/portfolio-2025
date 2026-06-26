@@ -11,7 +11,6 @@ import {
   readSavedIcons,
   type SavedDesktopIcon,
 } from "../components/IconPainter/iconPainterDesktop";
-import { EASTER_EGG_LOG_FILE_ID } from "../features/easter-eggs/easterEggDefinitions";
 import { createThrottledLocalStorage } from "../utils/storage";
 import { scaleUiValue } from "../utils/uiScale";
 import type { WindowAppId } from "../constants/windowLayout";
@@ -549,19 +548,6 @@ const getViewportMetrics = () => {
 const isGeneratedFileItemId = (id: string) =>
   id.startsWith(GENERATED_FILE_ID_PREFIX);
 
-const getRootChildren = (
-  generatedFileIds: string[] = [],
-  extraItemIds: string[] = [],
-) => [
-  ...ROOT_FOLDER_ITEM_IDS,
-  ...ROOT_APP_ITEM_IDS,
-  ...generatedFileIds,
-  ...ROOT_FILE_ITEM_IDS,
-  ...ROOT_SYSTEM_ITEM_IDS,
-  ...extraItemIds,
-  "trash",
-];
-
 const getExtraRootItemIds = (children: string[]) =>
   children.filter(
     (childId) =>
@@ -653,16 +639,10 @@ const getGeneratedFilePosition = (index: number) =>
         ROOT_FOLDER_ITEM_IDS.length + ROOT_APP_ITEM_IDS.length + index,
       );
 
-const getEasterEggLogPosition = (generatedFileCount: number) =>
-  getGeneratedFilePosition(generatedFileCount + 2);
-
 const getSavedIconPosition = (index: number) => getGeneratedFilePosition(index);
 
 const getCreditsPosition = (generatedFileCount: number) =>
   getGeneratedFilePosition(generatedFileCount);
-
-const getTimeMachinePosition = (generatedFileCount: number) =>
-  getGeneratedFilePosition(generatedFileCount + 1);
 
 const getMediaDiskPosition = (generatedFileCount: number) =>
   getGeneratedFilePosition(generatedFileCount + 2);
@@ -681,16 +661,38 @@ const getTrashPosition = () => {
   };
 };
 
-const getCleanRootPosition = (
+export const getRootChildren = (
+  generatedFileIds: string[] = [],
+  extraItemIds: string[] = [],
+) => [
+  ...ROOT_FOLDER_ITEM_IDS,
+  ...ROOT_APP_ITEM_IDS,
+  ...generatedFileIds,
+  ...ROOT_FILE_ITEM_IDS,
+  ...ROOT_SYSTEM_ITEM_IDS,
+  ...extraItemIds,
+  "trash",
+];
+
+/**
+ * Base grid position that accounts for all layout categories.
+ */
+const getGridPosition = (gridIndex: number) => {
+  const { isMobile } = getViewportMetrics();
+  if (isMobile) {
+    return getMobileRowPosition(
+      MOBILE_GENERATED_START_ROW + Math.floor(gridIndex / MOBILE_GRID.columns),
+      gridIndex % MOBILE_GRID.columns,
+    );
+  }
+  return getDesktopGridPosition(gridIndex);
+};
+
+export const getCleanRootPosition = (
   item: FileSystemItem,
   siblings: FileSystemItem[],
 ) => {
   if (item.id === "trash") return getTrashPosition();
-  if (item.id === EASTER_EGG_LOG_FILE_ID) {
-    return getEasterEggLogPosition(
-      siblings.filter((sibling) => isGeneratedFileItemId(sibling.id)).length,
-    );
-  }
 
   if (item.id === "mediaHd") {
     return getMediaDiskPosition(
@@ -723,9 +725,49 @@ const getCleanRootPosition = (
     return getCreditsPosition(generatedFiles.length);
   }
 
-  return getGeneratedFilePosition(
-    generatedFiles.length + ROOT_FILE_ITEM_IDS.length,
+  // Extra items placed after the last layout grid index (mediaHd at 14+G)
+  const generatedCount = siblings.filter((s) =>
+    isGeneratedFileItemId(s.id),
+  ).length;
+  const extras = siblings.filter(
+    (s) => !ROOT_LAYOUT_ITEM_IDS.has(s.id) && !isGeneratedFileItemId(s.id) && s.id !== "trash",
   );
+  const extraIndex = extras.findIndex((s) => s.id === item.id);
+
+  // Grid index of the last standard item + the +2 offset mediaHd uses + extraIndex
+  const gridIndex =
+    ROOT_FOLDER_ITEM_IDS.length +
+    ROOT_APP_ITEM_IDS.length +
+    generatedCount +
+    ROOT_FILE_ITEM_IDS.length +
+    2 +
+    Math.max(0, extraIndex);
+
+  return getGridPosition(gridIndex);
+};
+
+/**
+ * Computes position for a NEW extra item using nextExtraIds (which includes the item),
+ * since the item isn't in root.children yet and sibling-based index would be wrong.
+ */
+const getExtraRootItemPosition = (
+  item: FileSystemItem,
+  siblings: FileSystemItem[],
+  nextExtraIds: string[],
+): Position => {
+  const generatedCount = siblings.filter((s) =>
+    isGeneratedFileItemId(s.id),
+  ).length;
+  const extraIndex = nextExtraIds.indexOf(item.id);
+  const gridIndex =
+    ROOT_FOLDER_ITEM_IDS.length +
+    ROOT_APP_ITEM_IDS.length +
+    generatedCount +
+    ROOT_FILE_ITEM_IDS.length +
+    2 +
+    Math.max(0, extraIndex);
+
+  return getGridPosition(gridIndex);
 };
 
 const isAutoLayoutRootItemId = (id: string) =>
@@ -922,12 +964,12 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       position: getCreditsPosition(savedIconIds.length),
       content: creditsContent,
     },
-    [EASTER_EGG_LOG_FILE_ID]: {
-      id: EASTER_EGG_LOG_FILE_ID,
+    ["easterEggLog"]: {
+      id: "easterEggLog",
       name: "Easter Eggs",
       type: "file",
       parentId: "root",
-      position: getEasterEggLogPosition(savedIconIds.length),
+      position: { x: 0, y: 0 },
       content: "",
       documentStyle: "easter-eggs-log",
     },
@@ -936,7 +978,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Time Machine HD",
       type: "system",
       parentId: "root",
-      position: getTimeMachinePosition(savedIconIds.length),
+      position: { x: 0, y: 0 },
       systemType: "disk",
       children: ["tmScreenshot1988", "tmFutureProjects", "tmReadme2035"],
     },
@@ -1108,6 +1150,7 @@ interface FileSystemStore {
   moveItem: (id: string, position: Position) => void;
   upsertSavedIconItem: (icon: SavedDesktopIcon) => void;
   deleteSavedIconItem: (id: string) => void;
+  addExtraRootItem: (itemId: string) => void;
   cleanUpChildren: (parentId: string | null) => void;
   resetLayout: () => void;
   getItemById: (id: string) => FileSystemItem | undefined;
@@ -1191,35 +1234,50 @@ export const useFileSystem = create<FileSystemStore>()(
             getSavedIconPosition(generatedFileIndex);
           const credits = state.items.credits;
 
-          return {
-            items: {
-              ...state.items,
-              root: {
-                ...root,
-                children: getRootChildren(
-                  generatedFileIds,
-                  getExtraRootItemIds(root.children),
-                ),
-              },
-              ...(credits
-                ? {
-                    credits: {
-                      ...credits,
-                      position: getCreditsPosition(generatedFileIds.length),
-                    },
-                  }
-                : {}),
-              [itemId]: {
-                id: itemId,
-                name: icon.name,
-                type: "app",
-                parentId: "root",
-                position,
-                app: "icon-painter",
-                savedIconId: icon.id,
-              },
+          const baseItems: Record<string, FileSystemItem> = {
+            ...state.items,
+            root: {
+              ...root,
+              children: getRootChildren(
+                generatedFileIds,
+                getExtraRootItemIds(root.children),
+              ),
+            },
+            ...(credits
+              ? {
+                  credits: {
+                    ...credits,
+                    position: getCreditsPosition(generatedFileIds.length),
+                  },
+                }
+              : {}),
+            [itemId]: {
+              id: itemId,
+              name: icon.name,
+              type: "app",
+              parentId: "root",
+              position,
+              app: "icon-painter",
+              savedIconId: icon.id,
             },
           };
+
+          // Recalculate extra item positions so they shift after new generated files
+          const extraIds = getExtraRootItemIds((baseItems.root as FolderItem).children);
+          if (extraIds.length > 0) {
+            const newSiblings = getChildItems(baseItems, "root");
+            for (const extraId of extraIds) {
+              const extraItem = baseItems[extraId];
+              if (extraItem) {
+                baseItems[extraId] = {
+                  ...extraItem,
+                  position: getCleanRootPosition(extraItem, newSiblings),
+                };
+              }
+            }
+          }
+
+          return { items: baseItems };
         });
       },
       deleteSavedIconItem: (id) => {
@@ -1246,16 +1304,74 @@ export const useFileSystem = create<FileSystemStore>()(
           );
           const credits = nextItems.credits;
 
+          const baseItems: Record<string, FileSystemItem> = {
+            ...nextItems,
+            root: {
+              ...root,
+              children: getRootChildren(
+                generatedFileIds,
+                getExtraRootItemIds(root.children),
+              ),
+            },
+            ...(credits
+              ? {
+                  credits: {
+                    ...credits,
+                    position: getCreditsPosition(generatedFileIds.length),
+                  },
+                }
+              : {}),
+          };
+
+          // Recalculate extra item positions so they shift after generated files shrink
+          const extraIds = getExtraRootItemIds((baseItems.root as FolderItem).children);
+          if (extraIds.length > 0) {
+            const newSiblings = getChildItems(baseItems, "root");
+            for (const extraId of extraIds) {
+              const extraItem = baseItems[extraId];
+              if (extraItem) {
+                baseItems[extraId] = {
+                  ...extraItem,
+                  position: getCleanRootPosition(extraItem, newSiblings),
+                };
+              }
+            }
+          }
+
+          return {
+            items: baseItems,
+            itemPositions: nextPositions,
+            activeItemId: state.activeItemId === id ? null : state.activeItemId,
+          };
+        });
+      },
+      addExtraRootItem: (itemId) => {
+        set((state) => {
+          const root = state.items.root;
+          if (root?.type !== "folder" || root.children.includes(itemId)) {
+            return state;
+          }
+
+          const generatedFileIds = root.children.filter(isGeneratedFileItemId);
+          const extraItemIds = getExtraRootItemIds(root.children);
+          const nextExtraIds = extraItemIds.includes(itemId)
+            ? extraItemIds
+            : [...extraItemIds, itemId];
+          const item = state.items[itemId];
+          const siblings = getChildItems(state.items, "root");
+          const credits = state.items.credits;
+
           return {
             items: {
-              ...nextItems,
-              root: {
-                ...root,
-                children: getRootChildren(
-                  generatedFileIds,
-                  getExtraRootItemIds(root.children),
-                ),
-              },
+              ...state.items,
+              ...(item
+                ? {
+                    [itemId]: {
+                      ...item,
+                      position: getExtraRootItemPosition(item, siblings, nextExtraIds),
+                    },
+                  }
+                : {}),
               ...(credits
                 ? {
                     credits: {
@@ -1264,9 +1380,11 @@ export const useFileSystem = create<FileSystemStore>()(
                     },
                   }
                 : {}),
+              root: {
+                ...root,
+                children: getRootChildren(generatedFileIds, nextExtraIds),
+              },
             },
-            itemPositions: nextPositions,
-            activeItemId: state.activeItemId === id ? null : state.activeItemId,
           };
         });
       },
@@ -1311,11 +1429,50 @@ export const useFileSystem = create<FileSystemStore>()(
         });
       },
       resetLayout: () => {
-        set(() => ({
-          items: createInitialItems(),
-          itemPositions: {},
-          activeItemId: null,
-        }));
+        set((state) => {
+          const currentRoot = state.items.root;
+          const extraRootItems =
+            currentRoot?.type === "folder"
+              ? getExtraRootItemIds(currentRoot.children)
+              : [];
+
+          const initialItems = createInitialItems();
+          const newRoot = initialItems.root;
+
+          if (
+            newRoot &&
+            (newRoot.type === "folder" || newRoot.type === "system") &&
+            extraRootItems.length > 0
+          ) {
+            const missingExtraItems = extraRootItems.filter(
+              (id) => !newRoot.children.includes(id),
+            );
+
+            const generatedFileIds = newRoot.children.filter(
+              isGeneratedFileItemId,
+            );
+
+            initialItems.root = {
+              ...newRoot,
+              children: getRootChildren(
+                generatedFileIds,
+                missingExtraItems,
+              ),
+            };
+
+            for (const id of missingExtraItems) {
+              if (state.items[id]) {
+                initialItems[id] = state.items[id];
+              }
+            }
+          }
+
+          return {
+            items: initialItems,
+            itemPositions: {},
+            activeItemId: null,
+          };
+        });
       },
     }),
     {

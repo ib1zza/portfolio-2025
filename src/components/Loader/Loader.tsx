@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import s from "./Loader.module.scss";
 
 type Pixel = readonly [number, number];
@@ -175,23 +175,12 @@ const HelloSketch = () => {
   );
 };
 
-interface LoaderProps {
-  minDurationMs?: number;
-}
-
-const Loader: React.FC<LoaderProps> = () => {
-  useEffect(() => {
-    const el = document.getElementById("preloader");
-    if (el) el.style.display = "none";
-  }, []);
-
-  return (
-    <div className={s.loaderOverlay}>
-      <div className={s.loaderContent}>
-        <HelloSketch />
-      </div>
+const Loader: React.FC = () => (
+  <div className={s.loaderOverlay}>
+    <div className={s.loaderContent}>
+      <HelloSketch />
     </div>
-  );
-};
+  </div>
+);
 
 export default Loader;

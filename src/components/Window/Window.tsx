@@ -25,7 +25,12 @@ import { WindowFolderContent } from "./WindowFolderContent";
 import { WindowResizeLayer } from "./WindowResizeLayer";
 import { WindowScrollbars } from "./WindowScrollbars";
 import { WindowTitleBar } from "./WindowTitleBar";
-import { getWindowMinSize } from "../../constants/windowLayout";
+import {
+  getAppWindowSize,
+  getTopbarHeight,
+  getWindowMinSize,
+} from "../../constants/windowLayout";
+import type { WindowAppId } from "../../constants/windowLayout";
 import { useHaptics } from "../../hooks/useHaptics";
 
 interface WindowProps {
@@ -117,9 +122,31 @@ export const Window = memo(function Window({ data }: WindowProps) {
   const handleFitWindow = useCallback<MouseEventHandler<HTMLButtonElement>>(
     (e) => {
       fileOpen();
+      const itemAppId: WindowAppId | undefined =
+        currentItem?.type === "app"
+          ? currentItem.app
+          : currentItem?.type === "file" && currentItem.openWithApp
+            ? currentItem.openWithApp
+            : undefined;
+
+      if (itemAppId) {
+        const targetSize = getAppWindowSize(itemAppId);
+        const topbarHeight = getTopbarHeight();
+        const nextPosition = {
+          x: Math.min(position.x, Math.max(0, window.innerWidth - targetSize.width)),
+          y: Math.min(
+            Math.max(topbarHeight, position.y),
+            Math.max(topbarHeight, window.innerHeight - targetSize.height),
+          ),
+        };
+        commitWindowDimensions(targetSize);
+        updateWindowBounds(id, { position: nextPosition, size: targetSize });
+        return;
+      }
+
       handleZoomToFit(e);
     },
-    [fileOpen, handleZoomToFit],
+    [fileOpen, handleZoomToFit, currentItem, commitWindowDimensions, updateWindowBounds, id, position],
   );
 
   useEffect(() => {

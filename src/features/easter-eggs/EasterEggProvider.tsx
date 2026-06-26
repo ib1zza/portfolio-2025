@@ -75,6 +75,9 @@ export function EasterEggProvider({ children }: { children: ReactNode }) {
   const foundEggCount = useEasterEggProgress(
     (state) => state.foundEggIds.length,
   );
+  const foundEggIds = useEasterEggProgress(
+    (state) => state.foundEggIds,
+  );
   const isTimeMachineVisible = useFileSystem((state) => {
     const root = state.items.root;
     return root?.type === "folder" && root.children.includes(TIME_MACHINE_HD_ID);
@@ -101,40 +104,23 @@ export function EasterEggProvider({ children }: { children: ReactNode }) {
     isTimeMachineVisible && hasOpenedTimeMachineHd && !isLastDiskRevealed;
 
   const revealEasterEggLog = useCallback(() => {
-    useFileSystem.setState((state) => {
-      const root = state.items.root;
-
-      if (
-        root?.type !== "folder" ||
-        root.children.includes(EASTER_EGG_LOG_FILE_ID)
-      ) {
-        return state;
-      }
-
-      const keepsTrashLast = root.children.includes("trash");
-      const visibleChildren = root.children.filter((id) => id !== "trash");
-
-      return {
-        items: {
-          ...state.items,
-          root: {
-            ...root,
-            children: [
-              ...visibleChildren,
-              EASTER_EGG_LOG_FILE_ID,
-              ...(keepsTrashLast ? ["trash"] : []),
-            ],
-          },
-        },
-      };
-    });
+    useFileSystem.getState().addExtraRootItem(EASTER_EGG_LOG_FILE_ID);
   }, []);
+
+  const revealTimeMachineHd = useCallback(() => {
+    useFileSystem.getState().addExtraRootItem(TIME_MACHINE_HD_ID);
+    markFound("time-machine-hd");
+    void haptics.easterEgg("finderClick");
+  }, [haptics, markFound]);
 
   useEffect(() => {
     if (foundEggCount > 0) {
       revealEasterEggLog();
     }
-  }, [foundEggCount, revealEasterEggLog]);
+    if (foundEggIds.includes("time-machine-hd")) {
+      revealTimeMachineHd();
+    }
+  }, [foundEggCount, foundEggIds, revealEasterEggLog, revealTimeMachineHd]);
 
   useEffect(() => {
     if (isTimeMachineVisible) {
@@ -147,38 +133,6 @@ export function EasterEggProvider({ children }: { children: ReactNode }) {
       markFound("last-disk");
     }
   }, [isLastDiskRevealed, markFound]);
-
-  const revealTimeMachineHd = useCallback(() => {
-    markFound("time-machine-hd");
-    useFileSystem.setState((state) => {
-      const root = state.items.root;
-
-      if (
-        root?.type !== "folder" ||
-        root.children.includes(TIME_MACHINE_HD_ID)
-      ) {
-        return state;
-      }
-
-      const keepsTrashLast = root.children.includes("trash");
-      const visibleChildren = root.children.filter((id) => id !== "trash");
-
-      return {
-        items: {
-          ...state.items,
-          root: {
-            ...root,
-            children: [
-              ...visibleChildren,
-              TIME_MACHINE_HD_ID,
-              ...(keepsTrashLast ? ["trash"] : []),
-            ],
-          },
-        },
-      };
-    });
-    void haptics.easterEgg("finderClick");
-  }, [haptics, markFound]);
 
   const revealLastDisk = useCallback(() => {
     useFileSystem.setState((state) => {

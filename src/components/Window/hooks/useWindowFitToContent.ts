@@ -25,6 +25,42 @@ interface UseWindowFitToContentParams {
 const getNumericStyleValue = (style: CSSStyleDeclaration, property: string) =>
   parseFloat(style.getPropertyValue(property)) || 0;
 
+const measureElementRect = (
+  element: HTMLElement,
+  relativeTo: DOMRect,
+  scrollLeft: number,
+  scrollTop: number,
+): { width: number; height: number } => {
+  const rect = element.getBoundingClientRect();
+  const style = window.getComputedStyle(element);
+
+  // display: contents generates no box — measure its children instead
+  if (
+    rect.width === 0 &&
+    rect.height === 0 &&
+    element.children.length > 0 &&
+    style.display === "contents"
+  ) {
+    let w = 0, h = 0;
+    Array.from(element.children).forEach((child) => {
+      const childRect = measureElementRect(
+        child as HTMLElement, relativeTo, scrollLeft, scrollTop,
+      );
+      w = Math.max(w, childRect.width);
+      h = Math.max(h, childRect.height);
+    });
+    return { width: w, height: h };
+  }
+
+  const marginRight = getNumericStyleValue(style, "margin-right");
+  const marginBottom = getNumericStyleValue(style, "margin-bottom");
+
+  return {
+    width: Math.max(0, rect.right - relativeTo.left + scrollLeft + marginRight),
+    height: Math.max(0, rect.bottom - relativeTo.top + scrollTop + marginBottom),
+  };
+};
+
 const getArticleContentSize = (article: HTMLElement) => {
   const articleRect = article.getBoundingClientRect();
   const articleStyle = window.getComputedStyle(article);
@@ -72,19 +108,11 @@ const getContentSize = (node: HTMLElement) => {
   let height = 0;
 
   children.forEach((child) => {
-    const rect = child.getBoundingClientRect();
-    const style = window.getComputedStyle(child);
-    const marginRight = getNumericStyleValue(style, "margin-right");
-    const marginBottom = getNumericStyleValue(style, "margin-bottom");
-
-    width = Math.max(
-      width,
-      rect.right - nodeRect.left + node.scrollLeft + marginRight
+    const childSize = measureElementRect(
+      child, nodeRect, node.scrollLeft, node.scrollTop,
     );
-    height = Math.max(
-      height,
-      rect.bottom - nodeRect.top + node.scrollTop + marginBottom
-    );
+    width = Math.max(width, childSize.width);
+    height = Math.max(height, childSize.height);
   });
 
   return {

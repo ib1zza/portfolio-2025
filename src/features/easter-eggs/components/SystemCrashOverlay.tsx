@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 
 import { getAssetPath } from "../../../utils/assets";
 import s from "./SystemCrashOverlay.module.scss";
@@ -10,6 +17,7 @@ interface SystemCrashOverlayProps {
 
 const BOMB_FALL_MS = 700;
 const SAD_MAC_DELAY_MS = 300;
+const DISMISS_UNLOCK_MS = 1000;
 
 const getFallbackSource = () => ({
   x: window.innerWidth - 72,
@@ -71,6 +79,7 @@ export function SystemCrashOverlay({
   onDismiss,
 }: SystemCrashOverlayProps) {
   const [isSadMacVisible, setIsSadMacVisible] = useState(false);
+  const canDismissRef = useRef(false);
   const source = useMemo(() => {
     if (!sourceRect) return getFallbackSource();
 
@@ -90,14 +99,37 @@ export function SystemCrashOverlay({
   }, []);
 
   useEffect(() => {
-    const handleKeyDown = () => onDismiss();
+    const unlockTimer = window.setTimeout(
+      () => {
+        canDismissRef.current = true;
+      },
+      BOMB_FALL_MS + SAD_MAC_DELAY_MS + DISMISS_UNLOCK_MS,
+    );
+
+    return () => window.clearTimeout(unlockTimer);
+  }, []);
+
+  const handleDismiss = useCallback(() => {
+    if (!canDismissRef.current) return;
+    onDismiss();
+  }, [onDismiss]);
+
+  useEffect(() => {
+    const handleKeyDown = () => {
+      if (!canDismissRef.current) return;
+      onDismiss();
+    };
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onDismiss]);
 
   return (
-    <div className={s.overlay} aria-live="assertive" onClick={onDismiss}>
+    <div
+      className={s.overlay}
+      aria-live="assertive"
+      onClick={handleDismiss}
+    >
       {!isSadMacVisible ? (
         <div
           className={s.bomb}

@@ -15,104 +15,106 @@ export type WindowAppId =
   | "image-viewer"
   | "video-viewer";
 
-const MOBILE_WINDOW_METRICS = {
+// ─── Base sizes (plain numbers, unscaled) ────────────────────────────────
+
+const SIZE = {
+  topbarHeight: 21,
+  titlebarHeight: 17,
+  resizeHandleSize: 15,
+  titlebarButtonSafeArea: 30,
+  openStartWidth: 28,
+
+  defaultPosition: { x: 200, y: 100 },
+  defaultSize: { width: 400, height: 300 },
+  minSize: { width: 300, height: 132 },
+
+  // Per-app window sizes
+  appSize: { width: 580, height: 380 },
+  ditherStudioSize: { width: 580, height: 350 },
+  modelViewerSize: { width: 680, height: 390 },
+  audioPlayerSize: { width: 600, height: 450 },
+  badgeGeneratorSize: { width: 710, height: 390 },
+  largeAppSize: { width: 580, height: 420 },
+  videoPlayerSize: { width: 600, height: 450 },
+  portfolioAssistantSize: { width: 580, height: 440 },
+  hyperCardSize: { width: 360, height: 270 },
+  gameSize: { width: 540, height: 520 },
+  projectModelSize: { width: 900, height: 440 },
+  documentNoteSize: { width: 360, height: 260 },
+} as const;
+
+// ─── App → window size map ──────────────────────────────────────────────
+
+const APP_WINDOW_SIZES: Record<WindowAppId, { width: number; height: number }> =
+  {
+    "icon-painter": SIZE.appSize,
+    "dither-studio": SIZE.ditherStudioSize,
+    "model-viewer": SIZE.modelViewerSize,
+    "badge-generator": SIZE.badgeGeneratorSize,
+    "audio-player": SIZE.audioPlayerSize,
+    "video-player": SIZE.videoPlayerSize,
+    "space-invaders": SIZE.gameSize,
+    "portfolio-assistant": SIZE.portfolioAssistantSize,
+    "hypercard-stack": SIZE.hyperCardSize,
+    "image-viewer": SIZE.largeAppSize,
+    "video-viewer": SIZE.videoPlayerSize,
+  };
+
+// ─── Mobile ──────────────────────────────────────────────────────────────
+
+const MOBILE = {
   inset: 6,
   top: 27,
   bottom: 16,
 } as const;
 
-const WINDOW_BASE_METRICS = {
-  topbarHeight: 21,
-  titlebarHeight: 17,
-  defaultPosition: { x: 200, y: 100 },
-  defaultSize: { width: 400, height: 300 },
-  minSize: { width: 300, height: 132 },
-  resizeHandleSize: 15,
-  titlebarButtonSafeArea: 30,
-  openStartWidth: 28,
-  appSize: { width: 580, height: 384 },
-  largeAppSize: { width: 660, height: 420 },
-  hyperCardSize: { width: 360, height: 270 },
-  videoPlayerSize: { width: 720, height: 520 },
-  gameSize: { width: 520, height: 480 },
-  projectModelSize: { width: 900, height: 440 },
-  documentNoteSize: { width: 360, height: 260 },
-} as const;
+// ─── Getters ─────────────────────────────────────────────────────────────
 
-export const isMobileWindowMode = () =>
-  isMobilePointerMode();
+export const isMobileWindowMode = () => isMobilePointerMode();
 
-export const getTopbarHeight = () =>
-  scaleUiValue(WINDOW_BASE_METRICS.topbarHeight);
+export const getTopbarHeight = () => scaleUiValue(SIZE.topbarHeight);
 
-export const getWindowTitlebarHeight = () =>
-  scaleUiValue(WINDOW_BASE_METRICS.titlebarHeight);
+export const getWindowTitlebarHeight = () => scaleUiValue(SIZE.titlebarHeight);
 
 export const getDefaultWindowPosition = () => ({
-  x: scaleUiValue(WINDOW_BASE_METRICS.defaultPosition.x),
-  y: scaleUiValue(WINDOW_BASE_METRICS.defaultPosition.y),
+  x: scaleUiValue(SIZE.defaultPosition.x),
+  y: scaleUiValue(SIZE.defaultPosition.y),
 });
 
-export const getDefaultWindowSize = () =>
-  scaleUiSize(WINDOW_BASE_METRICS.defaultSize);
+export const getDefaultWindowSize = () => scaleUiSize(SIZE.defaultSize);
 
-export const getWindowMinSize = () =>
-  scaleUiSize(WINDOW_BASE_METRICS.minSize);
+export const getWindowMinSize = () => scaleUiSize(SIZE.minSize);
 
 export const getWindowResizeHandleSize = () =>
-  scaleUiValue(WINDOW_BASE_METRICS.resizeHandleSize);
+  scaleUiValue(SIZE.resizeHandleSize);
 
 export const getWindowTitlebarButtonSafeArea = () =>
-  scaleUiValue(WINDOW_BASE_METRICS.titlebarButtonSafeArea);
+  scaleUiValue(SIZE.titlebarButtonSafeArea);
 
-export const getWindowOpenStartWidth = () =>
-  scaleUiValue(WINDOW_BASE_METRICS.openStartWidth);
+export const getWindowOpenStartWidth = () => scaleUiValue(SIZE.openStartWidth);
 
 export const getAppWindowSize = (app: WindowAppId) =>
-  scaleUiSize(
-  app === "space-invaders"
-      ? WINDOW_BASE_METRICS.gameSize
-      : app === "model-viewer" ||
-          app === "badge-generator" ||
-          app === "audio-player" ||
-          app === "portfolio-assistant"
-        ? WINDOW_BASE_METRICS.largeAppSize
-        : app === "hypercard-stack"
-          ? WINDOW_BASE_METRICS.hyperCardSize
-        : app === "video-player" || app === "video-viewer"
-          ? WINDOW_BASE_METRICS.videoPlayerSize
-        : app === "image-viewer"
-          ? WINDOW_BASE_METRICS.largeAppSize
-          : WINDOW_BASE_METRICS.appSize,
-  );
+  scaleUiSize(APP_WINDOW_SIZES[app] ?? SIZE.appSize);
 
-export const getVideoPlayerWindowSize = () =>
-  scaleUiSize(WINDOW_BASE_METRICS.videoPlayerSize);
+export const getVideoPlayerWindowSize = () => scaleUiSize(SIZE.videoPlayerSize);
 
 export const getDocumentNoteWindowSize = () =>
-  scaleUiSize(WINDOW_BASE_METRICS.documentNoteSize);
+  scaleUiSize(SIZE.documentNoteSize);
 
 export const getProjectModelWindowSize = () => ({
-  width: Math.min(
-    scaleUiValue(WINDOW_BASE_METRICS.projectModelSize.width),
-    window.innerWidth,
-  ),
-  height: scaleUiValue(WINDOW_BASE_METRICS.projectModelSize.height),
+  width: Math.min(scaleUiValue(SIZE.projectModelSize.width), window.innerWidth),
+  height: scaleUiValue(SIZE.projectModelSize.height),
 });
 
 export const getMobileWindowBounds = () => ({
-  x: MOBILE_WINDOW_METRICS.inset,
-  y: MOBILE_WINDOW_METRICS.top,
-  width: Math.max(0, window.innerWidth - MOBILE_WINDOW_METRICS.inset * 2),
-  height: Math.max(
-    0,
-    window.innerHeight -
-      MOBILE_WINDOW_METRICS.top -
-      MOBILE_WINDOW_METRICS.bottom,
-  ),
+  x: MOBILE.inset,
+  y: MOBILE.top,
+  width: Math.max(0, window.innerWidth - MOBILE.inset * 2),
+  height: Math.max(0, window.innerHeight - MOBILE.top - MOBILE.bottom),
 });
 
 export const getWindowTargetBounds = (
   position: WindowInstance["position"],
   size: WindowInstance["size"],
-) => (isMobileWindowMode() ? getMobileWindowBounds() : { ...position, ...size });
+) =>
+  isMobileWindowMode() ? getMobileWindowBounds() : { ...position, ...size };

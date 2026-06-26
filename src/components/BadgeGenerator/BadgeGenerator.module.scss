@@ -28,10 +28,12 @@
 .previewPanel {
   display: grid;
   place-items: center;
-  min-height: ui(300px);
+  position: sticky;
+  top: var(--app-padding);
+  align-self: start;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    min-height: 0;
+    position: static;
     padding-block: var(--panel-gap);
   }
 }
