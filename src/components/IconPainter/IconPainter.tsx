@@ -165,6 +165,7 @@ const drawPixels = (
   canvas: HTMLCanvasElement | null,
   pixels: boolean[],
   scale = 1,
+  extendPixels = false,
 ) => {
   const context = canvas?.getContext("2d");
   if (!canvas || !context) return;
@@ -174,13 +175,15 @@ const drawPixels = (
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.fillStyle = "#000";
 
+  const size = extendPixels ? scale + 1 : scale;
+
   pixels.forEach((pixel, index) => {
     if (!pixel) return;
     context.fillRect(
       (index % GRID_SIZE) * scale,
       Math.floor(index / GRID_SIZE) * scale,
-      scale,
-      scale,
+      size,
+      size,
     );
   });
 };
@@ -335,16 +338,16 @@ export const IconPainter = memo(function IconPainter({
   const previewRefs = useRef<Record<number, HTMLCanvasElement | null>>({});
 
   const drawAllPixels = useCallback((nextPixels: boolean[]) => {
-    drawPixels(canvasRef.current, nextPixels, 8);
+    drawPixels(canvasRef.current, nextPixels, 8, true);
     PREVIEW_SIZES.forEach((size) => {
-      drawPixels(previewRefs.current[size], nextPixels, size / GRID_SIZE);
+      drawPixels(previewRefs.current[size], nextPixels, size / GRID_SIZE, false);
     });
   }, []);
 
   const setPreviewRef = useCallback(
     (size: PreviewSize, element: HTMLCanvasElement | null) => {
       previewRefs.current[size] = element;
-      if (element) drawPixels(element, pixelsRef.current, size / GRID_SIZE);
+      if (element) drawPixels(element, pixelsRef.current, size / GRID_SIZE, false);
     },
     [],
   );

@@ -19,6 +19,7 @@ interface SubmenuItemData {
 interface TabData {
   title: string;
   submenu?: Array<SubmenuItemData | null>;
+  mobileHidden?: boolean;
 }
 
 interface SubmenuProps {
@@ -164,6 +165,7 @@ export function Topbar() {
       },
       {
         title: "File",
+        mobileHidden: true,
         submenu: [
           {
             title: "Open About",
@@ -188,6 +190,7 @@ export function Topbar() {
       },
       {
         title: "Edit",
+        mobileHidden: true,
         submenu: [
           {
             title: "Clean Up Icons",
@@ -197,6 +200,7 @@ export function Topbar() {
       },
       {
         title: "Special",
+        mobileHidden: true,
         submenu: [
           {
             title: "Restart Finder",
@@ -350,7 +354,7 @@ export function Topbar() {
   return (
     <div className={s.topbar}>
       {tabs.map((tab, index) => (
-        <div key={tab.title} className={s.tab} ref={setTabRef(index)}>
+        <div key={tab.title} className={clsx(s.tab, { [s.mobileHidden]: tab.mobileHidden })} ref={setTabRef(index)}>
           <div
             className={clsx(s.tabTitle, {
               [s.active]: activeMenuIndex === index,

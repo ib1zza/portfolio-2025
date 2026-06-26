@@ -9,9 +9,13 @@
   touch-action: none;
   min-width: ui(82px);
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     position: static !important;
     touch-action: manipulation;
+    min-width: 0;
+    max-width: 100%;
   }
 
   &.active,
@@ -24,8 +28,11 @@
   }
 
   &.trash {
-    @media (max-width: 768px), (hover: none), (pointer: coarse) {
-      grid-column: 4;
+
+    @media (max-width: 768px),
+    (hover: none),
+    (pointer: coarse) {
+      grid-column: 3;
       justify-self: center;
 
       position: sticky !important;
@@ -52,13 +59,21 @@
 
 .folderName {
   min-height: var(--finder-label-line-height);
-  @include textMain(
-    var(--finder-label-font-size),
-    var(--finder-label-line-height)
-  );
+  @include textMain(var(--finder-label-font-size),
+    var(--finder-label-line-height));
   background: $white;
   padding-inline: ui(3px);
   user-select: none;
   white-space: nowrap;
   text-align: center;
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    font-size: ui(14px);
+    min-height: auto;
+  }
 }

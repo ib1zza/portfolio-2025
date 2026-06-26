@@ -99,9 +99,11 @@ export const WindowDocumentContent = memo(function WindowDocumentContent({
         })}
       </div>
       {projectModel?.type === "projectModel" && (
-        <Suspense fallback={<div className={s.modelFallback} />}>
-          <ProjectModelViewer isActive={isActive} model={projectModel.model} />
-        </Suspense>
+        <div className={s.stickyModelWrapper}>
+          <Suspense fallback={<div className={s.modelFallback} />}>
+            <ProjectModelViewer isActive={isActive} model={projectModel.model} />
+          </Suspense>
+        </div>
       )}
     </article>
   );

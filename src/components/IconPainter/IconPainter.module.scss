@@ -1,52 +1,44 @@
 .iconPainter {
   position: relative;
-  display: grid;
-  grid-template-columns: var(--app-canvas-panel-size) minmax(ui(220px), 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: var(--app-gap);
   width: 100%;
-  min-width: var(--icon-painter-min-width);
   min-height: 100%;
   padding: var(--app-padding);
   background: $white;
   user-select: none;
-
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    grid-template-columns: 1fr;
-    min-width: 0;
-    align-content: start;
-    overflow: auto;
-  }
+  overflow: auto;
 }
 
 .canvasPanel,
 .toolsPanel {
   border: $border;
   background: $white;
+  box-sizing: border-box;
 }
 
 .canvasPanel {
   width: var(--app-canvas-panel-size);
-  height: var(--app-canvas-panel-size);
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  align-self: flex-start;
 
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: var(--app-mobile-canvas-panel-size);
-    height: var(--app-mobile-canvas-panel-size);
-    justify-self: center;
+    margin: 0 auto;
   }
 }
 
 .canvas {
-  width: var(--app-canvas-size);
-  height: var(--app-canvas-size);
+  width: 100%;
+  height: 100%;
   background: $white;
   position: relative;
   touch-action: none;
-
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: var(--app-mobile-canvas-size);
-    height: var(--app-mobile-canvas-size);
-  }
 }
+
 
 .grid::before,
 .grid::after {
@@ -57,51 +49,90 @@
 }
 
 .grid::before {
-  background-image: repeating-linear-gradient(
+  background-image: linear-gradient(
     to right,
-    $black 0 var(--line-size),
-    transparent var(--line-size) calc(var(--line-size) * 2)
+    $black var(--line-size),
+    transparent var(--line-size)
   );
-  mask-image: repeating-linear-gradient(
-    to bottom,
-    $black 0 var(--line-size),
-    transparent var(--line-size) ui(8px)
-  );
-  -webkit-mask-image: repeating-linear-gradient(
-    to bottom,
-    $black 0 var(--line-size),
-    transparent var(--line-size) ui(8px)
-  );
+  background-size: calc(var(--line-size) * 2) 100%;
+  background-repeat: repeat-x;
+
+  mask-image: 
+    linear-gradient(
+      to bottom,
+      $black var(--line-size),
+      transparent var(--line-size)
+    ),
+    linear-gradient(
+      to top,
+      $black var(--line-size),
+      transparent var(--line-size)
+    );
+  mask-size: 100% calc(100% / 32), 100% 100%;
+  mask-repeat: repeat-y, no-repeat;
+  mask-position: 0 0, 0 0;
+
+  -webkit-mask-image: 
+    linear-gradient(
+      to bottom,
+      $black var(--line-size),
+      transparent var(--line-size)
+    ),
+    linear-gradient(
+      to top,
+      $black var(--line-size),
+      transparent var(--line-size)
+    );
+  -webkit-mask-size: 100% calc(100% / 32), 100% 100%;
+  -webkit-mask-repeat: repeat-y, no-repeat;
+  -webkit-mask-position: 0 0, 0 0;
 }
 
 .grid::after {
-  background-image: repeating-linear-gradient(
+  background-image: linear-gradient(
     to bottom,
-    $black 0 var(--line-size),
-    transparent var(--line-size) calc(var(--line-size) * 2)
+    $black var(--line-size),
+    transparent var(--line-size)
   );
-  mask-image: repeating-linear-gradient(
-    to right,
-    $black 0 var(--line-size),
-    transparent var(--line-size) ui(8px)
-  );
-  -webkit-mask-image: repeating-linear-gradient(
-    to right,
-    $black 0 var(--line-size),
-    transparent var(--line-size) ui(8px)
-  );
+  background-size: 100% calc(var(--line-size) * 2);
+  background-repeat: repeat-y;
+
+  mask-image: 
+    linear-gradient(
+      to right,
+      $black var(--line-size),
+      transparent var(--line-size)
+    ),
+    linear-gradient(
+      to left,
+      $black var(--line-size),
+      transparent var(--line-size)
+    );
+  mask-size: calc(100% / 32) 100%, 100% 100%;
+  mask-repeat: repeat-x, no-repeat;
+  mask-position: 0 0, 0 0;
+
+  -webkit-mask-image: 
+    linear-gradient(
+      to right,
+      $black var(--line-size),
+      transparent var(--line-size)
+    ),
+    linear-gradient(
+      to left,
+      $black var(--line-size),
+      transparent var(--line-size)
+    );
+  -webkit-mask-size: calc(100% / 32) 100%, 100% 100%;
+  -webkit-mask-repeat: repeat-x, no-repeat;
+  -webkit-mask-position: 0 0, 0 0;
 }
 
 .canvasBitmap {
   display: block;
-  width: var(--app-canvas-size);
-  height: var(--app-canvas-size);
+  width: 100%;
+  height: 100%;
   image-rendering: pixelated;
-
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    width: var(--app-mobile-canvas-size);
-    height: var(--app-mobile-canvas-size);
-  }
 }
 
 .toolsPanel {
@@ -110,6 +141,8 @@
   gap: var(--panel-gap);
   min-width: 0;
   padding: var(--panel-padding);
+  flex: 1 1 ui(220px);
+  align-self: flex-start;
 }
 
 .title {
@@ -141,6 +174,10 @@
   display: flex;
   align-items: flex-start;
   gap: var(--panel-padding);
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    flex-wrap: wrap;
+  }
 }
 
 .previewItem {
@@ -163,4 +200,8 @@
   display: flex;
   flex-direction: column;
   gap: ui(2px);
+
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    display: none;
+  }
 }

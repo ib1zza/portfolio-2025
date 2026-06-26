@@ -3,6 +3,7 @@ import {
   TABLET_UI_SCALE_QUERY,
 } from "../constants/responsive";
 
+const MOBILE_UI_SCALE = 1.5;
 const TABLET_UI_SCALE = 1.5;
 const DESKTOP_UI_SCALE = 2;
 
@@ -17,7 +18,7 @@ export const isTabletUiScale = () =>
 export const getUiScale = () => {
   if (isDesktopUiScale()) return DESKTOP_UI_SCALE;
   if (isTabletUiScale()) return TABLET_UI_SCALE;
-  return 1;
+  return MOBILE_UI_SCALE;
 };
 
 export const scaleUiValue = (value: number) => value * getUiScale();

@@ -1,6 +1,7 @@
 .window {
   --line-size: var(--window-line-size);
   border: var(--line-size) solid $black;
+  box-shadow: var(--line-size) var(--line-size) 0 $black;
   position: absolute;
   // TODO: make dynamic
   top: 100px;
@@ -11,16 +12,17 @@
   display: flex;
   flex-direction: column;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     position: fixed !important;
     top: var(--mobile-window-top) !important;
     left: var(--mobile-window-inset) !important;
     width: calc(100vw - (var(--mobile-window-inset) * 2)) !important;
-    height: calc(
-      100dvh - var(--mobile-window-top) - var(--mobile-window-bottom)
-    ) !important;
+    height: calc(100dvh - var(--mobile-window-top) - var(--mobile-window-bottom)) !important;
     min-width: 0 !important;
     min-height: 0 !important;
+    box-shadow: none !important;
   }
 }
 
@@ -62,12 +64,10 @@
     --bg-color: #fff;
 
     background-color: var(--bg-color);
-    background-image: linear-gradient(
-      to bottom,
-      var(--pixel-color) ui(1px),
-      transparent ui(1px),
-      transparent ui(2px)
-    );
+    background-image: linear-gradient(to bottom,
+        var(--pixel-color) ui(1px),
+        transparent ui(1px),
+        transparent ui(2px));
     background-size: 100% ui(2px);
     background-repeat: repeat-y;
     z-index: -1;
@@ -102,6 +102,7 @@
 
 .window.inactive {
   .windowTop {
+
     & .buttonContainer,
     &::before {
       visibility: hidden;
@@ -112,11 +113,13 @@
   & .verticalScrollBar {
     visibility: hidden;
   }
+
   .navigationButton {
     visibility: hidden;
   }
 
   .windowResize {
+
     &::before,
     &::after {
       visibility: hidden;
@@ -139,7 +142,9 @@
   border: var(--line-size) solid $black;
   position: relative;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     &::after {
       content: "";
       position: absolute;
@@ -160,6 +165,7 @@
     object-fit: fill;
     user-select: none;
   }
+
   &:active {
     svg {
       display: block;
@@ -203,7 +209,7 @@
   padding-inline: ui(10px);
   border-bottom: var(--line-size) solid $black;
 
-  & > * {
+  &>* {
     width: 30%;
     line-height: var(--window-finder-data-height);
     white-space: nowrap;
@@ -225,12 +231,8 @@
 .content {
   --controls-size: var(--window-scrollbar-size);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) calc(
-      var(--line-size) + var(--controls-size)
-    );
-  grid-template-rows: minmax(0, 1fr) calc(
-      var(--line-size) + var(--controls-size)
-    );
+  grid-template-columns: minmax(0, 1fr) calc(var(--line-size) + var(--controls-size));
+  grid-template-rows: minmax(0, 1fr) calc(var(--line-size) + var(--controls-size));
   flex-grow: 1;
   min-height: 0;
   overflow: hidden;
@@ -268,7 +270,9 @@
 .folderContent {
   display: contents;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
@@ -321,8 +325,8 @@
   left: 0;
   background: $white;
   border: var(--line-size) solid $black;
-  min-width: ui(16px);
-  min-height: ui(16px);
+  min-width: ui(14px);
+  min-height: ui(14px);
   will-change: transform;
   touch-action: none;
 }
@@ -358,11 +362,13 @@
       fill: $black;
     }
   }
+
   &Up {
     // for border
     height: calc(var(--controls-size) + var(--line-size));
 
     border-bottom: var(--line-size) solid $black;
+
     svg {
       transform: rotate(0deg);
     }
@@ -381,6 +387,7 @@
   &Right {
     width: calc(var(--controls-size) + var(--line-size));
     border-left: var(--line-size) solid $black;
+
     svg {
       transform: rotate(90deg);
     }
@@ -389,6 +396,7 @@
   &Left {
     width: calc(var(--controls-size) + var(--line-size));
     border-right: var(--line-size) solid $black;
+
     svg {
       transform: rotate(270deg);
     }
@@ -438,7 +446,8 @@
   --line-size: var(--window-line-size);
   background-color: transparent;
   pointer-events: none;
-  position: relative; /* Важно для позиционирования .dragHandle внутри него */
+  position: relative;
+  /* Важно для позиционирования .dragHandle внутри него */
 
   border: var(--line-size) dotted $black;
 }
@@ -451,7 +460,10 @@
   z-index: 1; // Убедитесь, что он поверх других элементов заголовка, если есть
 }
 
-@media (max-width: 768px), (hover: none), (pointer: coarse) {
+@media (max-width: 768px),
+(hover: none),
+(pointer: coarse) {
+
   .windowResizeHitbox,
   .windowProxy,
   .dragHandle {
@@ -463,6 +475,13 @@
   padding-inline: var(--panel-padding);
   white-space: pre-wrap;
   user-select: text;
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    word-break: break-word;
+    max-width: 100%;
+  }
 }
 
 .centeredNoteDocument {
@@ -472,10 +491,22 @@
   padding: ui(34px) ui(44px);
   user-select: text;
 
-  > div {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    padding: ui(16px) ui(20px);
+  }
+
+  >div {
     display: grid;
     gap: ui(12px);
     max-width: ui(340px);
+
+    @media (max-width: 768px),
+    (hover: none),
+    (pointer: coarse) {
+      max-width: 100%;
+    }
   }
 
   p {
@@ -493,6 +524,16 @@
   display: flex;
   align-items: flex-start;
   gap: var(--window-scrollbar-size);
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    width: 100%;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 !important;
+  }
 
   h1,
   h2,
@@ -516,6 +557,13 @@
   figcaption {
     @include textMain(var(--font-main-size), ui(16px));
     max-width: var(--document-text-width);
+
+    @media (max-width: 768px),
+    (hover: none),
+    (pointer: coarse) {
+      max-width: 100%;
+      word-break: break-word;
+    }
   }
 
   ul {
@@ -534,6 +582,13 @@
     border: var(--line-size) solid $black;
     padding: ui(4px);
     background: $white;
+
+    @media (max-width: 768px),
+    (hover: none),
+    (pointer: coarse) {
+      box-sizing: border-box;
+      max-width: 100%;
+    }
   }
 
   img {
@@ -543,9 +598,12 @@
     image-rendering: auto;
     filter: grayscale(1) contrast(1.2);
 
-    @media (max-width: 768px), (hover: none), (pointer: coarse) {
-      width: min(var(--document-image-width), calc(100vw - #{ui(54px)}));
-      max-width: 100%;
+    @media (max-width: 768px),
+    (hover: none),
+    (pointer: coarse) {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
     }
   }
 }
@@ -553,8 +611,11 @@
 .documentText {
   min-width: var(--document-text-width);
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     min-width: 0;
+    padding: var(--app-padding) var(--app-gap) 0 !important;
   }
 }
 
@@ -564,6 +625,35 @@
   border: var(--line-size) solid $black;
   background: $white;
   flex-shrink: 0;
+}
+
+.stickyModelWrapper {
+  position: sticky;
+  top: var(--app-padding);
+  flex-shrink: 0;
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    position: sticky !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    padding: var(--app-gap) !important;
+    background: $white !important;
+    border-top: var(--line-size) solid $black !important;
+    z-index: 10;
+
+    &> :first-child {
+      position: sticky !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      height: ui(150px) !important;
+      box-sizing: border-box;
+    }
+  }
 }
 
 .documentMeta {

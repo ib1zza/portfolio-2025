@@ -950,7 +950,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
     },
     portfolioAssistant: {
       id: "portfolioAssistant",
-      name: "Portfolio Assistant",
+      name: "Assistant",
       type: "app",
       parentId: "root",
       position: getAppPosition(7),

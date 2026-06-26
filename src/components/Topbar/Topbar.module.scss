@@ -19,6 +19,7 @@
     left: 0;
     z-index: $z-topbar;
     padding-inline: var(--desktop-mobile-padding-inline);
+    padding-top: env(safe-area-inset-top, 0px);
 
     overflow: visible;
     scrollbar-width: none;
@@ -31,6 +32,12 @@
 
 .tab {
   position: relative;
+}
+
+.mobileHidden {
+  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+    display: none;
+  }
 }
 
 .tabTitle {

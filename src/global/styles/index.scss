@@ -6,7 +6,7 @@
 @use "mixins" as *;
 
 :root {
-  --ui-scale: 1;
+  --ui-scale: 1.5;
   --topbar-height: #{ui(21px)};
   --window-titlebar-height: #{ui(17px)};
   --window-titlebar-content-height: #{ui(11px)};
@@ -15,8 +15,8 @@
   --window-line-size: #{ui(1px)};
   --line-size: var(--window-line-size);
   --mobile-window-inset: #{ui(12px)};
-  --mobile-window-top: calc(var(--topbar-height) + 12px);
-  --mobile-window-bottom: #{ui(40px)};
+  --mobile-window-top: calc(var(--topbar-height) + 12px + env(safe-area-inset-top, 0px));
+  --mobile-window-bottom: calc(#{ui(40px)} + env(safe-area-inset-bottom, 0px));
   --finder-icon-size: #{ui(32px)};
   --finder-label-font-size: #{ui(16px)};
   --finder-label-line-height: #{ui(12px)};
