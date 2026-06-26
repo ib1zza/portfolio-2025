@@ -26,7 +26,9 @@
   aspect-ratio: 1;
   align-self: flex-start;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     margin: 0 auto;
   }
 }
@@ -49,80 +51,60 @@
 }
 
 .grid::before {
-  background-image: linear-gradient(
-    to right,
-    $black var(--line-size),
-    transparent var(--line-size)
-  );
+  background-image: linear-gradient(to right,
+      $black var(--line-size),
+      transparent var(--line-size));
   background-size: calc(var(--line-size) * 2) 100%;
   background-repeat: repeat-x;
 
-  mask-image: 
-    linear-gradient(
-      to bottom,
+  mask-image:
+    linear-gradient(to bottom,
       $black var(--line-size),
-      transparent var(--line-size)
-    ),
-    linear-gradient(
-      to top,
+      transparent var(--line-size)),
+    linear-gradient(to top,
       $black var(--line-size),
-      transparent var(--line-size)
-    );
+      transparent var(--line-size));
   mask-size: 100% calc(100% / 32), 100% 100%;
   mask-repeat: repeat-y, no-repeat;
   mask-position: 0 0, 0 0;
 
-  -webkit-mask-image: 
-    linear-gradient(
-      to bottom,
+  -webkit-mask-image:
+    linear-gradient(to bottom,
       $black var(--line-size),
-      transparent var(--line-size)
-    ),
-    linear-gradient(
-      to top,
+      transparent var(--line-size)),
+    linear-gradient(to top,
       $black var(--line-size),
-      transparent var(--line-size)
-    );
+      transparent var(--line-size));
   -webkit-mask-size: 100% calc(100% / 32), 100% 100%;
   -webkit-mask-repeat: repeat-y, no-repeat;
   -webkit-mask-position: 0 0, 0 0;
 }
 
 .grid::after {
-  background-image: linear-gradient(
-    to bottom,
-    $black var(--line-size),
-    transparent var(--line-size)
-  );
+  background-image: linear-gradient(to bottom,
+      $black var(--line-size),
+      transparent var(--line-size));
   background-size: 100% calc(var(--line-size) * 2);
   background-repeat: repeat-y;
 
-  mask-image: 
-    linear-gradient(
-      to right,
+  mask-image:
+    linear-gradient(to right,
       $black var(--line-size),
-      transparent var(--line-size)
-    ),
-    linear-gradient(
-      to left,
+      transparent var(--line-size)),
+    linear-gradient(to left,
       $black var(--line-size),
-      transparent var(--line-size)
-    );
+      transparent var(--line-size));
   mask-size: calc(100% / 32) 100%, 100% 100%;
   mask-repeat: repeat-x, no-repeat;
   mask-position: 0 0, 0 0;
 
-  -webkit-mask-image: 
-    linear-gradient(
-      to right,
+  -webkit-mask-image:
+    linear-gradient(to right,
       $black var(--line-size),
-      transparent var(--line-size)
-    ),
-    linear-gradient(
-      to left,
+      transparent var(--line-size)),
+    linear-gradient(to left,
       $black var(--line-size),
-      transparent var(--line-size)
-    );
+      transparent var(--line-size));
   -webkit-mask-size: calc(100% / 32) 100%, 100% 100%;
   -webkit-mask-repeat: repeat-x, no-repeat;
   -webkit-mask-position: 0 0, 0 0;
@@ -155,6 +137,14 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--section-gap);
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    >button {
+      flex-grow: 1;
+    }
+  }
 }
 
 .exportRow {
@@ -162,6 +152,15 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--panel-padding);
+
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    >button {
+      flex-grow: 1;
+      flex-basis: 100%;
+    }
+  }
 }
 
 .previewWrap {
@@ -175,7 +174,9 @@
   align-items: flex-start;
   gap: var(--panel-padding);
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     flex-wrap: wrap;
   }
 }
@@ -195,13 +196,15 @@
 }
 
 .meta {
-  margin-top: ui(16px);
+  padding: var(--panel-padding);
   @include textMain(var(--font-main-size), ui(16px));
   display: flex;
   flex-direction: column;
   gap: ui(2px);
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
     display: none;
   }
 }
