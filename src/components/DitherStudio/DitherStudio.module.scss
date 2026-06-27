@@ -10,7 +10,7 @@
   background: $white;
   user-select: none;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     grid-template-columns: 1fr;
     min-width: 0;
     align-content: start;
@@ -32,7 +32,7 @@
   width: var(--app-canvas-panel-size);
   padding-bottom: var(--panel-padding);
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     width: var(--app-mobile-canvas-panel-size);
     justify-self: center;
   }
@@ -47,7 +47,7 @@
   overflow: hidden;
   border-bottom: $border;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     width: var(--app-mobile-canvas-size);
     height: var(--app-mobile-canvas-size);
   }
@@ -68,7 +68,7 @@
   background: $white;
   image-rendering: pixelated;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     width: var(--app-mobile-canvas-size);
     height: var(--app-mobile-canvas-size);
   }

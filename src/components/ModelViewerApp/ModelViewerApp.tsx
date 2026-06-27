@@ -1,8 +1,7 @@
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 
 import { portfolio } from "../../data/portfolio";
-import { MacButton } from "../UIKit/MacButton";
-import { PopupSelect } from "../UIKit/PopupSelect";
+import { MacButton, PopupSelect } from "../UIKit";
 import { ProjectModelViewer } from "../ProjectModelViewer";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";

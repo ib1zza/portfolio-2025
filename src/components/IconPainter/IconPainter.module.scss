@@ -26,9 +26,7 @@
   aspect-ratio: 1;
   align-self: flex-start;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     margin: 0 auto;
   }
 }
@@ -138,9 +136,7 @@
   flex-wrap: wrap;
   gap: var(--section-gap);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     >button {
       flex-grow: 1;
     }
@@ -153,9 +149,7 @@
   align-items: center;
   gap: var(--panel-padding);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     >button {
       flex-grow: 1;
       flex-basis: 100%;
@@ -174,9 +168,7 @@
   align-items: flex-start;
   gap: var(--panel-padding);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     flex-wrap: wrap;
   }
 }
@@ -202,9 +194,7 @@
   flex-direction: column;
   gap: ui(2px);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     display: none;
   }
 }

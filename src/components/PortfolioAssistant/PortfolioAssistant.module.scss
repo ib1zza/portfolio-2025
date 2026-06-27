@@ -10,7 +10,7 @@
   background: $white;
   user-select: none;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     grid-template-columns: 1fr;
     min-width: 0;
     align-content: start;

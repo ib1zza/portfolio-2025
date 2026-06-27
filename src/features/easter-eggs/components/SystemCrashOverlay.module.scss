@@ -73,7 +73,7 @@
   }
 }
 
-@media (max-width: 768px), (hover: none), (pointer: coarse) {
+@include mobile-touch {
   .sadMacIcon {
     width: 54px;
     height: 54px;

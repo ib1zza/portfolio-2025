@@ -3,8 +3,7 @@ import QRCode from "qrcode";
 
 import { portfolio } from "../../data/portfolio";
 import { useFileSystem } from "../../store/useFileSystem";
-import { MacButton } from "../UIKit/MacButton";
-import { MacTextInput } from "../UIKit/MacTextInput";
+import { MacButton, MacTextInput } from "../UIKit";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import {
   createBlankIconPixels,
@@ -21,6 +20,7 @@ import {
 } from "./badgeCard";
 import s from "./BadgeGenerator.module.scss";
 import { getAppWindowSize } from "../../constants/windowLayout";
+import { isMobilePointerMode } from "../../constants/responsive";
 
 const DEFAULT_COMPANY = portfolio.experience[0]?.company ?? "GROKHOTOV STUDIO";
 const DEFAULT_ABOUT = "I build UI kits, animation, and production websites.";
@@ -116,11 +116,7 @@ export const BadgeGenerator = memo(function BadgeGenerator({
     const preview = previewRef.current;
     if (!container || !preview) return;
 
-    if (
-      window.matchMedia(
-        "(max-width: 768px), (hover: none), (pointer: coarse)",
-      ).matches
-    ) {
+    if (isMobilePointerMode()) {
       preview.style.height = "";
       return;
     }

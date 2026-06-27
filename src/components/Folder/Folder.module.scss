@@ -9,9 +9,7 @@
   touch-action: none;
   min-width: ui(82px);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     position: static !important;
     touch-action: manipulation;
     min-width: 0;
@@ -29,9 +27,7 @@
 
   &.trash {
 
-    @media (max-width: 768px),
-    (hover: none),
-    (pointer: coarse) {
+    @include mobile-touch {
       grid-column: 3;
       justify-self: center;
 
@@ -67,9 +63,7 @@
   white-space: nowrap;
   text-align: center;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     white-space: normal;
     word-break: break-word;
     max-width: 100%;

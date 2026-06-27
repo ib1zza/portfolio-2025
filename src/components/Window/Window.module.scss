@@ -12,9 +12,7 @@
   display: flex;
   flex-direction: column;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     position: fixed !important;
     top: var(--mobile-window-top) !important;
     left: var(--mobile-window-inset) !important;
@@ -142,9 +140,7 @@
   border: var(--line-size) solid $black;
   position: relative;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     &::after {
       content: "";
       position: absolute;
@@ -270,9 +266,7 @@
 .folderContent {
   display: contents;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
@@ -460,9 +454,7 @@
   z-index: 1; // Убедитесь, что он поверх других элементов заголовка, если есть
 }
 
-@media (max-width: 768px),
-(hover: none),
-(pointer: coarse) {
+@include mobile-touch {
 
   .windowResizeHitbox,
   .windowProxy,
@@ -476,9 +468,7 @@
   white-space: pre-wrap;
   user-select: text;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     word-break: break-word;
     max-width: 100%;
   }
@@ -491,9 +481,7 @@
   padding: ui(34px) ui(44px);
   user-select: text;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     padding: ui(16px) ui(20px);
   }
 
@@ -502,9 +490,7 @@
     gap: ui(12px);
     max-width: ui(340px);
 
-    @media (max-width: 768px),
-    (hover: none),
-    (pointer: coarse) {
+    @include mobile-touch {
       max-width: 100%;
     }
   }
@@ -525,9 +511,7 @@
   align-items: flex-start;
   gap: var(--window-scrollbar-size);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     width: 100%;
     box-sizing: border-box;
     flex-direction: column;
@@ -558,9 +542,7 @@
     @include textMain(var(--font-main-size), ui(16px));
     max-width: var(--document-text-width);
 
-    @media (max-width: 768px),
-    (hover: none),
-    (pointer: coarse) {
+    @include mobile-touch {
       max-width: 100%;
       word-break: break-word;
     }
@@ -583,9 +565,7 @@
     padding: ui(4px);
     background: $white;
 
-    @media (max-width: 768px),
-    (hover: none),
-    (pointer: coarse) {
+    @include mobile-touch {
       box-sizing: border-box;
       max-width: 100%;
     }
@@ -598,9 +578,7 @@
     image-rendering: auto;
     filter: grayscale(1) contrast(1.2);
 
-    @media (max-width: 768px),
-    (hover: none),
-    (pointer: coarse) {
+    @include mobile-touch {
       width: 100% !important;
       max-width: 100% !important;
       height: auto !important;
@@ -611,9 +589,7 @@
 .documentText {
   min-width: var(--document-text-width);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     min-width: 0;
     padding: var(--app-padding) var(--app-gap) 0 !important;
   }
@@ -632,9 +608,7 @@
   top: var(--app-padding);
   flex-shrink: 0;
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     position: sticky !important;
     bottom: 0 !important;
     top: auto !important;

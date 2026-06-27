@@ -1,9 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { MacButton } from "../UIKit/MacButton";
-import { MacPromptDialog } from "../UIKit/MacPromptDialog";
-import { MacSlider } from "../UIKit/MacSlider";
-import { PopupSelect } from "../UIKit/PopupSelect";
+import { MacButton, MacPromptDialog, MacSlider, PopupSelect } from "../UIKit";
 import { drawDitheredImage } from "./ditherCanvas";
 import { downloadText, getSvgFromCanvas } from "./ditherExport";
 import { saveIconToDesktop } from "../IconPainter/iconPainterDesktop";

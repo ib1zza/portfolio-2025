@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 
 import { portfolio } from "../../data/portfolio";
-import { MacButton } from "../UIKit/MacButton";
+import { MacButton } from "../UIKit";
 import { createBlankIconPixels } from "../IconPainter/iconPainterDesktop";
 import {
   BADGE_QR_SIZE,

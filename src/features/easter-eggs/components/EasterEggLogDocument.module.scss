@@ -40,7 +40,7 @@
   }
 }
 
-@media (max-width: 768px), (hover: none), (pointer: coarse) {
+@include mobile-touch {
   .document {
     gap: ui(12px);
     padding: ui(14px) ui(16px) ui(16px);

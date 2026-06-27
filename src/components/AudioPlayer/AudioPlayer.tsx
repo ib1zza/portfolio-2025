@@ -1,9 +1,7 @@
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { MacButton } from "../UIKit/MacButton";
-import { MacSlider } from "../UIKit/MacSlider";
-import { PopupSelect } from "../UIKit/PopupSelect";
+import { MacButton, MacSlider, PopupSelect } from "../UIKit";
 import type { VisualizerMode } from "./visualizers";
 import {
   drawPixelBars,

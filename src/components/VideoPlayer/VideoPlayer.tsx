@@ -2,9 +2,7 @@ import { useDither } from "ditherwave";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { MacButton } from "../UIKit/MacButton";
-import { MacSlider } from "../UIKit/MacSlider";
-import { PopupSelect } from "../UIKit/PopupSelect";
+import { MacButton, MacSlider, PopupSelect } from "../UIKit";
 import { getAssetPath } from "../../utils/assets";
 import s from "./VideoPlayer.module.scss";
 

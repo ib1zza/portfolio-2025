@@ -89,3 +89,11 @@
   background-size: calc(var(--halftone-pixel-size) * 4)
     calc(var(--halftone-pixel-size) * 2);
 }
+
+@mixin mobile-touch {
+  @media (max-width: 768px),
+  (hover: none),
+  (pointer: coarse) {
+    @content;
+  }
+}

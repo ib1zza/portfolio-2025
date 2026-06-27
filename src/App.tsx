@@ -1,5 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
+import { FINE_POINTER_QUERY } from "./constants/responsive";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
@@ -43,7 +44,7 @@ function App() {
     let isCancelled = false;
     let revealTimer: number | undefined;
 
-    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const mediaQuery = window.matchMedia(FINE_POINTER_QUERY);
 
     const syncCursorMode = () => {
       setIsCustomCursorEnabled(mediaQuery.matches);

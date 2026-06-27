@@ -25,9 +25,7 @@
   color: #000;
   font-size: ui(14px);
 
-  @media (max-width: 768px),
-  (hover: none),
-  (pointer: coarse) {
+  @include mobile-touch {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     justify-items: center;

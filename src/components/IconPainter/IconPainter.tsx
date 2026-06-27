@@ -2,9 +2,7 @@ import clsx from "clsx";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
-import { MacButton } from "../UIKit/MacButton";
-import { MacPromptDialog } from "../UIKit/MacPromptDialog";
-import { PopupSelect } from "../UIKit/PopupSelect";
+import { MacButton, MacPromptDialog, PopupSelect } from "../UIKit";
 import { useFileSystem } from "../../store/useFileSystem";
 import {
   readVersionedStorage,

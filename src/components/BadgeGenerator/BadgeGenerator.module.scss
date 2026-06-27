@@ -11,7 +11,7 @@
   color: $black;
   user-select: none;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     grid-template-columns: 1fr;
     min-width: 0;
     align-content: start;
@@ -32,7 +32,7 @@
   top: var(--app-padding);
   align-self: start;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     position: static;
     padding-block: var(--panel-gap);
   }
@@ -44,7 +44,7 @@
   background: $white;
   image-rendering: pixelated;
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
+  @include mobile-touch {
     width: min(var(--badge-preview-width), calc(100vw - #{ui(24px)}));
     height: auto;
     aspect-ratio: 16 / 9;
