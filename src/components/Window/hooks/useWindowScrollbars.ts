@@ -153,7 +153,8 @@ export const useWindowScrollbars = ({
       const size = scroll ? Math.max(16, (client / scroll) * track) : 16;
       const maxOffset = Math.max(1, scroll - client);
       const maxThumbOffset = Math.max(0, track - size);
-      const position = (offset / maxOffset) * maxThumbOffset;
+      const clampedOffset = Math.max(0, Math.min(offset, maxOffset));
+      const position = (clampedOffset / maxOffset) * maxThumbOffset;
 
       return isY
         ? { height: size, transform: `translateY(${position}px)` }
