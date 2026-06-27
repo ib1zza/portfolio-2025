@@ -14,7 +14,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="ib1zza" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
     <link
       rel="preload"
@@ -39,7 +39,7 @@
       *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
       html{-moz-text-size-adjust:none;-webkit-text-size-adjust:none;text-size-adjust:none}
       body{min-height:100vh;line-height:1.5;font-family:sans-serif}
-      html,body,#root{width:100%;height:100%;overflow:hidden}
+      html,body,#root{width:100%;height:100%;overflow:hidden;touch-action:manipulation}
       img,picture{max-width:100%;display:block}
       input,button,textarea,select{font-family:inherit;font-size:inherit}
       button{border:none;background:none;outline:none}
@@ -59,6 +59,16 @@
 
         setAppleTouchIcon();
         darkQuery?.addEventListener?.("change", setAppleTouchIcon);
+
+        // Prevent pinch-to-zoom on touch devices / iOS Safari
+        document.addEventListener('gesturestart', (e) => {
+          e.preventDefault();
+        });
+        document.addEventListener('touchmove', (e) => {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+          }
+        }, { passive: false });
       })();
     </script>
   </head>
