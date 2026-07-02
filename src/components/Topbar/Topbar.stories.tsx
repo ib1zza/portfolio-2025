@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Topbar } from './Topbar';
-import { useEffect } from 'react';
 
-// Mock zustand stores
-import { useWindowManager } from '../../store/useWindowManager';
-import { useFileSystem } from '../../store/useFileSystem';
 
 const meta = {
   title: 'Components/Topbar',

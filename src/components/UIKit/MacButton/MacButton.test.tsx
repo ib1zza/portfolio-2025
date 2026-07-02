@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, test, describe, vi } from 'vitest';
 import { MacButton } from './MacButton';
-import s from './MacButton.module.scss';
 
 describe('MacButton', () => {
   test('renders children correctly', () => {

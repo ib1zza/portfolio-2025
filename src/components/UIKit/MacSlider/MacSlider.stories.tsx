@@ -40,6 +40,7 @@ export const Default: Story = {
     max: 100,
     step: 1,
     orientation: 'horizontal',
+    onChange: () => {},
   },
 };
 
@@ -59,6 +60,7 @@ export const Vertical: Story = {
     max: 100,
     step: 1,
     orientation: 'vertical',
+    onChange: () => {},
   },
 };
 
@@ -78,5 +80,6 @@ export const Stepped: Story = {
     max: 100,
     step: 25,
     orientation: 'horizontal',
+    onChange: () => {},
   },
 };
