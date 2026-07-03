@@ -61,11 +61,17 @@ export const BadgeGenerator = memo(function BadgeGenerator({
       const nextIcons = readSavedIcons();
 
       setSavedIcons(nextIcons);
-      setSelectedIconId((currentId) =>
-        currentId && nextIcons.some((icon) => icon.id === currentId)
-          ? currentId
-          : (nextIcons[0]?.id ?? null),
-      );
+      setSelectedIconId((currentId) => {
+        if (!currentId) return nextIcons[0]?.id ?? null;
+
+        for (let i = 0; i < nextIcons.length; i++) {
+          if (nextIcons[i].id === currentId) {
+            return currentId;
+          }
+        }
+
+        return nextIcons[0]?.id ?? null;
+      });
     };
 
     window.addEventListener(ICON_DESKTOP_STORAGE_EVENT, syncSavedIcons);
