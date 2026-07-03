@@ -5,6 +5,10 @@
   background: $white;
   border: $border;
   overflow: hidden;
+
+  &[role="slider"] {
+    touch-action: none;
+  }
 }
 
 .fill {

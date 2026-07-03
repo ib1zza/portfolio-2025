@@ -424,6 +424,7 @@ export const AudioPlayer = memo(function AudioPlayer({
                   min={0}
                   max={duration || 1}
                   step={0.1}
+                  commitOnPointerUp
                   onChange={handleSeek}
                 />
               </div>
@@ -433,14 +434,16 @@ export const AudioPlayer = memo(function AudioPlayer({
                   {isPlaying ? "Pause" : "Play"}
                 </MacButton>
                 <MacButton onClick={handleStop}>Stop</MacButton>
-                <button
-                  className={clsx(s.loopBtn, loop && s.active)}
-                  type="button"
-                  onClick={handleLoopToggle}
-                >
-                  Loop
-                </button>
-                <MacButton onClick={handleOpenClick}>Open</MacButton>
+                <div className={s.secondaryTransportControls}>
+                  <button
+                    className={clsx(s.loopBtn, loop && s.active)}
+                    type="button"
+                    onClick={handleLoopToggle}
+                  >
+                    Loop
+                  </button>
+                  <MacButton onClick={handleOpenClick}>Open</MacButton>
+                </div>
               </div>
             </div>
           </>

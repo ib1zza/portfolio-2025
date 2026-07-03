@@ -439,6 +439,7 @@ export const VideoPlayer = memo(function VideoPlayer({
                 min={0}
                 max={duration || 1}
                 step={0.1}
+                commitOnPointerUp
                 onChange={handleSeek}
               />
             </div>
