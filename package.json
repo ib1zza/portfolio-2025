@@ -14,7 +14,8 @@
     "preview": "vite preview --configLoader native --host",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "chromatic": "npx chromatic --project-token=chpt_3571c45dd58dbe2"
   },
   "dependencies": {
     "@react-three/fiber": "^9.6.1",
