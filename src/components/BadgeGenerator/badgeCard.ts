@@ -114,7 +114,9 @@ const drawText = (
 };
 
 export const renderBadgeCanvas = async (input: BadgeInput) => {
-  await document.fonts?.ready;
+  if (document.fonts?.status !== "loaded") {
+    await document.fonts?.ready;
+  }
 
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d")!;
