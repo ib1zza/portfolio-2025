@@ -142,3 +142,4 @@ function MacSliderComponent({
 }
 
 export const MacSlider = memo(MacSliderComponent);
+MacSlider.displayName = 'MacSlider';

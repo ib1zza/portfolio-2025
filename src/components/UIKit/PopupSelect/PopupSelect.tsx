@@ -140,4 +140,6 @@ function PopupSelectComponent<T extends string>({
   );
 }
 
-export const PopupSelect = memo(PopupSelectComponent) as typeof PopupSelectComponent;
+const PopupSelect$1 = memo(PopupSelectComponent);
+PopupSelect$1.displayName = 'PopupSelect';
+export const PopupSelect = PopupSelect$1 as typeof PopupSelectComponent;

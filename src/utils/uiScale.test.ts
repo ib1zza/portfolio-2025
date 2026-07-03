@@ -3,6 +3,7 @@ import { getUiScale, scaleUiValue, scaleUiSize, isDesktopUiScale, isTabletUiScal
 import { DESKTOP_UI_SCALE_QUERY, TABLET_UI_SCALE_QUERY } from '../constants/responsive';
 
 describe('uiScale utils', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let matchMediaMock: any;
 
   beforeEach(() => {

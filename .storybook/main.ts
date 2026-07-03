@@ -10,8 +10,6 @@ const config: StorybookConfig = {
     "@chromatic-com/storybook",
     "@storybook/addon-a11y",
     "@storybook/addon-docs",
-    "@storybook/addon-essentials",
-    "@storybook/addon-interactions",
     "@storybook/addon-links"
   ],
   "framework": {

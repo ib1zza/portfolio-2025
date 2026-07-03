@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Window } from './Window';
 import type { WindowInstance } from '../../store/useWindowManager';
 
