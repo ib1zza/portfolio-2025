@@ -4,6 +4,8 @@
 
 This project uses [Zustand](https://github.com/pmndrs/zustand) for global state management. Zustand was chosen for its minimal boilerplate and ease of integrating state across both React DOM and React Three Fiber environments.
 
+---
+
 ## Core Stores
 
 There are two primary stores that manage the "operating system" layer of the project:
@@ -24,12 +26,104 @@ This store manages the window lifecycle and visual state.
 - **State Ownership:** It owns the definition of *what is open*. It receives references to underlying items (from `useFileSystem`) but only manages their temporary runtime window representation.
 - **Key Actions:** `openWindow`, `closeWindow`, `focusWindow`, `updateWindowLayout`, `minimizeWindow`.
 
+---
+
+## Key TypeScript Types
+
+These shapes represent the underlying structures utilized inside the stores and UI components:
+
+### `FileSystemItem` (Unified Virtual File System Node)
+Located in `src/types/fileSystem.ts`.
+```typescript
+type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem
+
+interface BaseItem {
+  id: string
+  name: string
+  type: "folder" | "file" | "link" | "app" | "system"
+  parentId?: string
+  position?: { x: number; y: number }
+  active?: boolean
+}
+
+interface FolderItem extends BaseItem {
+  type: "folder"
+  children: string[] // List of child item IDs
+}
+
+interface FileItem extends BaseItem {
+  type: "file"
+  content: string | DocumentBlock[] // Raw text or structured rich documents
+}
+
+interface LinkItem extends BaseItem {
+  type: "link"
+  href: string
+  icon: "vk" | "telegram" | "email" | "github"
+}
+
+interface AppItem extends BaseItem {
+  type: "app"
+  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator" | "space-invaders"
+  savedIconId?: string
+}
+```
+
+### `WindowInstance` (Active Window Layout State)
+Located in `src/types/windowState.ts`.
+```typescript
+interface WindowInstance {
+  id: string
+  title: string
+  parentId?: string
+  openerWindowId?: string
+  fileId?: string
+  position: { x: number; y: number }
+  size: { width: number; height: number }
+  zIndex: number
+  isMinimized?: boolean
+  isMaximized?: boolean
+}
+```
+
+### `CursorType` (Custom Pointer Graphics)
+Located in `src/types/cursor.ts`.
+```typescript
+type CursorType =
+  | "arrow"
+  | "background"
+  | "beam"
+  | "busy"
+  | "grab"
+  | "grab_02"
+  | "hand"
+  | "pencil"
+  | "precision"
+  | "resize"
+  | "resize_02"
+  | "watch"
+```
+
+---
+
 ## Persistence and `localStorage`
 
 Both core stores utilize Zustand's `persist` middleware to save state to the browser's `localStorage`.
 
-- **Throttling:** Writing to `localStorage` on every pixel of a window drag operation is highly inefficient. Therefore, operations that update layout or positions use throttled storage wrappers or debounced actions to save state without degrading 60fps rendering performance.
-- **Versioning:** State definitions include versioning. If the structure of `useFileSystem` or `useWindowManager` drastically changes during development, the application logic must handle discarding or migrating outdated `localStorage` data to prevent runtime crashes.
+- **Throttling:** Writing to `localStorage` on every pixel of a window drag or resize operation is highly inefficient. Therefore, the stores are combined with a debounced local storage writer `createThrottledLocalStorage(250)` which batches writes and flushes them to disk after 250ms or right before the window unloads.
+- **Versioning:** State definitions include versioning. If the structure of `useFileSystem` or `useWindowManager` drastically changes during development, version migrations must be incremented.
+
+### Store Persistence Details
+
+| Store | localStorage key | Version | Persisted data |
+|-------|-----------------|---------|---------------|
+| **`useWindowManager`** | `portfolio-2025-window-manager` | 2 | `windowHistory` (last coordinates + dimensions per window ID) |
+| **`useFileSystem`** | `portfolio-2025-file-system` | 2 | `itemPositions` (custom coordinate positions of items on the grid) |
+| **Icon Painter Canvas** | `portfolio-2025-icon-painter` | 1 | Currently active canvas drawing state |
+| **Icon Desktop** | `portfolio-2025-icon-painter-desktop` | 1 | Saved desktop-facing custom canvas icon data |
+| **Icon Library** | `portfolio-2025-icon-painter-library` | 1 | Completed icon collection |
+
+---
 
 ## Where State Belongs
 

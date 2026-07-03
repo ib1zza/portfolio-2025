@@ -1,5 +1,7 @@
 # Testing Coverage Plan (Goal: 90%)
 
+[← Back to README](./README.md)
+
 This document outlines a step-by-step strategy to progressively achieve 90% test coverage across the project. We start with fundamental, rarely changing components (bottom-up approach) and progressively move to more complex modules.
 
 ## Phase 1: Foundations (Utilities & UI Kit) - 10-20% coverage
