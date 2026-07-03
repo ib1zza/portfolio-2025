@@ -1,0 +1,27 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { Topbar } from './Topbar';
+
+
+const meta = {
+  title: 'Components/Topbar',
+  component: Topbar,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  tags: ['autodocs'],
+  decorators: [
+    (Story) => {
+      // Small wrapper to give Topbar some space at the top
+      return (
+        <div style={{ height: '300px', backgroundColor: '#e5e5e5' }}>
+          <Story />
+        </div>
+      );
+    }
+  ]
+} satisfies Meta<typeof Topbar>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
