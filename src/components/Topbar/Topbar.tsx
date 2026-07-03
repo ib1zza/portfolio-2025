@@ -28,11 +28,12 @@ interface SubmenuProps {
   setRef: (el: HTMLDivElement | null) => void;
 }
 
-const formatClock = () =>
-  new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date());
+const clockFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+});
+
+const formatClock = () => clockFormatter.format(new Date());
 
 const isTouchLikePointer = (event: MouseEvent | PointerEvent) =>
   "pointerType" in event &&
