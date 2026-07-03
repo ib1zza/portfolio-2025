@@ -67,51 +67,6 @@ const ALIEN_TYPES = [0, 0, 1, 1, 2];
 
 const ALIEN_POINTS = [30, 20, 10];
 
-const ALIEN_SPRITES: string[][] = [
-  [
-    ".......##.......",
-    ".....######.....",
-    "....########....",
-    "...##..##..##...",
-    "..##..####..##..",
-    ".##.##.##.##.##.",
-    ".##.##.##.##.##.",
-    "..##..####..##..",
-    "...##..##..##...",
-    "....########....",
-    ".....######.....",
-    ".......##.......",
-  ],
-  [
-    "......##.##.....",
-    "....##....##....",
-    "...##......##...",
-    "..##........##..",
-    ".##..##..##..##.",
-    "##..##..##..##..",
-    "##..##..##..##..",
-    ".##..##..##..##.",
-    "..##........##..",
-    "...##......##...",
-    "....##....##....",
-    "......##.##.....",
-  ],
-  [
-    "......####......",
-    "....########....",
-    "...##..##..##...",
-    "..##..####..##..",
-    ".##.##.##.##.##.",
-    "#.##.##.##.##.##",
-    "#.##.##.##.##.##",
-    ".##.##.##.##.##.",
-    "..##..####..##..",
-    "...##..##..##...",
-    "....########....",
-    "......####......",
-  ],
-];
-
 const UFO_SPRITE: string[] = [
   "....########....",
   "..############..",
@@ -183,12 +138,37 @@ export const SpaceInvaders = memo(function SpaceInvaders({
   const alienMoveIntervalRef = useRef(20);
   const alienBottomReachedRef = useRef(false);
   const ufoTimerRef = useRef(0);
+  const alienAnimFrameRef = useRef(0);
+
+  const alienImagesRef = useRef<(HTMLImageElement | null)[][]>(
+    Array.from({ length: 3 }, () => [null, null]),
+  );
 
   const keysRef = useRef({
     left: false,
     right: false,
     fire: false,
   });
+
+  useEffect(() => {
+    const paths = [
+      "/icons/space-invaders/alien0-a.svg",
+      "/icons/space-invaders/alien0-b.svg",
+      "/icons/space-invaders/alien1-a.svg",
+      "/icons/space-invaders/alien1-b.svg",
+      "/icons/space-invaders/alien2-a.svg",
+      "/icons/space-invaders/alien2-b.svg",
+    ];
+    paths.forEach((src, i) => {
+      const img = new Image();
+      img.src = src;
+      const type = Math.floor(i / 2);
+      const frame = i % 2;
+      const arr = alienImagesRef.current[type];
+      if (arr) arr[frame] = img;
+      else alienImagesRef.current[type] = [img, null];
+    });
+  }, []);
 
   const syncDOMState = useCallback(() => {
     setGameState(gameStateRef.current);
@@ -275,6 +255,7 @@ export const SpaceInvaders = memo(function SpaceInvaders({
     alienMoveCounterRef.current = 0;
     alienMoveIntervalRef.current = 20;
     alienBottomReachedRef.current = false;
+    alienAnimFrameRef.current = 0;
     ufoRef.current = { x: 0, y: 6, active: false, dir: 1 };
     ufoTimerRef.current = 0;
     bulletsRef.current = [];
@@ -297,6 +278,7 @@ export const SpaceInvaders = memo(function SpaceInvaders({
     alienDirRef.current = 1;
     alienMoveCounterRef.current = 0;
     alienBottomReachedRef.current = false;
+    alienAnimFrameRef.current = 0;
     ufoRef.current = { x: 0, y: 6, active: false, dir: 1 };
     ufoTimerRef.current = 0;
     bulletsRef.current = [];
@@ -345,6 +327,7 @@ export const SpaceInvaders = memo(function SpaceInvaders({
 
     if (alienMoveCounterRef.current >= moveSpeed) {
       alienMoveCounterRef.current = 0;
+      alienAnimFrameRef.current = 1 - alienAnimFrameRef.current;
 
       let hitEdge = false;
       for (const alien of aliens) {
@@ -599,14 +582,11 @@ export const SpaceInvaders = memo(function SpaceInvaders({
 
       for (const alien of aliensRef.current) {
         if (!alien.alive) continue;
-        drawSprite(
-          ctx,
-          ALIEN_SPRITES[alien.type],
-          alien.x,
-          alien.y,
-          ALIEN_WIDTH,
-          ALIEN_HEIGHT,
-        );
+        const imgs = alienImagesRef.current[alien.type];
+        const img = imgs[alienAnimFrameRef.current];
+        if (img?.complete) {
+          ctx.drawImage(img, alien.x, alien.y, ALIEN_WIDTH, ALIEN_HEIGHT);
+        }
       }
 
       ctx.fillStyle = "black";
@@ -645,6 +625,8 @@ export const SpaceInvaders = memo(function SpaceInvaders({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    ctx.imageSmoothingEnabled = false;
 
     let animId: number;
 

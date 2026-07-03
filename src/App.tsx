@@ -14,7 +14,6 @@ const LazyHapticsTester = lazy(() =>
     default: m.HapticsTester,
   })),
 );
-
 const MIN_LOADER_DURATION_MS = import.meta.env.DEV ? 0 : 3000;
 const LOADER_AFTER_CONTENT_READY_MS = 100;
 
@@ -25,11 +24,12 @@ function App() {
 
   const isTestRoute = window.location.pathname.startsWith("/test");
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
+  const isStandaloneRoute = isBadgeRoute || isTestRoute;
 
   useEffect(() => {
-    document.body.classList.toggle("native-cursor", isBadgeRoute);
+    document.body.classList.toggle("native-cursor", isStandaloneRoute);
 
-    if (isBadgeRoute) {
+    if (isStandaloneRoute) {
       document.body.style.cursor = "default";
       setIsCustomCursorEnabled(false);
       setIsContentReady(true);
@@ -94,7 +94,7 @@ function App() {
       document.body.classList.remove("native-cursor");
       document.body.style.cursor = "default";
     };
-  }, [isBadgeRoute]);
+  }, [isStandaloneRoute]);
 
   if (isTestRoute) {
     return (

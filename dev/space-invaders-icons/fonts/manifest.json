@@ -1,0 +1,2138 @@
+[
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 15,
+    "glyphName": "at",
+    "unicode": "U+0040",
+    "character": "@",
+    "path": "fonts/invaders-from-space/015-at-u0040.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 16,
+    "glyphName": "A",
+    "unicode": "U+0041",
+    "character": "A",
+    "path": "fonts/invaders-from-space/016-A-u0041.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 17,
+    "glyphName": "B",
+    "unicode": "U+0042",
+    "character": "B",
+    "path": "fonts/invaders-from-space/017-B-u0042.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 18,
+    "glyphName": "C",
+    "unicode": "U+0043",
+    "character": "C",
+    "path": "fonts/invaders-from-space/018-C-u0043.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 19,
+    "glyphName": "D",
+    "unicode": "U+0044",
+    "character": "D",
+    "path": "fonts/invaders-from-space/019-D-u0044.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 20,
+    "glyphName": "E",
+    "unicode": "U+0045",
+    "character": "E",
+    "path": "fonts/invaders-from-space/020-E-u0045.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 21,
+    "glyphName": "F",
+    "unicode": "U+0046",
+    "character": "F",
+    "path": "fonts/invaders-from-space/021-F-u0046.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 22,
+    "glyphName": "G",
+    "unicode": "U+0047",
+    "character": "G",
+    "path": "fonts/invaders-from-space/022-G-u0047.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 26,
+    "glyphName": "a",
+    "unicode": "U+0061",
+    "character": "a",
+    "path": "fonts/invaders-from-space/026-a-u0061.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 27,
+    "glyphName": "d",
+    "unicode": "U+0064",
+    "character": "d",
+    "path": "fonts/invaders-from-space/027-d-u0064.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 28,
+    "glyphName": "e",
+    "unicode": "U+0065",
+    "character": "e",
+    "path": "fonts/invaders-from-space/028-e-u0065.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 29,
+    "glyphName": "f",
+    "unicode": "U+0066",
+    "character": "f",
+    "path": "fonts/invaders-from-space/029-f-u0066.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 30,
+    "glyphName": "g",
+    "unicode": "U+0067",
+    "character": "g",
+    "path": "fonts/invaders-from-space/030-g-u0067.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 31,
+    "glyphName": "macron",
+    "unicode": "U+00AF",
+    "character": "¯",
+    "path": "fonts/invaders-from-space/031-macron-u00AF.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 32,
+    "glyphName": "zero",
+    "unicode": "U+0030",
+    "character": "0",
+    "path": "fonts/invaders-from-space/032-zero-u0030.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 33,
+    "glyphName": "one",
+    "unicode": "U+0031",
+    "character": "1",
+    "path": "fonts/invaders-from-space/033-one-u0031.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 34,
+    "glyphName": "two",
+    "unicode": "U+0032",
+    "character": "2",
+    "path": "fonts/invaders-from-space/034-two-u0032.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 35,
+    "glyphName": "three",
+    "unicode": "U+0033",
+    "character": "3",
+    "path": "fonts/invaders-from-space/035-three-u0033.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 36,
+    "glyphName": "four",
+    "unicode": "U+0034",
+    "character": "4",
+    "path": "fonts/invaders-from-space/036-four-u0034.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 37,
+    "glyphName": "five",
+    "unicode": "U+0035",
+    "character": "5",
+    "path": "fonts/invaders-from-space/037-five-u0035.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 38,
+    "glyphName": "six",
+    "unicode": "U+0036",
+    "character": "6",
+    "path": "fonts/invaders-from-space/038-six-u0036.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 39,
+    "glyphName": "seven",
+    "unicode": "U+0037",
+    "character": "7",
+    "path": "fonts/invaders-from-space/039-seven-u0037.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 40,
+    "glyphName": "eight",
+    "unicode": "U+0038",
+    "character": "8",
+    "path": "fonts/invaders-from-space/040-eight-u0038.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 41,
+    "glyphName": "nine",
+    "unicode": "U+0039",
+    "character": "9",
+    "path": "fonts/invaders-from-space/041-nine-u0039.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 42,
+    "glyphName": "b",
+    "unicode": "U+0062",
+    "character": "b",
+    "path": "fonts/invaders-from-space/042-b-u0062.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 43,
+    "glyphName": "c",
+    "unicode": "U+0063",
+    "character": "c",
+    "path": "fonts/invaders-from-space/043-c-u0063.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 47,
+    "glyphName": "quoteleft",
+    "unicode": "U+2018",
+    "character": "‘",
+    "path": "fonts/invaders-from-space/047-quoteleft-u2018.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 48,
+    "glyphName": "H",
+    "unicode": "U+0048",
+    "character": "H",
+    "path": "fonts/invaders-from-space/048-H-u0048.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 49,
+    "glyphName": "h",
+    "unicode": "U+0068",
+    "character": "h",
+    "path": "fonts/invaders-from-space/049-h-u0068.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 50,
+    "glyphName": "I",
+    "unicode": "U+0049",
+    "character": "I",
+    "path": "fonts/invaders-from-space/050-I-u0049.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 51,
+    "glyphName": "i",
+    "unicode": "U+0069",
+    "character": "i",
+    "path": "fonts/invaders-from-space/051-i-u0069.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 52,
+    "glyphName": "J",
+    "unicode": "U+004A",
+    "character": "J",
+    "path": "fonts/invaders-from-space/052-J-u004A.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 53,
+    "glyphName": "j",
+    "unicode": "U+006A",
+    "character": "j",
+    "path": "fonts/invaders-from-space/053-j-u006A.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 54,
+    "glyphName": "k",
+    "unicode": "U+006B",
+    "character": "k",
+    "path": "fonts/invaders-from-space/054-k-u006B.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 55,
+    "glyphName": "K",
+    "unicode": "U+004B",
+    "character": "K",
+    "path": "fonts/invaders-from-space/055-K-u004B.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 56,
+    "glyphName": "L",
+    "unicode": "U+004C",
+    "character": "L",
+    "path": "fonts/invaders-from-space/056-L-u004C.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 57,
+    "glyphName": "l",
+    "unicode": "U+006C",
+    "character": "l",
+    "path": "fonts/invaders-from-space/057-l-u006C.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 58,
+    "glyphName": "M",
+    "unicode": "U+004D",
+    "character": "M",
+    "path": "fonts/invaders-from-space/058-M-u004D.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 59,
+    "glyphName": "m",
+    "unicode": "U+006D",
+    "character": "m",
+    "path": "fonts/invaders-from-space/059-m-u006D.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 60,
+    "glyphName": "N",
+    "unicode": "U+004E",
+    "character": "N",
+    "path": "fonts/invaders-from-space/060-N-u004E.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 61,
+    "glyphName": "n",
+    "unicode": "U+006E",
+    "character": "n",
+    "path": "fonts/invaders-from-space/061-n-u006E.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 62,
+    "glyphName": "O",
+    "unicode": "U+004F",
+    "character": "O",
+    "path": "fonts/invaders-from-space/062-O-u004F.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 63,
+    "glyphName": "o",
+    "unicode": "U+006F",
+    "character": "o",
+    "path": "fonts/invaders-from-space/063-o-u006F.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 64,
+    "glyphName": "P",
+    "unicode": "U+0050",
+    "character": "P",
+    "path": "fonts/invaders-from-space/064-P-u0050.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 65,
+    "glyphName": "Q",
+    "unicode": "U+0051",
+    "character": "Q",
+    "path": "fonts/invaders-from-space/065-Q-u0051.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 66,
+    "glyphName": "p",
+    "unicode": "U+0070",
+    "character": "p",
+    "path": "fonts/invaders-from-space/066-p-u0070.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 67,
+    "glyphName": "q",
+    "unicode": "U+0071",
+    "character": "q",
+    "path": "fonts/invaders-from-space/067-q-u0071.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 69,
+    "glyphName": "R",
+    "unicode": "U+0052",
+    "character": "R",
+    "path": "fonts/invaders-from-space/069-R-u0052.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 70,
+    "glyphName": "S",
+    "unicode": "U+0053",
+    "character": "S",
+    "path": "fonts/invaders-from-space/070-S-u0053.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 71,
+    "glyphName": "r",
+    "unicode": "U+0072",
+    "character": "r",
+    "path": "fonts/invaders-from-space/071-r-u0072.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 72,
+    "glyphName": "s",
+    "unicode": "U+0073",
+    "character": "s",
+    "path": "fonts/invaders-from-space/072-s-u0073.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 73,
+    "glyphName": "T",
+    "unicode": "U+0054",
+    "character": "T",
+    "path": "fonts/invaders-from-space/073-T-u0054.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 74,
+    "glyphName": "U",
+    "unicode": "U+0055",
+    "character": "U",
+    "path": "fonts/invaders-from-space/074-U-u0055.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 75,
+    "glyphName": "t",
+    "unicode": "U+0074",
+    "character": "t",
+    "path": "fonts/invaders-from-space/075-t-u0074.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 76,
+    "glyphName": "u",
+    "unicode": "U+0075",
+    "character": "u",
+    "path": "fonts/invaders-from-space/076-u-u0075.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 77,
+    "glyphName": "V",
+    "unicode": "U+0056",
+    "character": "V",
+    "path": "fonts/invaders-from-space/077-V-u0056.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 78,
+    "glyphName": "v",
+    "unicode": "U+0076",
+    "character": "v",
+    "path": "fonts/invaders-from-space/078-v-u0076.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 79,
+    "glyphName": "W",
+    "unicode": "U+0057",
+    "character": "W",
+    "path": "fonts/invaders-from-space/079-W-u0057.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 80,
+    "glyphName": "w",
+    "unicode": "U+0077",
+    "character": "w",
+    "path": "fonts/invaders-from-space/080-w-u0077.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 81,
+    "glyphName": "X",
+    "unicode": "U+0058",
+    "character": "X",
+    "path": "fonts/invaders-from-space/081-X-u0058.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 82,
+    "glyphName": "x",
+    "unicode": "U+0078",
+    "character": "x",
+    "path": "fonts/invaders-from-space/082-x-u0078.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 83,
+    "glyphName": "Y",
+    "unicode": "U+0059",
+    "character": "Y",
+    "path": "fonts/invaders-from-space/083-Y-u0059.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 84,
+    "glyphName": "y",
+    "unicode": "U+0079",
+    "character": "y",
+    "path": "fonts/invaders-from-space/084-y-u0079.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 85,
+    "glyphName": "Z",
+    "unicode": "U+005A",
+    "character": "Z",
+    "path": "fonts/invaders-from-space/085-Z-u005A.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 86,
+    "glyphName": "z",
+    "unicode": "U+007A",
+    "character": "z",
+    "path": "fonts/invaders-from-space/086-z-u007A.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 87,
+    "glyphName": "bracketleft",
+    "unicode": "U+005B",
+    "character": "[",
+    "path": "fonts/invaders-from-space/087-bracketleft-u005B.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 88,
+    "glyphName": "bracketright",
+    "unicode": "U+005D",
+    "character": "]",
+    "path": "fonts/invaders-from-space/088-bracketright-u005D.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 89,
+    "glyphName": "braceleft",
+    "unicode": "U+007B",
+    "character": "{",
+    "path": "fonts/invaders-from-space/089-braceleft-u007B.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 90,
+    "glyphName": "braceright",
+    "unicode": "U+007D",
+    "character": "}",
+    "path": "fonts/invaders-from-space/090-braceright-u007D.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 91,
+    "glyphName": "less",
+    "unicode": "U+003C",
+    "character": "<",
+    "path": "fonts/invaders-from-space/091-less-u003C.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 92,
+    "glyphName": "greater",
+    "unicode": "U+003E",
+    "character": ">",
+    "path": "fonts/invaders-from-space/092-greater-u003E.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 93,
+    "glyphName": "parenleft",
+    "unicode": "U+0028",
+    "character": "(",
+    "path": "fonts/invaders-from-space/093-parenleft-u0028.svg"
+  },
+  {
+    "font": "invaders-from-space",
+    "glyphIndex": 94,
+    "glyphName": "parenright",
+    "unicode": "U+0029",
+    "character": ")",
+    "path": "fonts/invaders-from-space/094-parenright-u0029.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 4,
+    "glyphName": "exclam",
+    "unicode": "U+0021",
+    "character": "!",
+    "path": "fonts/invaders-font/004-exclam-u0021.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 5,
+    "glyphName": "quotedbl",
+    "unicode": "U+0022",
+    "character": "\"",
+    "path": "fonts/invaders-font/005-quotedbl-u0022.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 6,
+    "glyphName": "numbersign",
+    "unicode": "U+0023",
+    "character": "#",
+    "path": "fonts/invaders-font/006-numbersign-u0023.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 7,
+    "glyphName": "dollar",
+    "unicode": "U+0024",
+    "character": "$",
+    "path": "fonts/invaders-font/007-dollar-u0024.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 8,
+    "glyphName": "percent",
+    "unicode": "U+0025",
+    "character": "%",
+    "path": "fonts/invaders-font/008-percent-u0025.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 9,
+    "glyphName": "ampersand",
+    "unicode": "U+0026",
+    "character": "&",
+    "path": "fonts/invaders-font/009-ampersand-u0026.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 10,
+    "glyphName": "quotesingle",
+    "unicode": "U+0027",
+    "character": "'",
+    "path": "fonts/invaders-font/010-quotesingle-u0027.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 11,
+    "glyphName": "parenleft",
+    "unicode": "U+0028",
+    "character": "(",
+    "path": "fonts/invaders-font/011-parenleft-u0028.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 12,
+    "glyphName": "parenright",
+    "unicode": "U+0029",
+    "character": ")",
+    "path": "fonts/invaders-font/012-parenright-u0029.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 13,
+    "glyphName": "asterisk",
+    "unicode": "U+002A",
+    "character": "*",
+    "path": "fonts/invaders-font/013-asterisk-u002A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 14,
+    "glyphName": "plus",
+    "unicode": "U+002B",
+    "character": "+",
+    "path": "fonts/invaders-font/014-plus-u002B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 15,
+    "glyphName": "comma",
+    "unicode": "U+002C",
+    "character": ",",
+    "path": "fonts/invaders-font/015-comma-u002C.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 16,
+    "glyphName": "hyphen",
+    "unicode": "U+002D",
+    "character": "-",
+    "path": "fonts/invaders-font/016-hyphen-u002D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 17,
+    "glyphName": "period",
+    "unicode": "U+002E",
+    "character": ".",
+    "path": "fonts/invaders-font/017-period-u002E.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 18,
+    "glyphName": "slash",
+    "unicode": "U+002F",
+    "character": "/",
+    "path": "fonts/invaders-font/018-slash-u002F.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 19,
+    "glyphName": "zero",
+    "unicode": "U+0030",
+    "character": "0",
+    "path": "fonts/invaders-font/019-zero-u0030.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 20,
+    "glyphName": "one",
+    "unicode": "U+0031",
+    "character": "1",
+    "path": "fonts/invaders-font/020-one-u0031.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 21,
+    "glyphName": "two",
+    "unicode": "U+0032",
+    "character": "2",
+    "path": "fonts/invaders-font/021-two-u0032.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 22,
+    "glyphName": "three",
+    "unicode": "U+0033",
+    "character": "3",
+    "path": "fonts/invaders-font/022-three-u0033.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 23,
+    "glyphName": "four",
+    "unicode": "U+0034",
+    "character": "4",
+    "path": "fonts/invaders-font/023-four-u0034.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 24,
+    "glyphName": "five",
+    "unicode": "U+0035",
+    "character": "5",
+    "path": "fonts/invaders-font/024-five-u0035.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 25,
+    "glyphName": "six",
+    "unicode": "U+0036",
+    "character": "6",
+    "path": "fonts/invaders-font/025-six-u0036.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 26,
+    "glyphName": "seven",
+    "unicode": "U+0037",
+    "character": "7",
+    "path": "fonts/invaders-font/026-seven-u0037.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 27,
+    "glyphName": "eight",
+    "unicode": "U+0038",
+    "character": "8",
+    "path": "fonts/invaders-font/027-eight-u0038.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 28,
+    "glyphName": "nine",
+    "unicode": "U+0039",
+    "character": "9",
+    "path": "fonts/invaders-font/028-nine-u0039.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 29,
+    "glyphName": "colon",
+    "unicode": "U+003A",
+    "character": ":",
+    "path": "fonts/invaders-font/029-colon-u003A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 30,
+    "glyphName": "semicolon",
+    "unicode": "U+003B",
+    "character": ";",
+    "path": "fonts/invaders-font/030-semicolon-u003B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 31,
+    "glyphName": "less",
+    "unicode": "U+003C",
+    "character": "<",
+    "path": "fonts/invaders-font/031-less-u003C.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 32,
+    "glyphName": "equal",
+    "unicode": "U+003D",
+    "character": "=",
+    "path": "fonts/invaders-font/032-equal-u003D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 33,
+    "glyphName": "greater",
+    "unicode": "U+003E",
+    "character": ">",
+    "path": "fonts/invaders-font/033-greater-u003E.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 34,
+    "glyphName": "question",
+    "unicode": "U+003F",
+    "character": "?",
+    "path": "fonts/invaders-font/034-question-u003F.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 35,
+    "glyphName": "at",
+    "unicode": "U+0040",
+    "character": "@",
+    "path": "fonts/invaders-font/035-at-u0040.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 36,
+    "glyphName": "A",
+    "unicode": "U+0041",
+    "character": "A",
+    "path": "fonts/invaders-font/036-A-u0041.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 37,
+    "glyphName": "B",
+    "unicode": "U+0042",
+    "character": "B",
+    "path": "fonts/invaders-font/037-B-u0042.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 38,
+    "glyphName": "C",
+    "unicode": "U+0043",
+    "character": "C",
+    "path": "fonts/invaders-font/038-C-u0043.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 39,
+    "glyphName": "D",
+    "unicode": "U+0044",
+    "character": "D",
+    "path": "fonts/invaders-font/039-D-u0044.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 40,
+    "glyphName": "E",
+    "unicode": "U+0045",
+    "character": "E",
+    "path": "fonts/invaders-font/040-E-u0045.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 41,
+    "glyphName": "F",
+    "unicode": "U+0046",
+    "character": "F",
+    "path": "fonts/invaders-font/041-F-u0046.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 42,
+    "glyphName": "G",
+    "unicode": "U+0047",
+    "character": "G",
+    "path": "fonts/invaders-font/042-G-u0047.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 43,
+    "glyphName": "H",
+    "unicode": "U+0048",
+    "character": "H",
+    "path": "fonts/invaders-font/043-H-u0048.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 44,
+    "glyphName": "I",
+    "unicode": "U+0049",
+    "character": "I",
+    "path": "fonts/invaders-font/044-I-u0049.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 45,
+    "glyphName": "J",
+    "unicode": "U+004A",
+    "character": "J",
+    "path": "fonts/invaders-font/045-J-u004A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 46,
+    "glyphName": "K",
+    "unicode": "U+004B",
+    "character": "K",
+    "path": "fonts/invaders-font/046-K-u004B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 47,
+    "glyphName": "L",
+    "unicode": "U+004C",
+    "character": "L",
+    "path": "fonts/invaders-font/047-L-u004C.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 48,
+    "glyphName": "M",
+    "unicode": "U+004D",
+    "character": "M",
+    "path": "fonts/invaders-font/048-M-u004D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 49,
+    "glyphName": "N",
+    "unicode": "U+004E",
+    "character": "N",
+    "path": "fonts/invaders-font/049-N-u004E.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 50,
+    "glyphName": "O",
+    "unicode": "U+004F",
+    "character": "O",
+    "path": "fonts/invaders-font/050-O-u004F.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 51,
+    "glyphName": "P",
+    "unicode": "U+0050",
+    "character": "P",
+    "path": "fonts/invaders-font/051-P-u0050.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 52,
+    "glyphName": "Q",
+    "unicode": "U+0051",
+    "character": "Q",
+    "path": "fonts/invaders-font/052-Q-u0051.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 53,
+    "glyphName": "R",
+    "unicode": "U+0052",
+    "character": "R",
+    "path": "fonts/invaders-font/053-R-u0052.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 54,
+    "glyphName": "S",
+    "unicode": "U+0053",
+    "character": "S",
+    "path": "fonts/invaders-font/054-S-u0053.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 55,
+    "glyphName": "T",
+    "unicode": "U+0054",
+    "character": "T",
+    "path": "fonts/invaders-font/055-T-u0054.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 56,
+    "glyphName": "U",
+    "unicode": "U+0055",
+    "character": "U",
+    "path": "fonts/invaders-font/056-U-u0055.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 57,
+    "glyphName": "V",
+    "unicode": "U+0056",
+    "character": "V",
+    "path": "fonts/invaders-font/057-V-u0056.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 58,
+    "glyphName": "W",
+    "unicode": "U+0057",
+    "character": "W",
+    "path": "fonts/invaders-font/058-W-u0057.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 59,
+    "glyphName": "X",
+    "unicode": "U+0058",
+    "character": "X",
+    "path": "fonts/invaders-font/059-X-u0058.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 60,
+    "glyphName": "Y",
+    "unicode": "U+0059",
+    "character": "Y",
+    "path": "fonts/invaders-font/060-Y-u0059.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 61,
+    "glyphName": "Z",
+    "unicode": "U+005A",
+    "character": "Z",
+    "path": "fonts/invaders-font/061-Z-u005A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 62,
+    "glyphName": "bracketleft",
+    "unicode": "U+005B",
+    "character": "[",
+    "path": "fonts/invaders-font/062-bracketleft-u005B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 63,
+    "glyphName": "bracketright",
+    "unicode": "U+005D",
+    "character": "]",
+    "path": "fonts/invaders-font/063-bracketright-u005D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 64,
+    "glyphName": "asciicircum",
+    "unicode": "U+005E",
+    "character": "^",
+    "path": "fonts/invaders-font/064-asciicircum-u005E.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 65,
+    "glyphName": "underscore",
+    "unicode": "U+005F",
+    "character": "_",
+    "path": "fonts/invaders-font/065-underscore-u005F.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 66,
+    "glyphName": "a",
+    "unicode": "U+0061",
+    "character": "a",
+    "path": "fonts/invaders-font/066-a-u0061.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 67,
+    "glyphName": "b",
+    "unicode": "U+0062",
+    "character": "b",
+    "path": "fonts/invaders-font/067-b-u0062.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 68,
+    "glyphName": "c",
+    "unicode": "U+0063",
+    "character": "c",
+    "path": "fonts/invaders-font/068-c-u0063.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 69,
+    "glyphName": "d",
+    "unicode": "U+0064",
+    "character": "d",
+    "path": "fonts/invaders-font/069-d-u0064.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 70,
+    "glyphName": "e",
+    "unicode": "U+0065",
+    "character": "e",
+    "path": "fonts/invaders-font/070-e-u0065.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 71,
+    "glyphName": "f",
+    "unicode": "U+0066",
+    "character": "f",
+    "path": "fonts/invaders-font/071-f-u0066.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 72,
+    "glyphName": "g",
+    "unicode": "U+0067",
+    "character": "g",
+    "path": "fonts/invaders-font/072-g-u0067.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 73,
+    "glyphName": "h",
+    "unicode": "U+0068",
+    "character": "h",
+    "path": "fonts/invaders-font/073-h-u0068.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 74,
+    "glyphName": "i",
+    "unicode": "U+0069",
+    "character": "i",
+    "path": "fonts/invaders-font/074-i-u0069.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 75,
+    "glyphName": "j",
+    "unicode": "U+006A",
+    "character": "j",
+    "path": "fonts/invaders-font/075-j-u006A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 76,
+    "glyphName": "k",
+    "unicode": "U+006B",
+    "character": "k",
+    "path": "fonts/invaders-font/076-k-u006B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 77,
+    "glyphName": "l",
+    "unicode": "U+006C",
+    "character": "l",
+    "path": "fonts/invaders-font/077-l-u006C.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 78,
+    "glyphName": "m",
+    "unicode": "U+006D",
+    "character": "m",
+    "path": "fonts/invaders-font/078-m-u006D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 79,
+    "glyphName": "n",
+    "unicode": "U+006E",
+    "character": "n",
+    "path": "fonts/invaders-font/079-n-u006E.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 80,
+    "glyphName": "o",
+    "unicode": "U+006F",
+    "character": "o",
+    "path": "fonts/invaders-font/080-o-u006F.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 81,
+    "glyphName": "p",
+    "unicode": "U+0070",
+    "character": "p",
+    "path": "fonts/invaders-font/081-p-u0070.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 82,
+    "glyphName": "q",
+    "unicode": "U+0071",
+    "character": "q",
+    "path": "fonts/invaders-font/082-q-u0071.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 83,
+    "glyphName": "r",
+    "unicode": "U+0072",
+    "character": "r",
+    "path": "fonts/invaders-font/083-r-u0072.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 84,
+    "glyphName": "s",
+    "unicode": "U+0073",
+    "character": "s",
+    "path": "fonts/invaders-font/084-s-u0073.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 85,
+    "glyphName": "t",
+    "unicode": "U+0074",
+    "character": "t",
+    "path": "fonts/invaders-font/085-t-u0074.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 86,
+    "glyphName": "u",
+    "unicode": "U+0075",
+    "character": "u",
+    "path": "fonts/invaders-font/086-u-u0075.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 87,
+    "glyphName": "v",
+    "unicode": "U+0076",
+    "character": "v",
+    "path": "fonts/invaders-font/087-v-u0076.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 88,
+    "glyphName": "w",
+    "unicode": "U+0077",
+    "character": "w",
+    "path": "fonts/invaders-font/088-w-u0077.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 89,
+    "glyphName": "x",
+    "unicode": "U+0078",
+    "character": "x",
+    "path": "fonts/invaders-font/089-x-u0078.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 90,
+    "glyphName": "y",
+    "unicode": "U+0079",
+    "character": "y",
+    "path": "fonts/invaders-font/090-y-u0079.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 91,
+    "glyphName": "z",
+    "unicode": "U+007A",
+    "character": "z",
+    "path": "fonts/invaders-font/091-z-u007A.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 92,
+    "glyphName": "braceleft",
+    "unicode": "U+007B",
+    "character": "{",
+    "path": "fonts/invaders-font/092-braceleft-u007B.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 93,
+    "glyphName": "bar",
+    "unicode": "U+007C",
+    "character": "|",
+    "path": "fonts/invaders-font/093-bar-u007C.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 94,
+    "glyphName": "braceright",
+    "unicode": "U+007D",
+    "character": "}",
+    "path": "fonts/invaders-font/094-braceright-u007D.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 95,
+    "glyphName": "sterling",
+    "unicode": "U+00A3",
+    "character": "£",
+    "path": "fonts/invaders-font/095-sterling-u00A3.svg"
+  },
+  {
+    "font": "invaders-font",
+    "glyphIndex": 96,
+    "glyphName": "currency",
+    "unicode": "U+00A4",
+    "character": "¤",
+    "path": "fonts/invaders-font/096-currency-u00A4.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 3,
+    "glyphName": "exclam",
+    "unicode": "U+0021",
+    "character": "!",
+    "path": "fonts/pixel-invaders/003-exclam-u0021.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 4,
+    "glyphName": "quotedbl",
+    "unicode": "U+0022",
+    "character": "\"",
+    "path": "fonts/pixel-invaders/004-quotedbl-u0022.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 5,
+    "glyphName": "numbersign",
+    "unicode": "U+0023",
+    "character": "#",
+    "path": "fonts/pixel-invaders/005-numbersign-u0023.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 6,
+    "glyphName": "dollar",
+    "unicode": "U+0024",
+    "character": "$",
+    "path": "fonts/pixel-invaders/006-dollar-u0024.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 7,
+    "glyphName": "uni0025",
+    "unicode": "U+0025",
+    "character": "%",
+    "path": "fonts/pixel-invaders/007-uni0025-u0025.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 8,
+    "glyphName": "ampersand",
+    "unicode": "U+0026",
+    "character": "&",
+    "path": "fonts/pixel-invaders/008-ampersand-u0026.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 9,
+    "glyphName": "quotesingle",
+    "unicode": "U+0027",
+    "character": "'",
+    "path": "fonts/pixel-invaders/009-quotesingle-u0027.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 10,
+    "glyphName": "parenleft",
+    "unicode": "U+0028",
+    "character": "(",
+    "path": "fonts/pixel-invaders/010-parenleft-u0028.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 11,
+    "glyphName": "parenright",
+    "unicode": "U+0029",
+    "character": ")",
+    "path": "fonts/pixel-invaders/011-parenright-u0029.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 12,
+    "glyphName": "asterisk",
+    "unicode": "U+002A",
+    "character": "*",
+    "path": "fonts/pixel-invaders/012-asterisk-u002A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 13,
+    "glyphName": "plus",
+    "unicode": "U+002B",
+    "character": "+",
+    "path": "fonts/pixel-invaders/013-plus-u002B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 14,
+    "glyphName": "comma",
+    "unicode": "U+002C",
+    "character": ",",
+    "path": "fonts/pixel-invaders/014-comma-u002C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 15,
+    "glyphName": "hyphen",
+    "unicode": "U+002D",
+    "character": "-",
+    "path": "fonts/pixel-invaders/015-hyphen-u002D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 16,
+    "glyphName": "period",
+    "unicode": "U+002E",
+    "character": ".",
+    "path": "fonts/pixel-invaders/016-period-u002E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 17,
+    "glyphName": "slash",
+    "unicode": "U+002F",
+    "character": "/",
+    "path": "fonts/pixel-invaders/017-slash-u002F.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 18,
+    "glyphName": "zero",
+    "unicode": "U+0030",
+    "character": "0",
+    "path": "fonts/pixel-invaders/018-zero-u0030.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 19,
+    "glyphName": "one",
+    "unicode": "U+0031",
+    "character": "1",
+    "path": "fonts/pixel-invaders/019-one-u0031.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 20,
+    "glyphName": "two",
+    "unicode": "U+0032",
+    "character": "2",
+    "path": "fonts/pixel-invaders/020-two-u0032.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 21,
+    "glyphName": "three",
+    "unicode": "U+0033",
+    "character": "3",
+    "path": "fonts/pixel-invaders/021-three-u0033.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 22,
+    "glyphName": "four",
+    "unicode": "U+0034",
+    "character": "4",
+    "path": "fonts/pixel-invaders/022-four-u0034.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 23,
+    "glyphName": "five",
+    "unicode": "U+0035",
+    "character": "5",
+    "path": "fonts/pixel-invaders/023-five-u0035.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 24,
+    "glyphName": "six",
+    "unicode": "U+0036",
+    "character": "6",
+    "path": "fonts/pixel-invaders/024-six-u0036.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 25,
+    "glyphName": "seven",
+    "unicode": "U+0037",
+    "character": "7",
+    "path": "fonts/pixel-invaders/025-seven-u0037.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 26,
+    "glyphName": "eight",
+    "unicode": "U+0038",
+    "character": "8",
+    "path": "fonts/pixel-invaders/026-eight-u0038.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 27,
+    "glyphName": "nine",
+    "unicode": "U+0039",
+    "character": "9",
+    "path": "fonts/pixel-invaders/027-nine-u0039.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 28,
+    "glyphName": "colon",
+    "unicode": "U+003A",
+    "character": ":",
+    "path": "fonts/pixel-invaders/028-colon-u003A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 29,
+    "glyphName": "semicolon",
+    "unicode": "U+003B",
+    "character": ";",
+    "path": "fonts/pixel-invaders/029-semicolon-u003B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 30,
+    "glyphName": "less",
+    "unicode": "U+003C",
+    "character": "<",
+    "path": "fonts/pixel-invaders/030-less-u003C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 31,
+    "glyphName": "equal",
+    "unicode": "U+003D",
+    "character": "=",
+    "path": "fonts/pixel-invaders/031-equal-u003D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 32,
+    "glyphName": "greater",
+    "unicode": "U+003E",
+    "character": ">",
+    "path": "fonts/pixel-invaders/032-greater-u003E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 33,
+    "glyphName": "question",
+    "unicode": "U+003F",
+    "character": "?",
+    "path": "fonts/pixel-invaders/033-question-u003F.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 34,
+    "glyphName": "at",
+    "unicode": "U+0040",
+    "character": "@",
+    "path": "fonts/pixel-invaders/034-at-u0040.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 35,
+    "glyphName": "A",
+    "unicode": "U+0041",
+    "character": "A",
+    "path": "fonts/pixel-invaders/035-A-u0041.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 36,
+    "glyphName": "B",
+    "unicode": "U+0042",
+    "character": "B",
+    "path": "fonts/pixel-invaders/036-B-u0042.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 37,
+    "glyphName": "C",
+    "unicode": "U+0043",
+    "character": "C",
+    "path": "fonts/pixel-invaders/037-C-u0043.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 38,
+    "glyphName": "D",
+    "unicode": "U+0044",
+    "character": "D",
+    "path": "fonts/pixel-invaders/038-D-u0044.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 39,
+    "glyphName": "E",
+    "unicode": "U+0045",
+    "character": "E",
+    "path": "fonts/pixel-invaders/039-E-u0045.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 40,
+    "glyphName": "F",
+    "unicode": "U+0046",
+    "character": "F",
+    "path": "fonts/pixel-invaders/040-F-u0046.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 41,
+    "glyphName": "G",
+    "unicode": "U+0047",
+    "character": "G",
+    "path": "fonts/pixel-invaders/041-G-u0047.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 42,
+    "glyphName": "H",
+    "unicode": "U+0048",
+    "character": "H",
+    "path": "fonts/pixel-invaders/042-H-u0048.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 43,
+    "glyphName": "I",
+    "unicode": "U+0049",
+    "character": "I",
+    "path": "fonts/pixel-invaders/043-I-u0049.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 44,
+    "glyphName": "J",
+    "unicode": "U+004A",
+    "character": "J",
+    "path": "fonts/pixel-invaders/044-J-u004A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 45,
+    "glyphName": "K",
+    "unicode": "U+004B",
+    "character": "K",
+    "path": "fonts/pixel-invaders/045-K-u004B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 46,
+    "glyphName": "L",
+    "unicode": "U+004C",
+    "character": "L",
+    "path": "fonts/pixel-invaders/046-L-u004C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 47,
+    "glyphName": "M",
+    "unicode": "U+004D",
+    "character": "M",
+    "path": "fonts/pixel-invaders/047-M-u004D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 48,
+    "glyphName": "N",
+    "unicode": "U+004E",
+    "character": "N",
+    "path": "fonts/pixel-invaders/048-N-u004E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 49,
+    "glyphName": "O",
+    "unicode": "U+004F",
+    "character": "O",
+    "path": "fonts/pixel-invaders/049-O-u004F.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 50,
+    "glyphName": "P",
+    "unicode": "U+0050",
+    "character": "P",
+    "path": "fonts/pixel-invaders/050-P-u0050.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 51,
+    "glyphName": "Q",
+    "unicode": "U+0051",
+    "character": "Q",
+    "path": "fonts/pixel-invaders/051-Q-u0051.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 52,
+    "glyphName": "R",
+    "unicode": "U+0052",
+    "character": "R",
+    "path": "fonts/pixel-invaders/052-R-u0052.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 53,
+    "glyphName": "S",
+    "unicode": "U+0053",
+    "character": "S",
+    "path": "fonts/pixel-invaders/053-S-u0053.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 54,
+    "glyphName": "T",
+    "unicode": "U+0054",
+    "character": "T",
+    "path": "fonts/pixel-invaders/054-T-u0054.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 55,
+    "glyphName": "U",
+    "unicode": "U+0055",
+    "character": "U",
+    "path": "fonts/pixel-invaders/055-U-u0055.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 56,
+    "glyphName": "V",
+    "unicode": "U+0056",
+    "character": "V",
+    "path": "fonts/pixel-invaders/056-V-u0056.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 57,
+    "glyphName": "W",
+    "unicode": "U+0057",
+    "character": "W",
+    "path": "fonts/pixel-invaders/057-W-u0057.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 58,
+    "glyphName": "X",
+    "unicode": "U+0058",
+    "character": "X",
+    "path": "fonts/pixel-invaders/058-X-u0058.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 59,
+    "glyphName": "Y",
+    "unicode": "U+0059",
+    "character": "Y",
+    "path": "fonts/pixel-invaders/059-Y-u0059.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 60,
+    "glyphName": "Z",
+    "unicode": "U+005A",
+    "character": "Z",
+    "path": "fonts/pixel-invaders/060-Z-u005A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 61,
+    "glyphName": "bracketleft",
+    "unicode": "U+005B",
+    "character": "[",
+    "path": "fonts/pixel-invaders/061-bracketleft-u005B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 62,
+    "glyphName": "backslash",
+    "unicode": "U+005C",
+    "character": "\\",
+    "path": "fonts/pixel-invaders/062-backslash-u005C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 63,
+    "glyphName": "bracketright",
+    "unicode": "U+005D",
+    "character": "]",
+    "path": "fonts/pixel-invaders/063-bracketright-u005D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 64,
+    "glyphName": "asciicircum",
+    "unicode": "U+005E",
+    "character": "^",
+    "path": "fonts/pixel-invaders/064-asciicircum-u005E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 65,
+    "glyphName": "underscore",
+    "unicode": "U+005F",
+    "character": "_",
+    "path": "fonts/pixel-invaders/065-underscore-u005F.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 66,
+    "glyphName": "grave",
+    "unicode": "U+0060",
+    "character": "`",
+    "path": "fonts/pixel-invaders/066-grave-u0060.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 67,
+    "glyphName": "a",
+    "unicode": "U+0061",
+    "character": "a",
+    "path": "fonts/pixel-invaders/067-a-u0061.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 68,
+    "glyphName": "b",
+    "unicode": "U+0062",
+    "character": "b",
+    "path": "fonts/pixel-invaders/068-b-u0062.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 69,
+    "glyphName": "c",
+    "unicode": "U+0063",
+    "character": "c",
+    "path": "fonts/pixel-invaders/069-c-u0063.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 70,
+    "glyphName": "d",
+    "unicode": "U+0064",
+    "character": "d",
+    "path": "fonts/pixel-invaders/070-d-u0064.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 71,
+    "glyphName": "e",
+    "unicode": "U+0065",
+    "character": "e",
+    "path": "fonts/pixel-invaders/071-e-u0065.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 72,
+    "glyphName": "f",
+    "unicode": "U+0066",
+    "character": "f",
+    "path": "fonts/pixel-invaders/072-f-u0066.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 73,
+    "glyphName": "g",
+    "unicode": "U+0067",
+    "character": "g",
+    "path": "fonts/pixel-invaders/073-g-u0067.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 74,
+    "glyphName": "h",
+    "unicode": "U+0068",
+    "character": "h",
+    "path": "fonts/pixel-invaders/074-h-u0068.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 75,
+    "glyphName": "i",
+    "unicode": "U+0069",
+    "character": "i",
+    "path": "fonts/pixel-invaders/075-i-u0069.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 76,
+    "glyphName": "j",
+    "unicode": "U+006A",
+    "character": "j",
+    "path": "fonts/pixel-invaders/076-j-u006A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 77,
+    "glyphName": "k",
+    "unicode": "U+006B",
+    "character": "k",
+    "path": "fonts/pixel-invaders/077-k-u006B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 78,
+    "glyphName": "l",
+    "unicode": "U+006C",
+    "character": "l",
+    "path": "fonts/pixel-invaders/078-l-u006C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 79,
+    "glyphName": "m",
+    "unicode": "U+006D",
+    "character": "m",
+    "path": "fonts/pixel-invaders/079-m-u006D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 80,
+    "glyphName": "n",
+    "unicode": "U+006E",
+    "character": "n",
+    "path": "fonts/pixel-invaders/080-n-u006E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 81,
+    "glyphName": "o",
+    "unicode": "U+006F",
+    "character": "o",
+    "path": "fonts/pixel-invaders/081-o-u006F.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 82,
+    "glyphName": "p",
+    "unicode": "U+0070",
+    "character": "p",
+    "path": "fonts/pixel-invaders/082-p-u0070.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 83,
+    "glyphName": "q",
+    "unicode": "U+0071",
+    "character": "q",
+    "path": "fonts/pixel-invaders/083-q-u0071.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 84,
+    "glyphName": "r",
+    "unicode": "U+0072",
+    "character": "r",
+    "path": "fonts/pixel-invaders/084-r-u0072.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 85,
+    "glyphName": "s",
+    "unicode": "U+0073",
+    "character": "s",
+    "path": "fonts/pixel-invaders/085-s-u0073.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 86,
+    "glyphName": "t",
+    "unicode": "U+0074",
+    "character": "t",
+    "path": "fonts/pixel-invaders/086-t-u0074.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 87,
+    "glyphName": "u",
+    "unicode": "U+0075",
+    "character": "u",
+    "path": "fonts/pixel-invaders/087-u-u0075.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 88,
+    "glyphName": "v",
+    "unicode": "U+0076",
+    "character": "v",
+    "path": "fonts/pixel-invaders/088-v-u0076.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 89,
+    "glyphName": "w",
+    "unicode": "U+0077",
+    "character": "w",
+    "path": "fonts/pixel-invaders/089-w-u0077.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 90,
+    "glyphName": "x",
+    "unicode": "U+0078",
+    "character": "x",
+    "path": "fonts/pixel-invaders/090-x-u0078.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 91,
+    "glyphName": "y",
+    "unicode": "U+0079",
+    "character": "y",
+    "path": "fonts/pixel-invaders/091-y-u0079.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 92,
+    "glyphName": "z",
+    "unicode": "U+007A",
+    "character": "z",
+    "path": "fonts/pixel-invaders/092-z-u007A.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 93,
+    "glyphName": "braceleft",
+    "unicode": "U+007B",
+    "character": "{",
+    "path": "fonts/pixel-invaders/093-braceleft-u007B.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 94,
+    "glyphName": "bar",
+    "unicode": "U+007C",
+    "character": "|",
+    "path": "fonts/pixel-invaders/094-bar-u007C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 95,
+    "glyphName": "braceright",
+    "unicode": "U+007D",
+    "character": "}",
+    "path": "fonts/pixel-invaders/095-braceright-u007D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 96,
+    "glyphName": "asciitilde",
+    "unicode": "U+007E",
+    "character": "~",
+    "path": "fonts/pixel-invaders/096-asciitilde-u007E.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 97,
+    "glyphName": "copyright",
+    "unicode": "U+00A9",
+    "character": "©",
+    "path": "fonts/pixel-invaders/097-copyright-u00A9.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 98,
+    "glyphName": "registered",
+    "unicode": "U+00AE",
+    "character": "®",
+    "path": "fonts/pixel-invaders/098-registered-u00AE.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 99,
+    "glyphName": "quoteleft",
+    "unicode": "U+2018",
+    "character": "‘",
+    "path": "fonts/pixel-invaders/099-quoteleft-u2018.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 100,
+    "glyphName": "quoteright",
+    "unicode": "U+2019",
+    "character": "’",
+    "path": "fonts/pixel-invaders/100-quoteright-u2019.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 101,
+    "glyphName": "quotedblleft",
+    "unicode": "U+201C",
+    "character": "“",
+    "path": "fonts/pixel-invaders/101-quotedblleft-u201C.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 102,
+    "glyphName": "quotedblright",
+    "unicode": "U+201D",
+    "character": "”",
+    "path": "fonts/pixel-invaders/102-quotedblright-u201D.svg"
+  },
+  {
+    "font": "pixel-invaders",
+    "glyphIndex": 103,
+    "glyphName": "Euro",
+    "unicode": "U+20AC",
+    "character": "€",
+    "path": "fonts/pixel-invaders/103-Euro-u20AC.svg"
+  }
+]
