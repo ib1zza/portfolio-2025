@@ -429,13 +429,17 @@ const sectionItems = portfolio.projectSections.reduce<
   return items;
 }, {});
 
+const projectIdToSectionMap = new Map(
+  portfolio.projectSections.flatMap((section) =>
+    section.projectIds.map((projectId) => [projectId, section] as const),
+  ),
+);
+
 const projectItems = portfolio.projects.reduce<Record<string, FileSystemItem>>(
   (items, project) => {
     const folderId = `project-${project.id}`;
     const readmeId = `file-${project.id}-readme`;
-    const section = portfolio.projectSections.find((projectSection) =>
-      projectSection.projectIds.includes(project.id),
-    );
+    const section = projectIdToSectionMap.get(project.id);
 
     items[folderId] = {
       id: folderId,
@@ -1223,15 +1227,17 @@ export const useFileSystem = create<FileSystemStore>()(
           const currentGeneratedFileIds = root.children.filter((childId) =>
             isGeneratedFileItemId(childId),
           );
-          const generatedFileIds = currentGeneratedFileIds.includes(itemId)
+          const generatedFileIndex = currentGeneratedFileIds.indexOf(itemId);
+          const isIncluded = generatedFileIndex !== -1;
+          const generatedFileIds = isIncluded
             ? currentGeneratedFileIds
             : [...currentGeneratedFileIds, itemId];
-          const generatedFileIndex = generatedFileIds.indexOf(itemId);
+          const finalGeneratedFileIndex = isIncluded ? generatedFileIndex : generatedFileIds.length - 1;
           const existingItem = state.items[itemId];
           const position =
             existingItem?.position ??
             state.itemPositions[itemId] ??
-            getSavedIconPosition(generatedFileIndex);
+            getSavedIconPosition(finalGeneratedFileIndex);
           const credits = state.items.credits;
 
           const baseItems: Record<string, FileSystemItem> = {
@@ -1444,8 +1450,9 @@ export const useFileSystem = create<FileSystemStore>()(
             (newRoot.type === "folder" || newRoot.type === "system") &&
             extraRootItems.length > 0
           ) {
+            const newRootChildrenSet = new Set(newRoot.children);
             const missingExtraItems = extraRootItems.filter(
-              (id) => !newRoot.children.includes(id),
+              (id) => !newRootChildrenSet.has(id),
             );
 
             const generatedFileIds = newRoot.children.filter(
