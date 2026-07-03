@@ -1,6 +1,6 @@
 PACKAGE_MANAGER := yarn
 
-.PHONY: dev lint build build-github lint-fix preview ci install
+.PHONY: dev lint build build-github lint-fix preview ci install test coverage storybook build-storybook
 
 dev: install
 	$(PACKAGE_MANAGER) dev
@@ -22,5 +22,17 @@ build-github:
 
 preview:
 	$(PACKAGE_MANAGER) preview
+
+test:
+	$(PACKAGE_MANAGER) test
+
+coverage:
+	$(PACKAGE_MANAGER) coverage
+
+storybook:
+	$(PACKAGE_MANAGER) storybook
+
+build-storybook:
+	$(PACKAGE_MANAGER) build-storybook
 
 ci: lint build

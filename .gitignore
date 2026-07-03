@@ -33,3 +33,7 @@ EASTER_EGGS.md
 
 # future plans
 .plans/
+
+*storybook.log
+storybook-static
+coverage/

@@ -60,3 +60,4 @@ function MacProgressComponent({
 }
 
 export const MacProgress = memo(MacProgressComponent);
+MacProgress.displayName = 'MacProgress';
