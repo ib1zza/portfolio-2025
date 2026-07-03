@@ -33,7 +33,9 @@
   padding-bottom: var(--panel-padding);
 
   @include mobile-touch {
-    width: var(--app-mobile-canvas-panel-size);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     justify-self: center;
   }
 }
@@ -48,8 +50,9 @@
   border-bottom: $border;
 
   @include mobile-touch {
-    width: var(--app-mobile-canvas-size);
-    height: var(--app-mobile-canvas-size);
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
   }
 }
 
@@ -69,8 +72,10 @@
   image-rendering: pixelated;
 
   @include mobile-touch {
-    width: var(--app-mobile-canvas-size);
-    height: var(--app-mobile-canvas-size);
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: 100%;
   }
 }
 
