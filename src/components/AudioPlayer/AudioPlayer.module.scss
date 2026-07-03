@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: ui(8px);
-  padding: ui(12px);
+  padding: var(--app-padding);
   height: 100%;
   box-sizing: border-box;
 }
@@ -87,10 +87,11 @@
 .visualizerWrap {
   display: grid;
   grid-template-columns: 1fr 22px;
-  gap: ui(4px);
+  gap: ui(8px);
 
   @include mobile-touch {
     flex: 1;
+    gap: ui(4px);
     min-height: 0;
   }
 }
@@ -136,8 +137,8 @@
 .timeDisplay {
   @include textMain(ui(11px), ui(16px));
   color: $black;
-  min-width: ui(80px);
-  text-align: center;
+  min-width: 12ch;
+  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 

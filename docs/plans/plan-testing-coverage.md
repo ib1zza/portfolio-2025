@@ -38,10 +38,10 @@ Testing complex components that stitch together UI Kit components, hooks, and st
 Closing the gap by finding edge cases, testing app routing (if any) and top-level providers.
 - [ ] **App core (`src/App.tsx`, `src/contexts`)**
 - [ ] Refactoring missing uncovered branches in Vitest HTML reports.
-- [ ] Running regular `npm run coverage` during PRs.
+- [ ] Running regular `yarn coverage` during PRs.
 
 ## Execution
 For each component in Phase 1-2, we should:
 1. Write a `.test.tsx` / `.test.ts` file covering core functionality and edge cases.
 2. (For UI) Write a `.stories.tsx` file for Storybook visualization.
-3. Validate coverage with `npm run coverage`.
+3. Validate coverage with `yarn coverage`.

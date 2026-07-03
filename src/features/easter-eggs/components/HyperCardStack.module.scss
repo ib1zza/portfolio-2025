@@ -3,7 +3,7 @@
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
   gap: ui(12px);
-  padding: ui(18px);
+  padding: var(--app-padding);
   background: $white;
   user-select: text;
 }

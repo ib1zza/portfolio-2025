@@ -18,7 +18,7 @@ This document provides a map of the important directories and files in the repos
 ├── tsconfig.node.json          # Node TS config (config files)
 ├── eslint.config.js            # ESLint flat config
 ├── vercel.json                 # Vercel SPA rewrites + cache headers
-├── Makefile                    # `make dev` -> npm run dev
+├── Makefile                    # `make dev` -> yarn dev
 ├── README.md                   # Project README (entry documentation pointer)
 │
 ├── public/

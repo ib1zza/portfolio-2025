@@ -29,14 +29,14 @@ For quick reference, standard commands to spin up the local development setup or
 
 ```bash
 # Install dependencies
-npm install
+yarn install
 
 # Start development server
-npm run dev
+yarn dev
 
 # Build for production
-npm run build
+yarn build
 
 # Run project linter
-npm run lint
+yarn lint
 ```
