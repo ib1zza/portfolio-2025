@@ -11,6 +11,25 @@
   color: $black;
 }
 
+.stackedOnMobile {
+  @include mobile-touch {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: ui(4px);
+
+    .popupLabel {
+      height: auto;
+      padding: 0;
+    }
+
+    .popupControl {
+      width: 100%;
+    }
+  }
+}
+
 .openRoot {
   z-index: 30;
 }

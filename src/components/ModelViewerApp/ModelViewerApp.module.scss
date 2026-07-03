@@ -38,8 +38,10 @@
   height: var(--model-viewer-height);
 
   @include mobile-touch {
-    width: min(var(--model-viewer-width), calc(100vw - #{ui(36px)}));
-    height: min(var(--model-viewer-height), calc(100vw - #{ui(80px)}));
+    width: 100%;
+    height: auto;
+    aspect-ratio: 9 / 7;
+    box-sizing: border-box;
   }
 }
 
@@ -69,10 +71,4 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--section-gap);
 }
