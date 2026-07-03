@@ -415,6 +415,11 @@ export const SpaceInvaders = memo(function SpaceInvaders({
 
       for (let ai = aliens.length - 1; ai >= 0; ai--) {
         const alien = aliens[ai];
+
+        // Early exit: Since we iterate backwards, we check bottom-most aliens first.
+        // If the bullet is below this alien, it is below all remaining aliens in the loop.
+        if (bullet.y > alien.y + ALIEN_HEIGHT) break;
+
         if (!alien.alive) continue;
         if (
           bullet.x < alien.x + ALIEN_WIDTH &&
