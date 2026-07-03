@@ -21,6 +21,7 @@ import {
 import s from "./BadgeGenerator.module.scss";
 import { getAppWindowSize } from "../../constants/windowLayout";
 import { isMobilePointerMode } from "../../constants/responsive";
+import TrashSmallSvg from "../../assets/icons/trash-small.svg?react";
 
 const DEFAULT_COMPANY = portfolio.experience[0]?.company ?? "GROKHOTOV STUDIO";
 const DEFAULT_ABOUT = "I build UI kits, animation, and production websites.";
@@ -279,10 +280,12 @@ export const BadgeGenerator = memo(function BadgeGenerator({
                 }
               />
               <MacButton
+                aria-label={`Remove contact ${index + 1}`}
                 disabled={contacts.length <= 1}
+                iconOnly
                 onClick={() => removeContact(index)}
               >
-                del
+                <TrashSmallSvg />
               </MacButton>
             </div>
           ))}

@@ -22,6 +22,10 @@
     .buttonFill {
       background: $black;
     }
+
+    svg {
+      filter: invert(1);
+    }
   }
 
   &:disabled {
@@ -38,6 +42,23 @@
   position: relative;
   z-index: 1;
   margin-bottom: ui(-2px);
+}
+
+.iconOnly {
+  min-width: 0;
+  width: var(--mac-button-height);
+  padding-inline: 0;
+
+  .buttonLabel {
+    display: flex;
+    align-items: center;
+  }
+
+  svg {
+    display: block;
+    width: ui(12px);
+    height: ui(12px);
+  }
 }
 
 .buttonFill,
@@ -205,28 +226,97 @@
     top: 0;
     left: 0;
     transform-origin: top left;
-    clip-path: polygon(5px 0, 6px 0, 6px 4px, 4px 4px, 4px 6px, 0 6px, 0 5px, 1px 5px, 1px 3px, 2px 3px, 2px 2px, 3px 2px, 3px 1px, 5px 1px);
+    clip-path: polygon(
+      5px 0,
+      6px 0,
+      6px 4px,
+      4px 4px,
+      4px 6px,
+      0 6px,
+      0 5px,
+      1px 5px,
+      1px 3px,
+      2px 3px,
+      2px 2px,
+      3px 2px,
+      3px 1px,
+      5px 1px
+    );
   }
 
   .defaultCornerTopRight {
     top: 0;
     right: 0;
     transform-origin: top right;
-    clip-path: polygon(0 0, 1px 0, 1px 1px, 3px 1px, 3px 2px, 4px 2px, 4px 3px, 5px 3px, 5px 5px, 6px 5px, 6px 6px, 5px 6px, 3px 6px, 2px 6px, 2px 4px, 0 4px);
+    clip-path: polygon(
+      0 0,
+      1px 0,
+      1px 1px,
+      3px 1px,
+      3px 2px,
+      4px 2px,
+      4px 3px,
+      5px 3px,
+      5px 5px,
+      6px 5px,
+      6px 6px,
+      5px 6px,
+      3px 6px,
+      2px 6px,
+      2px 4px,
+      0 4px
+    );
   }
 
   .defaultCornerBottomLeft {
     bottom: 0;
     left: 0;
     transform-origin: bottom left;
-    clip-path: polygon(1px 0, 0 0, 0 1px, 1px 1px, 1px 3px, 2px 3px, 2px 4px, 3px 4px, 3px 5px, 5px 5px, 5px 6px, 6px 6px, 6px 5px, 6px 3px, 6px 2px, 4px 2px, 4px 0);
+    clip-path: polygon(
+      1px 0,
+      0 0,
+      0 1px,
+      1px 1px,
+      1px 3px,
+      2px 3px,
+      2px 4px,
+      3px 4px,
+      3px 5px,
+      5px 5px,
+      5px 6px,
+      6px 6px,
+      6px 5px,
+      6px 3px,
+      6px 2px,
+      4px 2px,
+      4px 0
+    );
   }
 
   .defaultCornerBottomRight {
     right: 0;
     bottom: 0;
     transform-origin: bottom right;
-    clip-path: polygon(2px 0, 3px 0, 5px 0, 6px 0, 6px 1px, 5px 1px, 5px 3px, 4px 3px, 4px 4px, 3px 4px, 3px 5px, 1px 5px, 1px 6px, 0 6px, 0 5px, 0 3px, 0 2px, 2px 2px);
+    clip-path: polygon(
+      2px 0,
+      3px 0,
+      5px 0,
+      6px 0,
+      6px 1px,
+      5px 1px,
+      5px 3px,
+      4px 3px,
+      4px 4px,
+      3px 4px,
+      3px 5px,
+      1px 5px,
+      1px 6px,
+      0 6px,
+      0 5px,
+      0 3px,
+      0 2px,
+      2px 2px
+    );
   }
 
   .buttonFill {
