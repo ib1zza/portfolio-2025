@@ -24,6 +24,7 @@ The project uses aggressive manual chunking in Vite to keep initial load times f
 1. **Analyze Bundle:** You can use tools like `rollup-plugin-visualizer` (if installed) to generate a bundle map.
 2. **Lazy Loading:** Ensure new built-in apps or large visual components (like custom cursors) are wrapped in `React.lazy()` so they don't bloat the main desktop entry chunk.
 3. **3D Asset Size:** Keep `.glb` models compressed. Large models should ideally use Draco compression.
+4. **Execution Bottlenecks:** Be mindful of instantiating expensive objects inside loops or frequent intervals. For example, always cache `Intl.DateTimeFormat` instances outside of React components or `setInterval` calls, as creating them on every tick causes significant CPU overhead.
 
 ## Dead Code and Asset Cleanup
 
