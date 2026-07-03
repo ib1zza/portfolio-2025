@@ -62,11 +62,29 @@ const APP_WINDOW_SIZES: Record<WindowAppId, { width: number; height: number }> =
 
 // ─── Mobile ──────────────────────────────────────────────────────────────
 
-const MOBILE = {
-  inset: 6,
-  top: 27,
-  bottom: 16,
-} as const;
+const readMobileWindowBoundsFromCss = () => {
+  const probe = document.createElement("div");
+
+  probe.style.position = "fixed";
+  probe.style.top = "var(--mobile-window-top)";
+  probe.style.left = "var(--mobile-window-inset)";
+  probe.style.width = "calc(100vw - (var(--mobile-window-inset) * 2))";
+  probe.style.height =
+    "calc(100dvh - var(--mobile-window-top) - var(--mobile-window-bottom))";
+  probe.style.visibility = "hidden";
+  probe.style.pointerEvents = "none";
+
+  document.body.appendChild(probe);
+  const rect = probe.getBoundingClientRect();
+  probe.remove();
+
+  return {
+    x: rect.left,
+    y: rect.top,
+    width: rect.width,
+    height: rect.height,
+  };
+};
 
 // ─── Getters ─────────────────────────────────────────────────────────────
 
@@ -106,12 +124,7 @@ export const getProjectModelWindowSize = () => ({
   height: scaleUiValue(SIZE.projectModelSize.height),
 });
 
-export const getMobileWindowBounds = () => ({
-  x: MOBILE.inset,
-  y: MOBILE.top,
-  width: Math.max(0, window.innerWidth - MOBILE.inset * 2),
-  height: Math.max(0, window.innerHeight - MOBILE.top - MOBILE.bottom),
-});
+export const getMobileWindowBounds = () => readMobileWindowBoundsFromCss();
 
 export const getWindowTargetBounds = (
   position: WindowInstance["position"],

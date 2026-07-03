@@ -14,6 +14,7 @@ interface PopupSelectProps<T extends string> {
   value: T;
   options: Array<PopupSelectOption<T>>;
   onChange: (value: T) => void;
+  stackedOnMobile?: boolean;
 }
 
 type PopupControlStyle = CSSProperties & {
@@ -25,6 +26,7 @@ function PopupSelectComponent<T extends string>({
   value,
   options,
   onChange,
+  stackedOnMobile = false,
 }: PopupSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement | null>(null);
@@ -74,7 +76,10 @@ function PopupSelectComponent<T extends string>({
   return (
     <div
       ref={popupRef}
-      className={clsx(s.popup, { [s.openRoot]: isOpen })}
+      className={clsx(s.popup, {
+        [s.openRoot]: isOpen,
+        [s.stackedOnMobile]: stackedOnMobile,
+      })}
       onBlur={(event) => {
         const nextFocus = event.relatedTarget;
 

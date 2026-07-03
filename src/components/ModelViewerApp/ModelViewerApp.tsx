@@ -86,6 +86,7 @@ export const ModelViewerApp = memo(function ModelViewerApp({
           value={selectedPresetId}
           options={MODEL_PRESETS}
           onChange={setSelectedPresetId}
+          stackedOnMobile
         />
 
         <div className={s.meta}>
@@ -94,17 +95,6 @@ export const ModelViewerApp = memo(function ModelViewerApp({
           <span>{selectedPreset.project.stack.join(", ")}</span>
         </div>
 
-        <div className={s.actions}>
-          {MODEL_PRESETS.map((preset) => (
-            <MacButton
-              key={preset.value}
-              isPressed={preset.value === selectedPresetId}
-              onClick={() => setSelectedPresetId(preset.value)}
-            >
-              {preset.label}
-            </MacButton>
-          ))}
-        </div>
       </section>
     </div>
   );

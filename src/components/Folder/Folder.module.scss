@@ -26,7 +26,6 @@
   }
 
   &.trash {
-
     @include mobile-touch {
       grid-column: 3;
       justify-self: center;
@@ -34,6 +33,7 @@
       position: sticky !important;
       bottom: var(--desktop-mobile-padding-bottom);
       margin-top: auto;
+      left: unset !important;
 
       z-index: 2;
     }
@@ -55,8 +55,10 @@
 
 .folderName {
   min-height: var(--finder-label-line-height);
-  @include textMain(var(--finder-label-font-size),
-    var(--finder-label-line-height));
+  @include textMain(
+    var(--finder-label-font-size),
+    var(--finder-label-line-height)
+  );
   background: $white;
   padding-inline: ui(3px);
   user-select: none;

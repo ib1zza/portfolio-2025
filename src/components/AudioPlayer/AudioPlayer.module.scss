@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: ui(8px);
-  padding: ui(12px);
+  padding: var(--app-padding);
   height: 100%;
   box-sizing: border-box;
 }
@@ -77,12 +77,23 @@
   width: 100%;
   aspect-ratio: 2 / 1;
   image-rendering: crisp-edges;
+
+  @include mobile-touch {
+    height: 100%;
+    aspect-ratio: auto;
+  }
 }
 
 .visualizerWrap {
   display: grid;
   grid-template-columns: 1fr 22px;
   gap: ui(8px);
+
+  @include mobile-touch {
+    flex: 1;
+    gap: ui(4px);
+    min-height: 0;
+  }
 }
 
 .controls {
@@ -92,6 +103,7 @@
   border: $border;
   background: $white;
   padding: ui(8px);
+  flex-shrink: 0;
 }
 
 .trackInfo {
@@ -106,13 +118,27 @@
   display: flex;
   align-items: center;
   gap: ui(4px);
+
+  @include mobile-touch {
+    flex-wrap: wrap;
+  }
+}
+
+.secondaryTransportControls {
+  display: flex;
+  align-items: center;
+  gap: ui(4px);
+
+  @include mobile-touch {
+    flex-basis: 100%;
+  }
 }
 
 .timeDisplay {
   @include textMain(ui(11px), ui(16px));
   color: $black;
-  min-width: ui(80px);
-  text-align: center;
+  min-width: 12ch;
+  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 

@@ -32,7 +32,7 @@ The desktop environment includes several fully functional applications. These ar
 
 - **Purpose:** Creates digital business cards or badges.
 - **Key Features:** Generates dynamic QR codes linking to specific URLs or portfolio elements.
-- **Dependencies:** Relies on the `qrcode` npm package.
+- **Dependencies:** Relies on the `qrcode` package.
 
 ## Integration Rules for Apps
 

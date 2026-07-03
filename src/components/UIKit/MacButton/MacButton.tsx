@@ -5,6 +5,7 @@ import type { ButtonHTMLAttributes } from "react";
 import s from "./MacButton.module.scss";
 
 interface MacButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  iconOnly?: boolean;
   isPressed?: boolean;
   variant?: "regular" | "default";
 }
@@ -12,6 +13,7 @@ interface MacButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const MacButton = memo(function MacButton({
   children,
   className,
+  iconOnly = false,
   isPressed,
   variant = "regular",
   ...props
@@ -23,6 +25,7 @@ export const MacButton = memo(function MacButton({
       s[variant],
       {
         [s.pressed]: isPressed,
+        [s.iconOnly]: iconOnly,
       },
       className,
     )}

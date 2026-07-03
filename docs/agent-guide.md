@@ -8,13 +8,13 @@ This guide is specifically written for AI coding agents and developers working w
 
 ## Common Development Tasks
 
-- **Install Dependencies**: `npm install`
-- **Start Development Server**: `npm run dev`
-- **Build for Production**: `npm run build`
-- **Build for GitHub Pages**: `npm run build:github`
-- **Run Linter**: `npm run lint`
-- **Fix Linting Issues**: `npm run lint:fix`
-- **Preview Production Build Locally**: `npm run preview`
+- **Install Dependencies**: `yarn install`
+- **Start Development Server**: `yarn dev`
+- **Build for Production**: `yarn build`
+- **Build for GitHub Pages**: `yarn build:github`
+- **Run Linter**: `yarn lint`
+- **Fix Linting Issues**: `yarn lint:fix`
+- **Preview Production Build Locally**: `yarn preview`
 
 ---
 
@@ -72,6 +72,6 @@ This app perfectly replicates a specific retro aesthetic (Macintosh System 6/7).
 
 ## How to Verify Changes
 
-1. **Run the Linter:** Always run `npm run lint` before submitting.
-2. **Check the Dev Server:** Start `npm run dev` and visually verify the changes. If you changed window logic, try dragging, resizing, minimizing, and maximizing.
+1. **Run the Linter:** Always run `yarn lint` before submitting.
+2. **Check the Dev Server:** Start `yarn dev` and visually verify the changes. If you changed window logic, try dragging, resizing, minimizing, and maximizing.
 3. **Check Persisted State:** Refresh the browser. Did the window stay where you left it? Did the app crash because of malformed state? If so, fix the persistence logic.

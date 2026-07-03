@@ -8,9 +8,9 @@ This document outlines common maintenance workflows for keeping the project heal
 
 When updating dependencies (especially React, Zustand, Three.js, or Framer Motion):
 1. **Review Breaking Changes:** Check the changelogs of major libraries.
-2. **Run Tests/Lint:** Ensure `npm run lint` passes without errors.
+2. **Run Tests/Lint:** Ensure `yarn lint` passes without errors.
 3. **Verify 3D Contexts:** Updates to `@react-three/fiber` or `three` frequently cause subtle breakage in model loading or lighting. Always manually test the `ModelViewerApp` after an update.
-4. **Peer Dependencies:** If you encounter peer dependency conflicts during `npm install` (e.g., related to Storybook or Vite plugins), consider using `npm install --legacy-peer-deps` as a temporary workaround, but prefer resolving the underlying version conflict.
+4. **Peer Dependencies:** If you encounter peer dependency conflicts during `yarn install` (e.g., related to Storybook or Vite plugins), prefer resolving the underlying version conflict instead of adding install workarounds.
 
 ## Documentation Updates
 
