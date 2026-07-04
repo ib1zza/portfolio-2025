@@ -92,17 +92,20 @@ describe('windowLayout', () => {
   });
 
   it('isMobileWindowMode returns false on desktop', () => {
-    vi.mocked(window.matchMedia).mockReturnValue({ matches: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.matchMedia as any).mockReturnValue({ matches: false });
     expect(isMobileWindowMode()).toBe(false);
   });
 
   it('isMobileWindowMode returns true on mobile', () => {
-    vi.mocked(window.matchMedia).mockReturnValue({ matches: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.matchMedia as any).mockReturnValue({ matches: true });
     expect(isMobileWindowMode()).toBe(true);
   });
 
   it('getProjectModelWindowSize caps width to window.innerWidth', () => {
-    vi.mocked(window.matchMedia).mockReturnValue({ matches: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.matchMedia as any).mockReturnValue({ matches: false });
     const size = getProjectModelWindowSize();
     expect(size.width).toBe(Math.min(1800, window.innerWidth));
     expect(size.height).toBe(880);
@@ -117,7 +120,8 @@ describe('windowLayout', () => {
   });
 
   it('getWindowTargetBounds returns mobile bounds in mobile mode', () => {
-    vi.mocked(window.matchMedia).mockReturnValue({ matches: true });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.matchMedia as any).mockReturnValue({ matches: true });
     const bounds = getWindowTargetBounds(
       { x: 100, y: 100 },
       { width: 400, height: 300 },
@@ -127,7 +131,8 @@ describe('windowLayout', () => {
   });
 
   it('getWindowTargetBounds returns position+size on desktop', () => {
-    vi.mocked(window.matchMedia).mockReturnValue({ matches: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.matchMedia as any).mockReturnValue({ matches: false });
     const bounds = getWindowTargetBounds(
       { x: 100, y: 100 },
       { width: 400, height: 300 },

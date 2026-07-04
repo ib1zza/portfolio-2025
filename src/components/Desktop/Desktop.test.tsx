@@ -15,8 +15,7 @@ const hoisted = vi.hoisted(() => {
 
   const motionMock = {
     motion: {
-      div: ({ children, ...props }: Record<string, unknown>) => {
-        const { initial, animate, transition, exit, ...divProps } = props;
+      div: ({ children, ...divProps }: Record<string, unknown>) => {
         return <div {...divProps}>{children as React.ReactNode}</div>;
       },
     },
@@ -30,11 +29,11 @@ const hoisted = vi.hoisted(() => {
         id: 'root',
         type: 'folder',
         name: 'Desktop',
-        children: [],
+        children: [] as string[],
         position: { x: 0, y: 0 },
       },
-    },
-    activeItemId: null,
+    } as Record<string, unknown>,
+    activeItemId: null as string | null,
     setActive: vi.fn(),
     removeActive: vi.fn(),
     cleanUpChildren: vi.fn(),
@@ -77,7 +76,7 @@ vi.mock('../../store/useFileSystem', () => {
   const hook = (selector: (s: Record<string, unknown>) => unknown) => selector(hoisted.fsState);
   return {
     useFileSystem: Object.assign(hook, { getState: () => hoisted.fsState }),
-    getChildItems: (...args: unknown[]) => hoisted.mockGetChildItems(...args),
+    getChildItems: hoisted.mockGetChildItems,
     getState: () => hoisted.fsState,
   };
 });
