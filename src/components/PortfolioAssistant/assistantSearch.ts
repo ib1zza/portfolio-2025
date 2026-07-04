@@ -286,8 +286,16 @@ export const searchPortfolio = (question: string): AssistantAnswer => {
         title: document.title,
         score,
         matchedFields: fieldScores
-          .filter((field) => field.score > 0)
-          .sort((a, b) => b.score - a.score)
+          .reduce((acc: typeof fieldScores, field) => {
+            if (field.score > 0) {
+              let i = 0;
+              while (i < acc.length && acc[i].score >= field.score) {
+                i++;
+              }
+              acc.splice(i, 0, field);
+            }
+            return acc;
+          }, [])
           .map((field) => field.name),
         summary: document.summary,
         links: document.links,
