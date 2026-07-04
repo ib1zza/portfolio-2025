@@ -40,12 +40,21 @@ interface SpatialItem {
   centerY: number;
 }
 
-const getSpatialItems = (items: Array<{ id: string }>) =>
-  items
+const getSpatialItems = (items: Array<{ id: string }>) => {
+  const elements = document.querySelectorAll<HTMLElement>(
+    "[data-finder-item-id]",
+  );
+  const elementsMap = new Map<string, HTMLElement>();
+  for (const el of elements) {
+    const id = el.getAttribute("data-finder-item-id");
+    if (id) {
+      elementsMap.set(id, el);
+    }
+  }
+
+  return items
     .map((item) => {
-      const element = document.querySelector<HTMLElement>(
-        `[data-finder-item-id="${CSS.escape(item.id)}"]`,
-      );
+      const element = elementsMap.get(item.id);
       const rect = element?.getBoundingClientRect();
 
       if (!rect) return null;
@@ -58,6 +67,7 @@ const getSpatialItems = (items: Array<{ id: string }>) =>
       };
     })
     .filter((item): item is SpatialItem => item !== null);
+};
 
 const getFirstSpatialItem = (items: SpatialItem[]) =>
   [...items].sort(
