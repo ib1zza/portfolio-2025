@@ -126,6 +126,7 @@ export const SpaceInvaders = memo(function SpaceInvaders({
   const bulletsRef = useRef<Bullet[]>([]);
   const bombsRef = useRef<Bomb[]>([]);
   const shieldsRef = useRef<boolean[][][]>([]);
+  const shieldCanvasesRef = useRef<HTMLCanvasElement[]>([]);
   const ufoRef = useRef<UFOType>({ x: 0, y: 6, active: false, dir: 1 });
   const scoreRef = useRef(0);
   const livesRef = useRef(LIVES);
@@ -233,12 +234,31 @@ export const SpaceInvaders = memo(function SpaceInvaders({
 
   const initShields = useCallback(() => {
     const shields: boolean[][][] = [];
+    const canvases: HTMLCanvasElement[] = [];
 
     for (let i = 0; i < SHIELD_COUNT; i++) {
-      shields.push(createShieldPixels());
+      const pixels = createShieldPixels();
+      shields.push(pixels);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = SHIELD_WIDTH;
+      canvas.height = SHIELD_HEIGHT;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.fillStyle = "black";
+        for (let row = 0; row < SHIELD_HEIGHT; row++) {
+          for (let col = 0; col < SHIELD_WIDTH; col++) {
+            if (pixels[row]?.[col]) {
+              ctx.fillRect(col, row, 1, 1);
+            }
+          }
+        }
+      }
+      canvases.push(canvas);
     }
 
     shieldsRef.current = shields;
+    shieldCanvasesRef.current = canvases;
   }, []);
 
   const startGame = useCallback(() => {
@@ -474,6 +494,13 @@ export const SpaceInvaders = memo(function SpaceInvaders({
                   shieldPixels[py][px]
                 ) {
                   shieldPixels[py][px] = false;
+                  const canvas = shieldCanvasesRef.current[si];
+                  if (canvas) {
+                    const ctx = canvas.getContext("2d");
+                    if (ctx) {
+                      ctx.clearRect(px, py, 1, 1);
+                    }
+                  }
                 }
               }
             }
@@ -538,6 +565,13 @@ export const SpaceInvaders = memo(function SpaceInvaders({
                 shieldPixels[py][px]
               ) {
                 shieldPixels[py][px] = false;
+                const canvas = shieldCanvasesRef.current[si];
+                if (canvas) {
+                  const ctx = canvas.getContext("2d");
+                  if (ctx) {
+                    ctx.clearRect(px, py, 1, 1);
+                  }
+                }
               }
             }
           }
@@ -608,12 +642,9 @@ export const SpaceInvaders = memo(function SpaceInvaders({
         const shieldPixels = shieldsRef.current[si];
         if (!shieldPixels) continue;
         const shieldX = (si + 1) * SHIELD_GAP + si * SHIELD_WIDTH;
-        for (let row = 0; row < SHIELD_HEIGHT; row++) {
-          for (let col = 0; col < SHIELD_WIDTH; col++) {
-            if (shieldPixels[row]?.[col]) {
-              ctx.fillRect(shieldX + col, SHIELD_Y + row, 1, 1);
-            }
-          }
+        const canvas = shieldCanvasesRef.current[si];
+        if (canvas) {
+          ctx.drawImage(canvas, shieldX, SHIELD_Y);
         }
       }
 
