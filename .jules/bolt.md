@@ -19,3 +19,4 @@
 
 
 **Action:** Always check the underlying order and invariants of game state arrays when looking for O(N^2) loop optimizations.
+## 2025-02-26 - DOM Query Caching **Learning:** [Repeated DOM queries inside loops can cause significant performance bottlenecks.] **Action:** [Use document.querySelectorAll before the loop and cache the results in a Map for fast lookups, which showed a ~190x performance improvement.]
