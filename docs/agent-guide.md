@@ -61,6 +61,16 @@ If you are assigned a new task, start by consulting these documents in order:
 
 ---
 
+## Performance Guidelines
+
+This project targets 60fps across the board and must run smoothly on lower-end devices despite rendering full window systems and 3D models. To ensure optimal performance:
+
+1. **DOM Query Caching:** Avoid repeated DOM lookups (`document.querySelector`) inside loops (like `map` or `filter`). Always fetch elements in a single batch using `document.querySelectorAll` before the loop and cache them in a `Map` to enable O(1) lookups.
+2. **Array Chain Reductions:** When manipulating small arrays inside critical execution paths (like calculating search scoring metrics), combine chained array operations (`.filter()`, `.sort()`, and `.map()`) into a single `.reduce()` pass using inline insertion sort techniques.
+3. **Canvas Optimization:** When dealing with destructible elements or visual modifications in canvas apps (like Space Invaders), never rely on pixel-by-pixel `fillRect` redraws per frame. Instead, use an offscreen `HTMLCanvasElement` to draw the initial state, rendering it in a single `ctx.drawImage()`, and use `ctx.clearRect()` for localized damage tracking.
+
+---
+
 ## Avoiding Visual Style Breakage
 
 This app perfectly replicates a specific retro aesthetic (Macintosh System 6/7).
