@@ -34,6 +34,13 @@ The desktop environment includes several fully functional applications. These ar
 - **Key Features:** Generates dynamic QR codes linking to specific URLs or portfolio elements.
 - **Dependencies:** Relies on the `qrcode` package.
 
+## 5. Space Invaders
+**Location:** `src/components/SpaceInvaders/`
+
+- **Purpose:** A 1-bit retro mini-game inspired by the classic arcade game.
+- **Key Features:** Gameplay loops involving moving ships, shooting aliens, and destructible shields.
+- **Architecture & Performance:** The game relies heavily on optimized rendering. Destructible elements (like shields) are drawn onto offscreen canvases using `ctx.clearRect` for localized damage, completely avoiding the severe performance cost of pixel-by-pixel `fillRect` redraws on every frame.
+
 ## Integration Rules for Apps
 
 When modifying an existing app or creating a new one:

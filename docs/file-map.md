@@ -14,12 +14,14 @@ This document provides a map of the important directories and files in the repos
 ├── package.json                # Dependencies, scripts
 ├── vite.config.mjs             # Vite config: aliases, SCSS preprocessor, chunk splitting
 ├── tsconfig.json               # Root TS config (references app + node)
-├── tsconfig.app.json           # App TS config (src/)
+├── tsconfig.app.json           # App TS config (src/, excludes tests)
 ├── tsconfig.node.json          # Node TS config (config files)
 ├── eslint.config.js            # ESLint flat config
 ├── vercel.json                 # Vercel SPA rewrites + cache headers
 ├── Makefile                    # `make dev` -> yarn dev
 ├── README.md                   # Project README (entry documentation pointer)
+│
+├── tests/                      # Setup and perf benchmarks
 │
 ├── public/
 │   ├── favicon.ico
@@ -152,6 +154,8 @@ This document provides a map of the important directories and files in the repos
 │       ├── BadgeSharePage/     # Standalone shared badge route (/badge?data=...)
 │       │   ├── BadgeSharePage.tsx
 │       │   └── BadgeSharePage.module.scss
+│       │
+│       ├── SpaceInvaders/        # App: 1-bit retro mini-game
 │       │
 │       └── ProjectModelViewer/ # 3D model scene (R3F) for project case studies
 │           ├── ProjectModelViewer.tsx

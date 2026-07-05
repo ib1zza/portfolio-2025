@@ -39,11 +39,14 @@ Here is an overview of the documentation files available to help you navigate an
 - [**Easter Eggs**](./easter-eggs.md)
   Description of the 5 implemented desktop secrets and interactive easter eggs (HyperCard Stack, Time Machine HD, Special Menu, Trash Bomb, etc.) along with development guidelines for future additions.
 
-- [**Testing Coverage Plan**](./plan-testing-coverage.md)
+- [**Testing Coverage Plan**](./plans/plan-testing-coverage.md)
   The target-driven roadmap to achieving 90% test coverage across utility modules, custom hooks, and components.
 
-- [**Space Invaders Design Plan**](./plan-space-invaders.md)
-  Technical specs, asset coordinates, gameplay loops, and layout instructions for the 1-bit retro Space Invaders mini-game.
+- [**Topbar Dynamic Features**](./plans/topbar-dynamic-features.md)
+  Ideas and concepts for making the Topbar component more dynamic, including app-specific menus and context-sensitive File/Edit menus.
+
+- [**Topbar Implementation Plan**](./plans/topbar-dynamic-features-implementation-plan.md)
+  Detailed step-by-step implementation plan for the dynamic topbar feature.
 
 - [**Maintenance**](./maintenance.md)
   Common maintenance workflows such as dependency updates, documentation updates, performance/bundle reviews, and cleanup.
