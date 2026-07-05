@@ -52,8 +52,6 @@ This document provides a map of the important directories and files in the repos
 │   │
 │   ├── types/
 │   │   ├── cursor.ts           # CursorType union
-│   │   ├── fileSystem.ts       # BaseItem/FileItem/FolderItem/AppItem/SystemItem
-│   │   └── windowState.ts      # WindowInstance interface
 │   │
 │   ├── constants/
 │   │   ├── responsive.ts       # Media query constants & helpers

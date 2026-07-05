@@ -665,7 +665,7 @@ const getTrashPosition = () => {
   };
 };
 
-export const getRootChildren = (
+const getRootChildren = (
   generatedFileIds: string[] = [],
   extraItemIds: string[] = [],
 ) => [
@@ -692,7 +692,7 @@ const getGridPosition = (gridIndex: number) => {
   return getDesktopGridPosition(gridIndex);
 };
 
-export const getCleanRootPosition = (
+const getCleanRootPosition = (
   item: FileSystemItem,
   siblings: FileSystemItem[],
 ) => {

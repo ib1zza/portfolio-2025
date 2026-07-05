@@ -3,7 +3,7 @@ import {
 } from "../../utils/storage";
 
 export const ICON_GRID_SIZE = 32;
-export const ICON_PIXEL_COUNT = ICON_GRID_SIZE * ICON_GRID_SIZE;
+const ICON_PIXEL_COUNT = ICON_GRID_SIZE * ICON_GRID_SIZE;
 export const ICON_DESKTOP_STORAGE_EVENT = "portfolio-2025-icon-desktop";
 
 const DESKTOP_STORAGE_KEY = "portfolio-2025-icon-painter-desktop";
@@ -26,7 +26,7 @@ const normalizePixels = (pixels: unknown) =>
     ? pixels.map(Boolean)
     : createBlankIconPixels();
 
-export const readDesktopIconPixels = () =>
+const readDesktopIconPixels = () =>
   readVersionedStorage(
     DESKTOP_STORAGE_KEY,
     DESKTOP_STORAGE_VERSION,

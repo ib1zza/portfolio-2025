@@ -3,27 +3,27 @@ export interface PortfolioLink {
   href: string;
 }
 
-export type ProjectKind =
+type ProjectKind =
   | "commercial"
   | "pet"
   | "legacy"
   | "current"
   | "internal";
 
-export type ProjectAvailability =
+type ProjectAvailability =
   | "public"
   | "private"
   | "offline"
   | "unreleased"
   | "nda";
 
-export interface ProjectMetric {
+interface ProjectMetric {
   label: string;
   value: string;
   note?: string;
 }
 
-export interface CaseStudyBlock {
+interface CaseStudyBlock {
   problem: string;
   solution: string;
   result?: string;
