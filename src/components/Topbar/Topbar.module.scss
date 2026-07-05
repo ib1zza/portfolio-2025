@@ -52,6 +52,20 @@
     background: $black;
     color: $white;
   }
+  &.titleTab {
+    cursor: default;
+  }
+}
+
+.checkmark {
+  display: inline-block;
+  width: ui(16px);
+  text-align: center;
+}
+
+.checkmarkSpacer {
+  display: inline-block;
+  width: ui(16px);
 }
 
 .submenu {

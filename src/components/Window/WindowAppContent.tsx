@@ -91,9 +91,13 @@ export const WindowAppContent = memo(function WindowAppContent({
   return (
     <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
       {app === "icon-painter" && (
-        <IconPainter savedIconId={savedIconId} savedIconName={title} />
+        <IconPainter
+          savedIconId={savedIconId}
+          savedIconName={title}
+          windowId={windowId}
+        />
       )}
-      {app === "dither-studio" && <DitherStudio />}
+      {app === "dither-studio" && <DitherStudio windowId={windowId} />}
       {app === "model-viewer" && (
         <ModelViewerApp isActive={isActive} windowId={windowId} />
       )}

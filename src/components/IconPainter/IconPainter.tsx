@@ -4,6 +4,8 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 
 import { MacButton, MacPromptDialog, PopupSelect } from "../UIKit";
 import { useFileSystem } from "../../store/useFileSystem";
+import { useMenuStore } from "../../store/useMenuStore";
+import { useWindowManager } from "../../store/useWindowManager";
 import {
   readVersionedStorage,
   writeVersionedStorage,
@@ -310,15 +312,22 @@ const PreviewCanvases = memo(function PreviewCanvases({
 interface IconPainterProps {
   savedIconId?: string;
   savedIconName?: string;
+  windowId?: string;
 }
 
 export const IconPainter = memo(function IconPainter({
   savedIconId,
   savedIconName,
+  windowId,
 }: IconPainterProps) {
   const upsertSavedIconItem = useFileSystem(
     (state) => state.upsertSavedIconItem,
   );
+  const isFocused = useWindowManager(
+    (state) => state.focusedWindowId === windowId,
+  );
+  const setAppMenu = useMenuStore((state) => state.setAppMenu);
+  const clearAppMenu = useMenuStore((state) => state.clearAppMenu);
   const [tool, setTool] = useState<Tool>("pencil");
   const [pixels, setPixels] = useState(() => readInitialPixels(savedIconId));
   const [undoStack, setUndoStack] = useState<boolean[][]>([]);
@@ -338,14 +347,20 @@ export const IconPainter = memo(function IconPainter({
   const drawAllPixels = useCallback((nextPixels: boolean[]) => {
     drawPixels(canvasRef.current, nextPixels, 8, true);
     PREVIEW_SIZES.forEach((size) => {
-      drawPixels(previewRefs.current[size], nextPixels, size / GRID_SIZE, false);
+      drawPixels(
+        previewRefs.current[size],
+        nextPixels,
+        size / GRID_SIZE,
+        false,
+      );
     });
   }, []);
 
   const setPreviewRef = useCallback(
     (size: PreviewSize, element: HTMLCanvasElement | null) => {
       previewRefs.current[size] = element;
-      if (element) drawPixels(element, pixelsRef.current, size / GRID_SIZE, false);
+      if (element)
+        drawPixels(element, pixelsRef.current, size / GRID_SIZE, false);
     },
     [],
   );
@@ -587,6 +602,77 @@ export const IconPainter = memo(function IconPainter({
   const invertPixels = useCallback(() => {
     commitPixels((current) => current.map((pixel) => !pixel));
   }, [commitPixels]);
+
+  useEffect(() => {
+    if (!isFocused) return;
+
+    setAppMenu(
+      "Icon Painter",
+      [
+        {
+          title: "Tools",
+          submenu: [
+            {
+              title: "Pencil",
+              action: () => setTool("pencil"),
+              checked: tool === "pencil",
+            },
+            {
+              title: "Eraser",
+              action: () => setTool("eraser"),
+              checked: tool === "eraser",
+            },
+            {
+              title: "Fill",
+              action: () => setTool("fill"),
+              checked: tool === "fill",
+            },
+            null,
+            {
+              title: "Toggle Grid",
+              action: toggleGrid,
+              checked: isGridVisible,
+            },
+          ],
+        },
+        {
+          title: "Image",
+          submenu: [
+            { title: "Clear Canvas", action: clearPixels },
+            { title: "Invert Colors", action: invertPixels },
+          ],
+        },
+      ],
+      [
+        { title: "Save", action: () => setPendingSaveMode("overwrite") },
+        { title: "Save As...", action: () => setPendingSaveMode("copy") },
+        { title: "Export...", action: exportCurrent },
+        null,
+      ],
+      [
+        { title: "Undo", action: undo, disabled: undoStack.length === 0 },
+        { title: "Redo", action: redo, disabled: redoStack.length === 0 },
+      ],
+    );
+
+    return () => clearAppMenu();
+  }, [
+    isFocused,
+    tool,
+    isGridVisible,
+    setTool,
+    toggleGrid,
+    clearPixels,
+    invertPixels,
+    setPendingSaveMode,
+    exportCurrent,
+    undo,
+    redo,
+    undoStack.length,
+    redoStack.length,
+    setAppMenu,
+    clearAppMenu,
+  ]);
 
   return (
     <div className={s.iconPainter}>

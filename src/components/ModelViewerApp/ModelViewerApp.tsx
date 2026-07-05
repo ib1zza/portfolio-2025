@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { portfolio } from "../../data/portfolio";
 import { MacButton, PopupSelect } from "../UIKit";
@@ -6,6 +6,8 @@ import { ProjectModelViewer } from "../ProjectModelViewer";
 import { useFileSystem } from "../../store/useFileSystem";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import { getProjectModelWindowSize } from "../../constants/windowLayout";
+import { useMenuStore } from "../../store/useMenuStore";
+import { useWindowManager } from "../../store/useWindowManager";
 import s from "./ModelViewerApp.module.scss";
 
 type ModelPresetId = string;
@@ -30,10 +32,18 @@ export const ModelViewerApp = memo(function ModelViewerApp({
 }: ModelViewerAppProps) {
   const { openWindowAnimated } = useWindowOpenAnimation();
   const setActive = useFileSystem((state) => state.setActive);
+  const isFocused = useWindowManager(
+    (state) => state.focusedWindowId === windowId,
+  );
+  const setAppMenu = useMenuStore((state) => state.setAppMenu);
+  const clearAppMenu = useMenuStore((state) => state.clearAppMenu);
+
   const [selectedPresetId, setSelectedPresetId] = useState<ModelPresetId>(
     MODEL_PRESETS[0]?.value ?? "",
   );
+  const [wireframe, setWireframe] = useState<boolean>(false);
   const openReadmeSourceRef = useRef<HTMLDivElement | null>(null);
+  const resetCameraRef = useRef<() => void>(() => {});
 
   const selectedPreset = useMemo(
     () =>
@@ -58,6 +68,34 @@ export const ModelViewerApp = memo(function ModelViewerApp({
     });
   }, [openWindowAnimated, selectedPreset, setActive, windowId]);
 
+  useEffect(() => {
+    if (!isFocused) return;
+
+    setAppMenu(
+      "Model Viewer",
+      [
+        {
+          title: "View",
+          submenu: [
+            {
+              title: "Wireframe",
+              action: () => setWireframe((w) => !w),
+              checked: wireframe,
+            },
+            {
+              title: "Reset Camera",
+              action: () => resetCameraRef.current(),
+            },
+          ],
+        },
+      ],
+      null,
+      null,
+    );
+
+    return () => clearAppMenu();
+  }, [isFocused, wireframe, setAppMenu, clearAppMenu]);
+
   if (!selectedPreset) {
     return <div className={s.modelViewerApp}>No models</div>;
   }
@@ -69,8 +107,11 @@ export const ModelViewerApp = memo(function ModelViewerApp({
           key={selectedPreset.value}
           className={s.viewer}
           isActive={isActive}
-          model={selectedPreset.model}
+          model={{ ...selectedPreset.model, wireframeScale: wireframe ? 2 : 1 }}
           size="large"
+          onResetCamera={(reset) => {
+            resetCameraRef.current = reset;
+          }}
         />
         <div ref={openReadmeSourceRef}>
           <MacButton variant="default" onClick={openSelectedReadme}>
@@ -94,7 +135,6 @@ export const ModelViewerApp = memo(function ModelViewerApp({
           <span>{selectedPreset.model.label}</span>
           <span>{selectedPreset.project.stack.join(", ")}</span>
         </div>
-
       </section>
     </div>
   );
