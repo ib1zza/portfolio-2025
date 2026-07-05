@@ -33,7 +33,7 @@ This store manages the window lifecycle and visual state.
 These shapes represent the underlying structures utilized inside the stores and UI components:
 
 ### `FileSystemItem` (Unified Virtual File System Node)
-Located in `src/types/fileSystem.ts`.
+Located in `src/store/useFileSystem.ts`.
 ```typescript
 type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem
 
@@ -70,7 +70,7 @@ interface AppItem extends BaseItem {
 ```
 
 ### `WindowInstance` (Active Window Layout State)
-Located in `src/types/windowState.ts`.
+Located in `src/store/useWindowManager.ts`.
 ```typescript
 interface WindowInstance {
   id: string

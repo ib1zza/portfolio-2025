@@ -20,7 +20,7 @@ export interface AssistantAnswer {
   suggestedQuestions: string[];
 }
 
-export interface AssistantProviderInput {
+interface AssistantProviderInput {
   question: string;
   language: AssistantLanguage;
   hits: PortfolioSearchHit[];
@@ -256,7 +256,7 @@ const scoreField = (field: SearchField, exactQuery: string, tokens: string[]) =>
   return exactScore + tokenScore;
 };
 
-export const searchPortfolio = (question: string): AssistantAnswer => {
+const searchPortfolio = (question: string): AssistantAnswer => {
   const language: AssistantLanguage = "en";
   const cleanQuestion = sanitizeAssistantQuestion(question);
   const normalizedQuestion = normalize(cleanQuestion);
