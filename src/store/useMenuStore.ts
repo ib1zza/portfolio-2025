@@ -33,12 +33,12 @@ export const useMenuStore = create<MenuStore>((set) => ({
   editMenuOverrides: null,
   customTabs: [],
 
-  setAppMenu: (appName, customTabs = [], fileOverrides = null, editOverrides = null) =>
+  setAppMenu: (appName, customTabs = [], fileOverrides = undefined, editOverrides = undefined) =>
     set({
       activeAppName: appName,
       customTabs,
-      fileMenuOverrides: fileOverrides,
-      editMenuOverrides: editOverrides,
+      fileMenuOverrides: fileOverrides ?? null,
+      editMenuOverrides: editOverrides ?? null,
     }),
 
   clearAppMenu: () =>

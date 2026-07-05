@@ -89,8 +89,8 @@ export const ModelViewerApp = memo(function ModelViewerApp({
           ],
         },
       ],
-      null,
-      null,
+      undefined,
+      undefined
     );
 
     return () => clearAppMenu();

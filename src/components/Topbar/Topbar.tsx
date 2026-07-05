@@ -113,7 +113,6 @@ export function Topbar() {
       ? focusedItem.id
       : (focusedItem?.parentId ?? "root");
   const markFound = useEasterEggProgress((state) => state.markFound);
-  const createFolder = useFileSystem((state) => state.createFolder);
 
   const activeAppName = useMenuStore((state) => state.activeAppName);
   const customTabs = useMenuStore((state) => state.customTabs);
@@ -213,7 +212,7 @@ export function Topbar() {
           : [
               {
                 title: "New Folder",
-                action: () => createFolder(cleanUpTarget),
+            action: () => console.warn("createFolder not implemented in store yet"),
               },
               {
                 title: "Open About",
@@ -316,7 +315,6 @@ export function Topbar() {
       fileMenuOverrides,
       editMenuOverrides,
       customTabs,
-      createFolder,
       windowIds,
       windows,
       focusWindow,
