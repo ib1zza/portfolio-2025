@@ -306,6 +306,8 @@ function DesktopContent() {
         return;
       }
 
+      if (focusedWindowId) return;
+
       if (event.key === "ArrowRight") {
         event.preventDefault();
         navigateActiveItem("right");
@@ -333,7 +335,7 @@ function DesktopContent() {
     document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [navigateActiveItem, openActiveItem, removeActive, unfocusAll]);
+  }, [navigateActiveItem, openActiveItem, removeActive, unfocusAll, focusedWindowId]);
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
