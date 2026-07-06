@@ -178,7 +178,6 @@ export const DitherStudio = memo(function DitherStudio({
     if (!isFocused) return;
 
     setAppMenu(
-      "Dither Studio",
       [
         {
           title: "Adjust",

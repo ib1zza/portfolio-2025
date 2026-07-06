@@ -58,9 +58,21 @@
 }
 
 .checkmark {
-  display: inline-block;
-  width: ui(16px);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: ui(9px);
+  height: ui(9px);
+
+  position: absolute;
+
+  top: ui(5px);
+  left: ui(3px);
+
+  > svg {
+    width: ui(9px);
+    height: ui(8px);
+  }
 }
 
 .checkmarkSpacer {
@@ -79,12 +91,14 @@
 }
 
 .submenuItem {
-  padding: ui(4px) ui(16px);
+  padding: ui(3px) ui(16px);
   white-space: nowrap;
-  height: ui(20px);
+  height: ui(18px);
   display: flex;
   align-items: center;
   cursor: pointer;
+
+  position: relative;
 
   &:hover {
     background: $black;

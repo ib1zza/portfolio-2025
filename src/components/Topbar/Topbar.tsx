@@ -9,6 +9,7 @@ import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 import { useEasterEggProgress } from "../../features/easter-eggs/useEasterEggProgress";
 import { useMenuStore } from "../../store/useMenuStore";
+import CheckmarkSvg from "../../assets/icons/checkmark.svg?react";
 import s from "./Topbar.module.scss";
 
 interface SubmenuItemData {
@@ -59,7 +60,7 @@ const SubmenuContent = ({
       }}
     >
       <span className={s.checkmark}>
-        {item.checked ? "✓ " : <span className={s.checkmarkSpacer} />}
+        {item.checked ? <CheckmarkSvg /> : <span className={s.checkmarkSpacer} />}
       </span>
       {item.title}
     </div>
@@ -114,14 +115,9 @@ export function Topbar() {
       : (focusedItem?.parentId ?? "root");
   const markFound = useEasterEggProgress((state) => state.markFound);
 
-  const activeAppName = useMenuStore((state) => state.activeAppName);
   const customTabs = useMenuStore((state) => state.customTabs);
   const fileMenuOverrides = useMenuStore((state) => state.fileMenuOverrides);
   const editMenuOverrides = useMenuStore((state) => state.editMenuOverrides);
-
-  const displayedAppName = focusedWindowId
-    ? activeAppName || "Finder"
-    : "Finder";
 
   useEffect(() => {
     const timerId = window.setInterval(() => setClock(formatClock()), 1000);
@@ -140,6 +136,8 @@ export function Topbar() {
   const closeFocusedWindowAnimated = useCallback(() => {
     if (focusedWindowId) closeWindowAnimated(focusedWindowId);
   }, [closeWindowAnimated, focusedWindowId]);
+
+  const isDesktopMode = !focusedWindowId;
 
   const tabs: TabData[] = useMemo(
     () => [
@@ -183,15 +181,6 @@ export function Topbar() {
             ],
       },
       {
-        title: (
-          <span style={{ fontWeight: "bold", paddingLeft: 8, paddingRight: 8 }}>
-            {displayedAppName}
-          </span>
-        ),
-        mobileHidden: true,
-        isTitleTab: true,
-      },
-      {
         title: "File",
         mobileHidden: true,
         submenu: fileMenuOverrides
@@ -210,19 +199,23 @@ export function Topbar() {
               },
             ]
           : [
-              {
-                title: "New Folder",
-            action: () => console.warn("createFolder not implemented in store yet"),
-              },
-              {
-                title: "Open About",
-                action: () => openPortfolioWindow("about", "About Me"),
-              },
-              {
-                title: "Open Projects",
-                action: () => openPortfolioWindow("projects", "Projects"),
-              },
-              null,
+              ...(isDesktopMode
+                ? [
+                    {
+                      title: "New Folder",
+                      action: () => console.warn("createFolder not implemented in store yet"),
+                    },
+                    {
+                      title: "Open About",
+                      action: () => openPortfolioWindow("about", "About Me"),
+                    },
+                    {
+                      title: "Open Projects",
+                      action: () => openPortfolioWindow("projects", "Projects"),
+                    },
+                    null,
+                  ]
+                : []),
               {
                 title: "Close Window",
                 action: closeFocusedWindowAnimated,
@@ -238,12 +231,14 @@ export function Topbar() {
       {
         title: "Edit",
         mobileHidden: true,
-        submenu: editMenuOverrides || [
-          {
-            title: "Clean Up Icons",
-            action: () => cleanUpChildren(cleanUpTarget),
-          },
-        ],
+        submenu: editMenuOverrides || (isDesktopMode
+          ? [
+              {
+                title: "Clean Up Icons",
+                action: () => cleanUpChildren(cleanUpTarget),
+              },
+            ]
+          : undefined),
       },
       ...customTabs,
       {
@@ -278,13 +273,17 @@ export function Topbar() {
         title: "Special",
         mobileHidden: true,
         submenu: [
-          {
-            title: "Restart Finder",
-            action: () => {
-              resetLayout();
-              resetWindows();
-            },
-          },
+          ...(isDesktopMode
+            ? [
+                {
+                  title: "Restart Finder",
+                  action: () => {
+                    resetLayout();
+                    resetWindows();
+                  },
+                },
+              ]
+            : []),
           ...(canRevealLastDisk
             ? [
                 null,
@@ -306,12 +305,12 @@ export function Topbar() {
       focusedWindowId,
       hasWindows,
       isAppleSpecialMenuActive,
+      isDesktopMode,
       openPortfolioWindow,
       revealLastDiskFromSpecial,
       resetLayout,
       resetWindows,
       runSpecialAction,
-      displayedAppName,
       fileMenuOverrides,
       editMenuOverrides,
       customTabs,
@@ -436,33 +435,38 @@ export function Topbar() {
 
   return (
     <div className={s.topbar}>
-      {tabs.map((tab, index) => (
-        <div
-          key={index}
-          className={clsx(s.tab, { [s.mobileHidden]: tab.mobileHidden })}
-          ref={setTabRef(index)}
-        >
+      {tabs.map((tab, index) => {
+        const hasSubmenu = tab.submenu && tab.submenu.length > 0;
+        if (!hasSubmenu) return null;
+
+        return (
           <div
-            className={clsx(s.tabTitle, {
-              [s.active]: activeMenuIndex === index && !tab.isTitleTab,
-              [s.titleTab]: tab.isTitleTab,
-            })}
-            onPointerDown={(event) => {
-              if (tab.isTitleTab) return;
-              handlePointerDownOnTab(event, index);
-            }}
+            key={index}
+            className={clsx(s.tab, { [s.mobileHidden]: tab.mobileHidden })}
+            ref={setTabRef(index)}
           >
-            {tab.title}
+            <div
+              className={clsx(s.tabTitle, {
+                [s.active]: activeMenuIndex === index && !tab.isTitleTab,
+                [s.titleTab]: tab.isTitleTab,
+              })}
+              onPointerDown={(event) => {
+                if (tab.isTitleTab) return;
+                handlePointerDownOnTab(event, index);
+              }}
+            >
+              {tab.title}
+            </div>
+            {hasSubmenu && activeMenuIndex === index && (
+              <Submenu
+                items={tab.submenu}
+                onItemClick={handleSubmenuItemClick}
+                setRef={setSubmenuRef}
+              />
+            )}
           </div>
-          {tab.submenu && activeMenuIndex === index && (
-            <Submenu
-              items={tab.submenu}
-              onItemClick={handleSubmenuItemClick}
-              setRef={setSubmenuRef}
-            />
-          )}
-        </div>
-      ))}
+        );
+      })}
       <div className={s.clock}>{clock}</div>
     </div>
   );

@@ -607,7 +607,6 @@ export const IconPainter = memo(function IconPainter({
     if (!isFocused) return;
 
     setAppMenu(
-      "Icon Painter",
       [
         {
           title: "Tools",

@@ -72,7 +72,6 @@ export const ModelViewerApp = memo(function ModelViewerApp({
     if (!isFocused) return;
 
     setAppMenu(
-      "Model Viewer",
       [
         {
           title: "View",
