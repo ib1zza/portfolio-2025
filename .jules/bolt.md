@@ -21,3 +21,6 @@
 
 ## 2023-10-27 - [Optimize array chain methods] **Learning:** [Combining .filter(), .sort() and .map() on small arrays into a single .reduce() pass with an inline insertion sort can yield measurable ~15% performance improvement.] **Action:** [Use single-pass reduce + insertion sort on small arrays (<15 elements) inside critical execution paths, like search scoring logic.]
 ## 2025-02-26 - DOM Query Caching **Learning:** [Repeated DOM queries inside loops can cause significant performance bottlenecks.] **Action:** [Use document.querySelectorAll before the loop and cache the results in a Map for fast lookups, which showed a ~190x performance improvement.]
+## 2023-10-27 - [Optimize array chain methods]
+**Learning:** [Combining .filter(), .sort() and .map() on small arrays into a single .reduce() pass with an inline insertion sort can yield measurable ~15% performance improvement.]
+**Action:** [Use single-pass reduce + insertion sort on small arrays (<15 elements) inside critical execution paths, like search scoring logic.]

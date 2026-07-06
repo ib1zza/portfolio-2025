@@ -69,10 +69,16 @@ const getSpatialItems = (items: Array<{ id: string }>) => {
     .filter((item): item is SpatialItem => item !== null);
 };
 
-const getFirstSpatialItem = (items: SpatialItem[]) =>
-  [...items].sort(
-    (a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left,
-  )[0];
+const getFirstSpatialItem = (items: SpatialItem[]) => {
+  if (!items.length) return undefined;
+  return items.reduce((first, current) => {
+    const dTop = current.rect.top - first.rect.top;
+    if (dTop < 0 || (dTop === 0 && current.rect.left < first.rect.left)) {
+      return current;
+    }
+    return first;
+  });
+};
 
 const getSpatialScore = (
   current: SpatialItem,
@@ -108,21 +114,36 @@ const getNextSpatialItem = (
 
   if (!current) return getFirstSpatialItem(items);
 
-  const nextItem = items
-    .filter((item) => item.id !== current.id)
-    .map((item) => ({
-      item,
-      score: getSpatialScore(current, item, direction),
-    }))
-    .filter(({ score }) => Number.isFinite(score))
-    .sort(
-      (a, b) =>
-        a.score - b.score ||
-        a.item.rect.top - b.item.rect.top ||
-        a.item.rect.left - b.item.rect.left,
-    )[0]?.item;
+  const nextItemInfo = items.reduce<{
+    item: SpatialItem | undefined;
+    score: number;
+  }>(
+    (best, item) => {
+      if (item.id === current.id) return best;
 
-  return nextItem ?? current;
+      const score = getSpatialScore(current, item, direction);
+      if (!Number.isFinite(score)) return best;
+
+      if (!best.item) return { item, score };
+
+      const scoreDiff = score - best.score;
+      if (scoreDiff < 0) return { item, score };
+      if (scoreDiff === 0) {
+        const topDiff = item.rect.top - best.item.rect.top;
+        if (
+          topDiff < 0 ||
+          (topDiff === 0 && item.rect.left < best.item.rect.left)
+        ) {
+          return { item, score };
+        }
+      }
+
+      return best;
+    },
+    { item: undefined, score: Infinity },
+  );
+
+  return nextItemInfo.item ?? current;
 };
 
 function DesktopContent() {
