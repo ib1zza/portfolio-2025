@@ -10,7 +10,7 @@ This project heavily relies on a cohesive set of visual and interaction rules to
 
 The application is treated not as a standard webpage, but as a bounded 2D desktop. Elements sit absolutely positioned within this space.
 
-- **Desktop:** The root container that catches unhandled clicks and serves as the canvas.
+- **Desktop:** The root container that catches unhandled clicks, serves as the canvas, and supports optimized spatial keyboard navigation (arrow keys). Spatial navigation is automatically disabled when a window is focused.
 - **Topbar:** A fixed menu bar at the top of the screen. Its menus are dynamic and context-sensitive depending on the active window.
 - **Windows:** Draggable, resizable containers that hold application content or document views.
 
