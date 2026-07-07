@@ -26,7 +26,7 @@ This document outlines the lifecycle of the application, from initial load to co
 5. Framer Motion animates the window opening (morphing from the icon position to its default window layout).
 
 ### Interacting with a Window
-1. **Focus:** Clicking anywhere on an inactive window triggers a `focusWindow` action, updating the `useWindowManager` state to adjust z-indices and updating the `Topbar` to reflect the active app's context.
+1. **Focus:** Clicking anywhere on an inactive window triggers a `focusWindow` action, updating the `useWindowManager` state to adjust z-indices and updating the `Topbar` to reflect the active app's context. When a window is focused, desktop spatial keyboard navigation is disabled.
 2. **Dragging:** Dragging the window title bar captures mouse movement. The updated position is passed back to `useWindowManager` to persist the window's layout.
 3. **Closing:** Clicking the close button dispatches a `closeWindow` action. Framer Motion plays a closing animation, and once complete, the window is removed from the `useWindowManager` state.
 
