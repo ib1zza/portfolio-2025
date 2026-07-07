@@ -169,14 +169,39 @@ export function Topbar() {
               },
               null,
               {
-                title: "Close Window",
-                action: closeFocusedWindowAnimated,
-                disabled: !focusedWindowId,
+                title: "Icon Painter",
+                action: () => openPortfolioWindow("iconPainter", "Icon Painter"),
               },
               {
-                title: "Close All",
-                action: closeAllWindows,
-                disabled: !hasWindows,
+                title: "Dither Studio",
+                action: () => openPortfolioWindow("ditherStudio", "Dither Studio"),
+              },
+              {
+                title: "Model Viewer",
+                action: () => openPortfolioWindow("modelViewer", "Model Viewer"),
+              },
+              {
+                title: "Badge Generator",
+                action: () =>
+                  openPortfolioWindow("badgeGenerator", "Badge Generator"),
+              },
+              {
+                title: "Audio Player",
+                action: () => openPortfolioWindow("audioPlayer", "Audio Player"),
+              },
+              {
+                title: "Video Player",
+                action: () => openPortfolioWindow("videoPlayer", "Video Player"),
+              },
+              {
+                title: "Space Invaders",
+                action: () =>
+                  openPortfolioWindow("spaceInvaders", "Space Invaders"),
+              },
+              {
+                title: "Assistant",
+                action: () =>
+                  openPortfolioWindow("portfolioAssistant", "Assistant"),
               },
             ],
       },
@@ -184,27 +209,10 @@ export function Topbar() {
         title: "File",
         mobileHidden: true,
         submenu: fileMenuOverrides
-          ? [
-              ...fileMenuOverrides,
-              null,
-              {
-                title: "Close Window",
-                action: closeFocusedWindowAnimated,
-                disabled: !focusedWindowId,
-              },
-              {
-                title: "Close All",
-                action: closeAllWindows,
-                disabled: !hasWindows,
-              },
-            ]
+          ? [...fileMenuOverrides]
           : [
               ...(isDesktopMode
                 ? [
-                    {
-                      title: "New Folder",
-                      action: () => console.warn("createFolder not implemented in store yet"),
-                    },
                     {
                       title: "Open About",
                       action: () => openPortfolioWindow("about", "About Me"),
@@ -213,32 +221,22 @@ export function Topbar() {
                       title: "Open Projects",
                       action: () => openPortfolioWindow("projects", "Projects"),
                     },
-                    null,
+                    {
+                      title: "Open Education",
+                      action: () => openPortfolioWindow("education", "Education"),
+                    },
+                    {
+                      title: "Open Contact",
+                      action: () => openPortfolioWindow("contact", "Contact"),
+                    },
                   ]
                 : []),
-              {
-                title: "Close Window",
-                action: closeFocusedWindowAnimated,
-                disabled: !focusedWindowId,
-              },
-              {
-                title: "Close All",
-                action: closeAllWindows,
-                disabled: !hasWindows,
-              },
             ],
       },
       {
         title: "Edit",
         mobileHidden: true,
-        submenu: editMenuOverrides || (isDesktopMode
-          ? [
-              {
-                title: "Clean Up Icons",
-                action: () => cleanUpChildren(cleanUpTarget),
-              },
-            ]
-          : undefined),
+        submenu: editMenuOverrides || undefined,
       },
       ...customTabs,
       {
@@ -246,11 +244,9 @@ export function Topbar() {
         mobileHidden: true,
         submenu: [
           {
-            title: "Minimize All",
-            action: () => {
-              console.warn("Minimize not implemented");
-            },
-            disabled: true,
+            title: "Close Window",
+            action: closeFocusedWindowAnimated,
+            disabled: !focusedWindowId,
           },
           {
             title: "Close All",
@@ -282,11 +278,14 @@ export function Topbar() {
                     resetWindows();
                   },
                 },
+                {
+                  title: "Clean Up Icons",
+                  action: () => cleanUpChildren(cleanUpTarget),
+                },
               ]
             : []),
           ...(canRevealLastDisk
             ? [
-                null,
                 {
                   title: "Reveal Last Disk",
                   action: revealLastDiskFromSpecial,
@@ -436,7 +435,8 @@ export function Topbar() {
   return (
     <div className={s.topbar}>
       {tabs.map((tab, index) => {
-        const hasSubmenu = tab.submenu && tab.submenu.length > 0;
+        const submenu = tab.submenu;
+        const hasSubmenu = submenu && submenu.length > 0;
         if (!hasSubmenu) return null;
 
         return (
@@ -459,7 +459,7 @@ export function Topbar() {
             </div>
             {hasSubmenu && activeMenuIndex === index && (
               <Submenu
-                items={tab.submenu}
+                items={submenu}
                 onItemClick={handleSubmenuItemClick}
                 setRef={setSubmenuRef}
               />
