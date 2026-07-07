@@ -436,7 +436,8 @@ export function Topbar() {
     <div className={s.topbar}>
       {tabs.map((tab, index) => {
         const submenu = tab.submenu;
-        const hasSubmenu = submenu && submenu.length > 0;
+        if (!submenu) return null;
+        const hasSubmenu = submenu.length > 0;
         if (!hasSubmenu) return null;
 
         return (
