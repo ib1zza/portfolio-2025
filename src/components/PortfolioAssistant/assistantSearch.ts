@@ -272,39 +272,60 @@ const searchPortfolio = (question: string): AssistantAnswer => {
     };
   }
 
-  const scoredHits = searchDocuments
-    .map((document) => {
-      const fieldScores = document.fields.map((field) => ({
-        name: field.name,
-        score: scoreField(field, normalizedQuestion, expandedTokens),
-      }));
-      const score = fieldScores.reduce((total, field) => total + field.score, 0);
+  // ⚡ Bolt: single-pass reduce + insertion sort to optimize search scoring
+  // 💡 What: Replaced array chain `.map().filter().sort().slice(0, 6)` with a single `.reduce()` pass and inline insertion sort bounded to 6 elements.
+  // 🎯 Why: Avoids creating intermediate arrays and prevents O(N log N) full sorting, replacing it with an O(N * 6) pass.
+  // 📊 Impact: Significantly reduces allocations and CPU time when searching many documents.
+  // 🔬 Measurement: Run search profiling; expected to be measurably faster.
+  const scoredHits = searchDocuments.reduce<PortfolioSearchHit[]>((acc, document) => {
+    const fieldScores = document.fields.map((field) => ({
+      name: field.name,
+      score: scoreField(field, normalizedQuestion, expandedTokens),
+    }));
+    const score = fieldScores.reduce((total, field) => total + field.score, 0);
 
-      return {
-        kind: document.kind,
-        id: document.id,
-        title: document.title,
-        score,
-        matchedFields: fieldScores
-          .reduce((acc: typeof fieldScores, field) => {
-            if (field.score > 0) {
-              let i = 0;
-              while (i < acc.length && acc[i].score >= field.score) {
-                i++;
-              }
-              acc.splice(i, 0, field);
+    if (score <= 0) return acc;
+
+    const hit: PortfolioSearchHit = {
+      kind: document.kind,
+      id: document.id,
+      title: document.title,
+      score,
+      matchedFields: fieldScores
+        .reduce((accScores: typeof fieldScores, field) => {
+          if (field.score > 0) {
+            let i = 0;
+            while (i < accScores.length && accScores[i].score >= field.score) {
+              i++;
             }
-            return acc;
-          }, [])
-          .map((field) => field.name),
-        summary: document.summary,
-        links: document.links,
-        details: document.details,
-      } satisfies PortfolioSearchHit;
-    })
-    .filter((hit) => hit.score > 0)
-    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
-    .slice(0, 6);
+            accScores.splice(i, 0, field);
+          }
+          return accScores;
+        }, [])
+        .map((field) => field.name),
+      summary: document.summary,
+      links: document.links,
+      details: document.details,
+    };
+
+    let i = 0;
+    while (
+      i < acc.length &&
+      (acc[i].score > hit.score ||
+        (acc[i].score === hit.score && acc[i].title.localeCompare(hit.title) <= 0))
+    ) {
+      i++;
+    }
+
+    if (i < 6) {
+      acc.splice(i, 0, hit);
+      if (acc.length > 6) {
+        acc.pop();
+      }
+    }
+
+    return acc;
+  }, []);
   const hasProjectIntent = questionTokens.some((token) =>
     ["project", "projects"].includes(token),
   );
