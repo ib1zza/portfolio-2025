@@ -177,6 +177,10 @@ export function Topbar() {
                 action: () => openPortfolioWindow("ditherStudio", "Dither Studio"),
               },
               {
+                title: "Dither Camera",
+                action: () => openPortfolioWindow("ditherCamera", "Dither Camera"),
+              },
+              {
                 title: "Model Viewer",
                 action: () => openPortfolioWindow("modelViewer", "Model Viewer"),
               },

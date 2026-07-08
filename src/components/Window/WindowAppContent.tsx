@@ -68,6 +68,11 @@ export const preloadedApps = {
       default: module.Terminal,
     })),
   ),
+  DitherCamera: lazyWithPreload(() =>
+    import("../DitherCamera").then((module) => ({
+      default: module.DitherCamera,
+    })),
+  ),
 };
 
 interface WindowAppContentProps {
@@ -99,6 +104,7 @@ export const WindowAppContent = memo(function WindowAppContent({
   const ImageViewer = preloadedApps.ImageViewer.getLoaded() || preloadedApps.ImageViewer.Component;
   const SimpleVideoPlayer = preloadedApps.SimpleVideoPlayer.getLoaded() || preloadedApps.SimpleVideoPlayer.Component;
   const Terminal = preloadedApps.Terminal.getLoaded() || preloadedApps.Terminal.Component;
+  const DitherCamera = preloadedApps.DitherCamera.getLoaded() || preloadedApps.DitherCamera.Component;
 
   return (
     <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
@@ -130,6 +136,7 @@ export const WindowAppContent = memo(function WindowAppContent({
         <SimpleVideoPlayer windowId={windowId} fileUrl={fileUrl} />
       )}
       {app === "terminal" && <Terminal windowId={windowId} />}
+      {app === "dither-camera" && <DitherCamera windowId={windowId} />}
     </Suspense>
   );
 });

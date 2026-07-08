@@ -1,9 +1,9 @@
-import { useDither } from "ditherwave";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton, MacSlider } from "../UIKit";
 import { getAssetPath } from "../../utils/assets";
+import { useThreeDither } from "../../hooks/useThreeDither";
 import s from "./SimpleVideoPlayer.module.scss";
 
 const DEFAULT_MODE = "bayer";
@@ -41,9 +41,9 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
 
   const palette = ["#000000", "#ffffff"];
 
-  useDither(
-    ditherCanvasRef as never,
-    sourceVideoRef as never,
+  useThreeDither(
+    ditherCanvasRef,
+    sourceVideoRef,
     {
       mode: DEFAULT_MODE,
       resolution: DEFAULT_RESOLUTION,
@@ -88,6 +88,8 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
     video.volume = 0.8;
     video.loop = false;
     video.load();
+
+
 
     setFileName(name);
     setCurrentTime(0);
@@ -283,6 +285,7 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
         className={s.sourceVideo}
         playsInline
       />
+
     </div>
   );
 });

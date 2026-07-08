@@ -1,9 +1,9 @@
-import { useDither } from "ditherwave";
 import clsx from "clsx";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton, MacSlider, PopupSelect } from "../UIKit";
 import { getAssetPath } from "../../utils/assets";
+import { useThreeDither } from "../../hooks/useThreeDither";
 import s from "./VideoPlayer.module.scss";
 
 type DitherMode = "bayer" | "floyd" | "dots" | "ascii";
@@ -71,9 +71,9 @@ export const VideoPlayer = memo(function VideoPlayer({
     ? ["#ffffff", "#000000"]
     : ["#000000", "#ffffff"];
 
-  useDither(
-    canvasRef as never,
-    videoRef as never,
+  useThreeDither(
+    canvasRef,
+    videoRef,
     {
       mode: ditherMode,
       resolution: Number(resolution),
@@ -119,6 +119,8 @@ export const VideoPlayer = memo(function VideoPlayer({
       video.volume = volume;
       video.loop = loop;
       video.load();
+
+
 
       if (displayRef.current) {
         displayRef.current.src = url;
@@ -517,6 +519,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         className={s.sourceVideo}
         playsInline
       />
+
 
       <input
         ref={inputRef}
