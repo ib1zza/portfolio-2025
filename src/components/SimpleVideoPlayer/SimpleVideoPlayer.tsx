@@ -31,7 +31,7 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
-  const [loop, setLoop] = useState(false);
+  const [loop, setLoop] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const sourceVideoRef = useRef<HTMLVideoElement>(null);
@@ -86,7 +86,7 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
     video.muted = false;
     video.src = url;
     video.volume = 0.8;
-    video.loop = false;
+    video.loop = true;
     video.load();
 
 
