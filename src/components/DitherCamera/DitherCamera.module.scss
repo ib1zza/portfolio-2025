@@ -28,7 +28,7 @@
   flex-direction: column;
   align-items: stretch;
   width: var(--app-canvas-panel-size);
-  padding-bottom: var(--panel-padding);
+  // padding-bottom: var(--panel-padding);
 
   @include mobile-touch {
     width: 100%;
@@ -113,10 +113,8 @@
 }
 
 .sliderLabel {
-  @include textTitle(
-    var(--control-title-font-size),
-    var(--control-title-line-height)
-  );
+  @include textTitle(var(--control-title-font-size),
+    var(--control-title-line-height));
   display: grid;
   grid-template-columns: auto minmax(ui(88px), 1fr) ui(32px);
   gap: var(--section-gap);
@@ -137,6 +135,10 @@
   height: ui(1px);
   background: $black;
   width: 100%;
+
+  @include mobile-touch {
+    display: none;
+  }
 }
 
 .actions {
@@ -144,6 +146,19 @@
   flex-direction: column;
   gap: var(--section-gap);
   margin-top: auto;
+
+  @include mobile-touch {
+    display: none;
+  }
+}
+
+.mobileAction {
+  display: none;
+  padding: var(--panel-padding);
+
+  @include mobile-touch {
+    display: block;
+  }
 }
 
 .videoHidden {

@@ -153,6 +153,28 @@ export const DitherCamera = memo(function DitherCamera({
     link.click();
   }, []);
 
+  // Listen for volume buttons keydown on mobile (best-effort browser interception)
+  useEffect(() => {
+    const handleVolumeKey = (e: KeyboardEvent) => {
+      if (
+        e.key === "VolumeUp" ||
+        e.key === "VolumeDown" ||
+        e.keyCode === 24 ||
+        e.keyCode === 25 ||
+        e.key === "AudioVolumeUp" ||
+        e.key === "AudioVolumeDown"
+      ) {
+        e.preventDefault();
+        takeSnapshot();
+      }
+    };
+
+    window.addEventListener("keydown", handleVolumeKey);
+    return () => {
+      window.removeEventListener("keydown", handleVolumeKey);
+    };
+  }, [takeSnapshot]);
+
   // Format device options for the dropdown selector
   const deviceOptions = devices.map((d, index) => ({
     value: d.deviceId,
@@ -180,6 +202,18 @@ export const DitherCamera = memo(function DitherCamera({
               )}
             </div>
           )}
+        </div>
+
+        {/* Mobile-only Take Photo button right under the preview */}
+        <div className={s.mobileAction}>
+          <MacButton
+            variant="default"
+            onClick={takeSnapshot}
+            disabled={hasPermission !== true}
+            style={{ width: "100%" }}
+          >
+            Take Photo
+          </MacButton>
         </div>
       </div>
 

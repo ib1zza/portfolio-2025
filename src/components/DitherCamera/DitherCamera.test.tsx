@@ -92,7 +92,7 @@ describe("DitherCamera", () => {
     });
 
     expect(screen.getByText("Camera Settings")).toBeInTheDocument();
-    expect(screen.getByText("Take Photo")).toBeInTheDocument();
+    expect(screen.getAllByText("Take Photo")[0]).toBeInTheDocument();
     expect(screen.getByText("Invert Colors")).toBeInTheDocument();
   });
 
@@ -126,7 +126,7 @@ describe("DitherCamera", () => {
     
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
 
-    const photoBtn = screen.getByText("Take Photo");
+    const photoBtn = screen.getAllByText("Take Photo")[0];
     fireEvent.click(photoBtn);
 
     expect(toDataURLMock).toHaveBeenCalled();
