@@ -24,3 +24,6 @@
 ## 2023-10-27 - [Optimize array chain methods]
 **Learning:** [Combining .filter(), .sort() and .map() on small arrays into a single .reduce() pass with an inline insertion sort can yield measurable ~15% performance improvement.]
 **Action:** [Use single-pass reduce + insertion sort on small arrays (<15 elements) inside critical execution paths, like search scoring logic.]
+## 2025-02-18 - [Optimize Easter Egg Progress Migration]
+**Learning:** Store migration functions that map over elements using \`.some\` against static arrays cause unnecessary $O(N \times M)$ overhead.
+**Action:** Extract static arrays into \`Set\` instances outside the function scope for O(1) lookups during migration and hydration.
