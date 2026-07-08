@@ -71,6 +71,12 @@ const SimpleVideoPlayer = lazy(() =>
   })),
 );
 
+const Terminal = lazy(() =>
+  import("../Terminal").then((module) => ({
+    default: module.Terminal,
+  })),
+);
+
 interface WindowAppContentProps {
   app: AppItem["app"];
   isActive: boolean;
@@ -117,6 +123,7 @@ export const WindowAppContent = memo(function WindowAppContent({
       {app === "video-viewer" && (
         <SimpleVideoPlayer windowId={windowId} fileUrl={fileUrl} />
       )}
+      {app === "terminal" && <Terminal windowId={windowId} />}
     </Suspense>
   );
 });

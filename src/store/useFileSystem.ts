@@ -77,7 +77,8 @@ export interface AppItem extends BaseItem {
     | "portfolio-assistant"
     | "hypercard-stack"
     | "image-viewer"
-    | "video-viewer";
+    | "video-viewer"
+    | "terminal";
   savedIconId?: string;
 }
 
@@ -487,6 +488,7 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "videoPlayer",
   "spaceInvaders",
   "portfolioAssistant",
+  "terminal",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
 const ROOT_SYSTEM_ITEM_IDS: readonly string[] = ["mediaHd"];
@@ -959,6 +961,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: getAppPosition(7),
       app: "portfolio-assistant",
+    },
+    terminal: {
+      id: "terminal",
+      name: "Terminal",
+      type: "app",
+      parentId: "root",
+      position: getAppPosition(8),
+      app: "terminal",
     },
     credits: {
       id: "credits",

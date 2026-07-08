@@ -1,0 +1,173 @@
+.terminalContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  font-family: "FindersKeepers", Arial, sans-serif;
+  font-size: ui(12px);
+  line-height: 1.2;
+  overflow-y: auto;
+  user-select: text;
+  transition: background-color 0.25s, color 0.25s;
+
+  // Hide scrollbar
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+// Colors & Themes
+.themeClassic {
+  background-color: transparent;
+  color: #000000;
+
+  .lineInput {
+    font-weight: bold;
+  }
+
+  .lineSystem {
+    color: #000000;
+  }
+
+  .lineSuccess {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  .lineError {
+    color: #000000;
+    font-style: italic;
+  }
+
+  .cursorBlock {
+    color: #000000;
+  }
+}
+
+.themeGreen {
+  background-color: #080a08;
+  color: #33ff33;
+  text-shadow: 0 0 2px rgba(51, 255, 51, 0.5);
+
+  .lineInput {
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+  }
+
+  .lineSystem {
+    color: #88ff88;
+  }
+
+  .lineSuccess {
+    color: #a3ffa3;
+    text-shadow: 0 0 2px rgba(163, 255, 163, 0.5);
+  }
+
+  .lineError {
+    color: #33ff33;
+    text-shadow: 0 0 2px rgba(51, 255, 51, 0.5);
+    font-style: italic;
+  }
+
+  .cursorBlock {
+    color: #33ff33;
+  }
+}
+
+.themeAmber {
+  background-color: #0d0a05;
+  color: #ffb000;
+  text-shadow: 0 0 2px rgba(255, 176, 0, 0.5);
+
+  .lineInput {
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+  }
+
+  .lineSystem {
+    color: #ffd080;
+  }
+
+  .lineSuccess {
+    color: #ffe0b0;
+    text-shadow: 0 0 2px rgba(255, 224, 176, 0.5);
+  }
+
+  .lineError {
+    color: #ffb000;
+    text-shadow: 0 0 2px rgba(255, 176, 0, 0.5);
+    font-style: italic;
+  }
+
+  .cursorBlock {
+    color: #ffb000;
+  }
+}
+
+// Text rows
+.outputContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.line {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.promptRow {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.promptLabel {
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.promptInput {
+  flex-grow: 1;
+  background: transparent !important;
+  border: none !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  caret-color: transparent !important; // Hide standard blinking cursor
+  text-shadow: inherit;
+}
+
+// Blinking block cursor
+.cursorBlock {
+  font-size: 13px;
+  animation: blink 1s infinite steps(2, start);
+  margin-left: 1px;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.animationActive {
+  overflow: hidden !important;
+}
+
+.animationCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}

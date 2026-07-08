@@ -35,7 +35,8 @@ export type FinderIconType =
   | "app-audioPlayer"
   | "app-videoPlayer"
   | "app-spaceInvaders"
-  | "app-portfolioAssistant";
+  | "app-portfolioAssistant"
+  | "app-terminal";
 
 interface FinderIconProps {
   id: string;
@@ -71,6 +72,34 @@ export const FinderIcon = memo(function FinderIcon({
   if (type === "app-spaceInvaders") return <SpaceInvadersSvg />;
 
   if (type === "app-portfolioAssistant") return <PortfolioAssistantSvg />;
+
+  if (type === "app-terminal") {
+    return (
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        shapeRendering="crispEdges"
+      >
+        <path d="M3 2H29V3H30V21H29V22H3V21H2V3H3ZM3 3V21H29V3H3Z" fill="black" />
+        <rect x="3" y="3" width="26" height="18" fill="white" />
+        <path d="M5 5H27V17H5V5Z" fill="black" />
+        <rect x="6" y="6" width="20" height="10" fill="black" />
+        <path d="M8 8H9V9H10V10H9V11H8V12H7V11H8V10H7V9H8V8Z" fill="white" />
+        <rect x="11" y="11" width="4" height="1" fill="white" />
+        <path d="M10 22H22V24H10V22Z" fill="black" />
+        <rect x="11" y="22" width="10" height="2" fill="white" />
+        <path d="M11 22H12V24H11V22Z" fill="black" />
+        <path d="M20 22H21V24H20V22Z" fill="black" />
+        <path d="M5 25H27V26H28V28H27V29H5V28H4V26H5V25Z" fill="black" />
+        <rect x="5" y="26" width="22" height="2" fill="white" />
+        <path d="M5 26V28H27V26" fill="white" />
+        <path d="M26 27H27V28H26V27Z" fill="black" />
+      </svg>
+    );
+  }
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;

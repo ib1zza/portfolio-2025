@@ -3,7 +3,8 @@ export type EasterEggId =
   | "time-machine-hd"
   | "special-menu"
   | "last-disk"
-  | "trash-bomb";
+  | "trash-bomb"
+  | "terminal-matrix";
 
 export interface EasterEggDefinition {
   id: EasterEggId;
@@ -16,6 +17,7 @@ export const EASTER_EGG_DEFINITIONS: EasterEggDefinition[] = [
   { id: "special-menu", label: "Special" },
   { id: "last-disk", label: "LAST_DISK.img" },
   { id: "trash-bomb", label: "Trash Bomb" },
+  { id: "terminal-matrix", label: "Terminal Matrix" },
 ];
 
 export const EASTER_EGG_COUNT = EASTER_EGG_DEFINITIONS.length;
