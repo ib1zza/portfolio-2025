@@ -188,7 +188,7 @@ export const HapticsTester = () => {
         minHeight: "100dvh",
         padding: "24px",
         color: "#000",
-        background: "#c0c0c0",
+        background: "#ffffff",
         fontFamily: "inherit",
       }}
     >
@@ -340,12 +340,12 @@ export const HapticsTester = () => {
                     padding: "12px",
                     border: "2px solid #000",
                     borderRadius: 0,
-                    background: isRunning ? "#d8d8d8" : "#fff",
-                    color: "#000",
+                    background: isRunning ? "#000000" : "#ffffff",
+                    color: isRunning ? "#ffffff" : "#000000",
                     font: "inherit",
                     textAlign: "left",
                     cursor: isRunning ? "default" : "pointer",
-                    boxShadow: "3px 3px 0 #000",
+                    boxShadow: "3px 3px 0 #000000",
                   }}
                 >
                   <strong

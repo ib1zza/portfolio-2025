@@ -155,6 +155,10 @@ This document provides a map of the important directories and files in the repos
 │       │
 │       ├── SpaceInvaders/        # App: 1-bit retro mini-game
 │       │
+│       ├── Terminal/             # App: retro Macintosh system terminal CLI
+│       │   ├── Terminal.tsx
+│       │   └── Terminal.module.scss
+│       │
 │       └── ProjectModelViewer/ # 3D model scene (R3F) for project case studies
 │           ├── ProjectModelViewer.tsx
 │           └── ProjectModelViewer.module.scss

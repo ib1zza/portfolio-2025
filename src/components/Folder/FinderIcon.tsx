@@ -13,6 +13,7 @@ import AudioPlayerSvg from "../../assets/icons/audio-player.svg?react";
 import VideoPlayerSvg from "../../assets/icons/video-player.svg?react";
 import SpaceInvadersSvg from "../../assets/icons/space-invaders.svg?react";
 import PortfolioAssistantSvg from "../../assets/icons/portfolio-assistant.svg?react";
+import TerminalSvg from "../../assets/icons/terminal.svg?react";
 
 export type FinderIconType =
   | "folder"
@@ -35,7 +36,8 @@ export type FinderIconType =
   | "app-audioPlayer"
   | "app-videoPlayer"
   | "app-spaceInvaders"
-  | "app-portfolioAssistant";
+  | "app-portfolioAssistant"
+  | "app-terminal";
 
 interface FinderIconProps {
   id: string;
@@ -71,6 +73,8 @@ export const FinderIcon = memo(function FinderIcon({
   if (type === "app-spaceInvaders") return <SpaceInvadersSvg />;
 
   if (type === "app-portfolioAssistant") return <PortfolioAssistantSvg />;
+
+  if (type === "app-terminal") return <TerminalSvg />;
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;

@@ -1,0 +1,133 @@
+.terminalContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  font-family: "FindersKeepers", Arial, sans-serif;
+  font-size: ui(12px);
+  line-height: 1.2;
+  overflow-y: auto;
+  user-select: text;
+  background-color: transparent;
+  color: #000000;
+
+  // Hide scrollbar
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+// Text lines
+.outputContent {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.line {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.lineInput {
+  font-weight: bold;
+}
+
+.lineSystem {
+  color: #000000;
+}
+
+.lineSuccess {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.lineError {
+  color: #000000;
+  font-style: italic;
+}
+
+.promptRow {
+  display: flex;
+  align-items: flex-start;
+}
+
+.promptLabel {
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.promptInputWrapper {
+  position: relative;
+  flex-grow: 1;
+  display: inline-flex;
+}
+
+.promptRepresentation {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  width: 100%;
+}
+
+.promptInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent !important;
+  border: none !important;
+  color: transparent !important;
+  /* Hide native text to show representation */
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  caret-color: transparent !important;
+  /* Hide standard blinking cursor */
+}
+
+// Block cursor (solid black, no blinking)
+.cursorBlock {
+  display: inline-block;
+  line-height: 1.1;
+  background-color: transparent;
+  color: inherit;
+  height: ui(10px);
+  vertical-align: text-bottom;
+  padding-inline: ui(1px);
+
+  &.focused {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  &:not(.focused) {
+    outline: 1px solid #000000;
+    outline-offset: -1px;
+  }
+}
+
+.animationActive {
+  overflow: hidden !important;
+}
+
+.animationCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+}

@@ -13,7 +13,8 @@ export type WindowAppId =
   | "portfolio-assistant"
   | "hypercard-stack"
   | "image-viewer"
-  | "video-viewer";
+  | "video-viewer"
+  | "terminal";
 
 // ─── Base sizes (plain numbers, unscaled) ────────────────────────────────
 
@@ -41,6 +42,7 @@ const SIZE = {
   gameSize: { width: 540, height: 520 },
   projectModelSize: { width: 900, height: 440 },
   documentNoteSize: { width: 360, height: 260 },
+  terminalSize: { width: 560, height: 360 },
 } as const;
 
 // ─── App → window size map ──────────────────────────────────────────────
@@ -58,6 +60,7 @@ const APP_WINDOW_SIZES: Record<WindowAppId, { width: number; height: number }> =
     "hypercard-stack": SIZE.hyperCardSize,
     "image-viewer": SIZE.largeAppSize,
     "video-viewer": SIZE.videoPlayerSize,
+    "terminal": SIZE.terminalSize,
   };
 
 // ─── Mobile ──────────────────────────────────────────────────────────────
