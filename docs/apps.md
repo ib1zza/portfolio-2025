@@ -53,6 +53,15 @@ The desktop environment includes several fully functional applications. These ar
 - **Purpose:** An interactive search and query tool for finding projects and documents.
 - **Architecture & Performance:** The search engine uses optimized scoring logic (a single-pass reduce with inline insertion sort) to prevent UI lag when searching through a large volume of documents.
 
+## 7. Terminal
+
+**Location:** `src/components/Terminal/`
+
+- **Purpose:** A retro Macintosh system command-line interface terminal.
+- **Key Features:** Supports directory navigation (`cd`), file reading (`cat`), file listing (`ls`), app execution (`open`), about/info system queries, history, tab autocompletion, custom matrix animation screen, and character-accurate static block cursor.
+- **State Dependencies:** Reads from `useFileSystem` for files and folders, uses `useWindowManager` to open apps, and integrates haptics.
+- **Common Modification Points:** Command parser inside `executeCommand`, autocomplete key handling, and terminal line styles in `Terminal.module.scss`.
+
 ## Integration Rules for Apps
 
 When modifying an existing app or creating a new one:
