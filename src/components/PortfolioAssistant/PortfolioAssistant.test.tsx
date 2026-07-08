@@ -41,7 +41,7 @@ describe('PortfolioAssistant', () => {
 
   test('renders without crashing', () => {
     render(<PortfolioAssistant />);
-    expect(screen.getByText('Assistant')).toBeInTheDocument();
+    expect(screen.getByLabelText('Ask about portfolio')).toBeInTheDocument();
   });
 
   test('renders suggested questions', () => {

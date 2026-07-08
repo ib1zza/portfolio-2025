@@ -250,7 +250,6 @@ export const DitherStudio = memo(function DitherStudio({
       </section>
 
       <section className={s.controlPanel}>
-        <div className={s.title}>Dither Studio</div>
         <div className={s.selects}>
           <PopupSelect
             label="Mode:"

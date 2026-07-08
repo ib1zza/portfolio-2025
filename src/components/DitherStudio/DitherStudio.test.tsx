@@ -41,7 +41,7 @@ describe('DitherStudio', () => {
 
   test('renders without crashing', () => {
     render(<DitherStudio />);
-    expect(screen.getByText('Dither Studio')).toBeInTheDocument();
+    expect(screen.getByText('Mode:')).toBeInTheDocument();
   });
 
   test('renders canvas element', () => {

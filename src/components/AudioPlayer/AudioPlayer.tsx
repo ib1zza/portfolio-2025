@@ -368,7 +368,6 @@ export const AudioPlayer = memo(function AudioPlayer({
 
         {!isInitialized ? (
           <div className={s.welcomeScreen}>
-            <span className={s.welcomeTitle}>Audio Player</span>
             <span className={s.welcomeText}>
               Load an MP3, OGG, or WAV file to start
             </span>

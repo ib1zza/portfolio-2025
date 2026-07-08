@@ -60,7 +60,7 @@ describe('IconPainter', () => {
 
   test('renders without crashing', () => {
     render(<IconPainter />);
-    expect(screen.getByText('Icon Painter')).toBeInTheDocument();
+    expect(screen.getByLabelText('Icon canvas')).toBeInTheDocument();
   });
 
   test('renders canvas element', () => {

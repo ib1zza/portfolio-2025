@@ -701,7 +701,6 @@ export const IconPainter = memo(function IconPainter({
       </div>
 
       <div className={s.toolsPanel}>
-        <div className={s.title}>Icon Painter</div>
         <ToolControls tool={tool} onToolChange={setTool} />
         <EditControls
           canUndo={undoStack.length > 0}

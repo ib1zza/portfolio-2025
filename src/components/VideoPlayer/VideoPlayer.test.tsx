@@ -49,7 +49,7 @@ describe('VideoPlayer', () => {
 
   test('renders without crashing', () => {
     render(<VideoPlayer windowId="test-win" />);
-    expect(screen.getByText('Video Player')).toBeInTheDocument();
+    expect(screen.getByText('Open')).toBeInTheDocument();
   });
 
   test('shows welcome overlay when not initialized', () => {

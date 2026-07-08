@@ -29,7 +29,6 @@ describe('AudioPlayer', () => {
 
   test('renders welcome screen when no file provided', () => {
     renderPlayer();
-    expect(screen.getByText('Audio Player')).toBeInTheDocument();
     expect(
       screen.getByText('Load an MP3, OGG, or WAV file to start'),
     ).toBeInTheDocument();
