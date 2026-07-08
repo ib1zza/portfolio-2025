@@ -30,6 +30,13 @@
   flex-direction: column;
   gap: var(--panel-gap);
   padding: var(--panel-padding);
+  position: sticky;
+  top: var(--app-padding);
+  align-self: start;
+
+  @include mobile-touch {
+    position: static;
+  }
 }
 
 .answerPanel {
@@ -49,9 +56,8 @@
 
 .searchForm {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
   gap: var(--section-gap);
-  align-items: center;
 }
 
 .quickGroup,
@@ -91,8 +97,7 @@
   text-align: left;
   overflow-wrap: anywhere;
 
-  &:hover,
-  &:focus-visible {
+  &:active {
     color: $white;
     background: $black;
     outline: none;
@@ -180,12 +185,5 @@
     color: $black;
     background: $white;
     text-decoration: none;
-
-    &:hover,
-    &:focus-visible {
-      color: $white;
-      background: $black;
-      outline: none;
-    }
   }
 }

@@ -5,6 +5,8 @@ import { drawDitheredImage } from "./ditherCanvas";
 import { downloadText, getSvgFromCanvas } from "./ditherExport";
 import { saveIconToDesktop } from "../IconPainter/iconPainterDesktop";
 import { useFileSystem } from "../../store/useFileSystem";
+import { useMenuStore } from "../../store/useMenuStore";
+import { useWindowManager } from "../../store/useWindowManager";
 import {
   DITHER_MODES,
   EXPORT_FORMATS,
@@ -15,10 +17,19 @@ import {
 } from "./ditherTypes";
 import s from "./DitherStudio.module.scss";
 
-export const DitherStudio = memo(function DitherStudio() {
+export const DitherStudio = memo(function DitherStudio({
+  windowId,
+}: {
+  windowId?: string;
+}) {
   const upsertSavedIconItem = useFileSystem(
     (state) => state.upsertSavedIconItem,
   );
+  const isFocused = useWindowManager(
+    (state) => state.focusedWindowId === windowId,
+  );
+  const setAppMenu = useMenuStore((state) => state.setAppMenu);
+  const clearAppMenu = useMenuStore((state) => state.clearAppMenu);
   const [image, setImage] = useState<HTMLImageElement | null>(null);
   const [fileName, setFileName] = useState("No image");
   void fileName;
@@ -162,6 +173,49 @@ export const DitherStudio = memo(function DitherStudio() {
     },
     [loadFile],
   );
+
+  useEffect(() => {
+    if (!isFocused) return;
+
+    setAppMenu(
+      [
+        {
+          title: "Adjust",
+          submenu: [
+            {
+              title: "Invert",
+              action: () => setInvert((value) => !value),
+              checked: invert,
+            },
+          ],
+        },
+      ],
+      [
+        {
+          title: "Save as Icon...",
+          action: () => setIsSaveIconDialogOpen(true),
+          disabled: !image,
+        },
+        { title: "Export PNG", action: exportPng, disabled: !image },
+        { title: "Export SVG", action: exportSvg, disabled: !image },
+        { title: "Copy", action: copyCurrent, disabled: !image },
+      ],
+      [{ title: "Clear Image", action: clearImage, disabled: !image }],
+    );
+
+    return () => clearAppMenu();
+  }, [
+    isFocused,
+    invert,
+    image,
+    setIsSaveIconDialogOpen,
+    exportPng,
+    exportSvg,
+    copyCurrent,
+    clearImage,
+    setAppMenu,
+    clearAppMenu,
+  ]);
 
   return (
     <div className={s.ditherStudio}>

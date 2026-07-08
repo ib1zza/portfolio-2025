@@ -1,7 +1,10 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
 import { portfolio } from "../../data/portfolio";
+import { isMobilePointerMode } from "../../constants/responsive";
+import { useFileSystem } from "../../store/useFileSystem";
+import { useWindowManager } from "../../store/useWindowManager";
 import { MacButton, MacTextInput } from "../UIKit";
 import {
   getInitialAssistantLanguage,
@@ -55,6 +58,10 @@ const saveHistoryItem = (question: string) => {
 };
 
 export const PortfolioAssistant = memo(function PortfolioAssistant() {
+  const containerRef = useRef<HTMLElement | null>(null);
+  const queryRef = useRef<HTMLDivElement | null>(null);
+  const openWindow = useWindowManager((state) => state.openWindow);
+  const setActive = useFileSystem((state) => state.setActive);
   const language = getInitialAssistantLanguage();
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<AssistantAnswer | null>(null);
@@ -87,14 +94,68 @@ export const PortfolioAssistant = memo(function PortfolioAssistant() {
     }
   }, [language]);
 
+  const openProjectWindow = useCallback(
+    (id: string, title: string) => {
+      const folderId = `project-${id}`;
+      openWindow(folderId, title, folderId);
+      setActive(folderId);
+    },
+    [openWindow, setActive],
+  );
+
+  const updateQueryHeight = useCallback(() => {
+    const container = containerRef.current;
+    const query = queryRef.current;
+    if (!container || !query) return;
+
+    if (isMobilePointerMode()) {
+      query.style.height = "";
+      return;
+    }
+
+    let scrollContainer: HTMLElement | null = container;
+    while (scrollContainer) {
+      const overflow = getComputedStyle(scrollContainer).overflow;
+      if (overflow === "auto" || overflow === "scroll") break;
+      scrollContainer = scrollContainer.parentElement;
+    }
+    if (!scrollContainer) return;
+
+    const cs = getComputedStyle(container);
+    const paddingTop = parseFloat(cs.paddingTop);
+    const paddingBottom = parseFloat(cs.paddingBottom);
+    const height = scrollContainer.clientHeight - paddingTop - paddingBottom;
+    query.style.height = `${Math.max(height, 0)}px`;
+  }, []);
+
+  useEffect(() => {
+    updateQueryHeight();
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    let scrollContainer: HTMLElement | null = container;
+    while (scrollContainer) {
+      const overflow = getComputedStyle(scrollContainer).overflow;
+      if (overflow === "auto" || overflow === "scroll") break;
+      scrollContainer = scrollContainer.parentElement;
+    }
+    if (!scrollContainer) return;
+
+    const ro = new ResizeObserver(updateQueryHeight);
+    ro.observe(scrollContainer);
+
+    return () => ro.disconnect();
+  }, [updateQueryHeight]);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void askQuestion(trimmedQuestion);
   };
 
   return (
-    <section className={s.assistant} aria-label="Assistant">
-      <div className={s.queryPanel}>
+    <section className={s.assistant} aria-label="Assistant" ref={containerRef}>
+      <div className={s.queryPanel} ref={queryRef}>
         <div className={s.title}>Assistant</div>
         <form className={s.searchForm} onSubmit={handleSubmit}>
           <MacTextInput
@@ -172,8 +233,19 @@ export const PortfolioAssistant = memo(function PortfolioAssistant() {
             {answer.hits.length > 0 && (
               <div className={s.results}>
                 <div className={s.sectionLabel}>Matches</div>
-                {answer.hits.map((hit) => (
-                  <article key={`${hit.kind}-${hit.id}`} className={s.result}>
+                {answer.hits.map((hit) => {
+                  const isProject = hit.kind === "project";
+
+                  return (
+                    <article
+                      key={`${hit.kind}-${hit.id}`}
+                      className={s.result}
+                      onClick={
+                        isProject
+                          ? () => openProjectWindow(hit.id, hit.title)
+                          : undefined
+                      }
+                    >
                     <div className={s.resultHeader}>
                       <h2>{hit.title}</h2>
                       <span>{hit.kind}</span>
@@ -196,7 +268,8 @@ export const PortfolioAssistant = memo(function PortfolioAssistant() {
                       </ul>
                     )}
                   </article>
-                ))}
+                );
+              })}
               </div>
             )}
           </div>

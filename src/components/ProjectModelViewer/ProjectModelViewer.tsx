@@ -14,8 +14,9 @@ import s from "./ProjectModelViewer.module.scss";
 interface ProjectModelViewerProps {
   className?: string;
   isActive: boolean;
-  model: ProjectModel;
+  model: ProjectModel & { wireframeScale?: number };
   size?: "default" | "large";
+  onResetCamera?: (reset: () => void) => void;
 }
 
 interface ModelSceneProps {
@@ -53,7 +54,11 @@ const isMesh = (object: Object3D): object is Mesh =>
   "isMesh" in object && Boolean((object as Mesh).isMesh);
 
 const getModelSources = (model: ProjectModel) =>
-  [model.src, model.logo?.src, ...(model.extras?.map((extra) => extra.src) ?? [])]
+  [
+    model.src,
+    model.logo?.src,
+    ...(model.extras?.map((extra) => extra.src) ?? []),
+  ]
     .filter((src): src is string => Boolean(src))
     .map(getAssetPath);
 
@@ -228,9 +233,11 @@ function ModelObject({ kind }: { kind: ProjectModel["kind"] }) {
 function DownloadedObject({
   src,
   scale = 2.2,
+  wireframeScale = 1.015,
 }: {
   src: string;
   scale?: number;
+  wireframeScale?: number;
 }) {
   const assetSrc = getAssetPath(src);
   const gltf = useLoader(GLTFLoader, assetSrc);
@@ -239,8 +246,9 @@ function DownloadedObject({
     [gltf.scene, scale],
   );
   const wireModel = useMemo(
-    () => prepareModelClone(gltf.scene, modelWireMaterial, scale, 1.015),
-    [gltf.scene, scale],
+    () =>
+      prepareModelClone(gltf.scene, modelWireMaterial, scale, wireframeScale),
+    [gltf.scene, scale, wireframeScale],
   );
 
   return (
@@ -251,7 +259,11 @@ function DownloadedObject({
   );
 }
 
-function DownloadedModel({ model }: { model: ProjectModel }) {
+function DownloadedModel({
+  model,
+}: {
+  model: ProjectModel & { wireframeScale?: number };
+}) {
   if (!model.src) return null;
 
   return (
@@ -259,7 +271,11 @@ function DownloadedModel({ model }: { model: ProjectModel }) {
       position={model.position ?? [0, 0, 0]}
       rotation={model.rotation ?? [0, 0, 0]}
     >
-      <DownloadedObject src={model.src} scale={model.scale} />
+      <DownloadedObject
+        src={model.src}
+        scale={model.scale}
+        wireframeScale={model.wireframeScale ?? 1.015}
+      />
     </group>
   );
 }
@@ -340,6 +356,7 @@ export function ProjectModelViewer({
   isActive,
   model,
   size = "default",
+  onResetCamera,
 }: ProjectModelViewerProps) {
   const rotationRef = useRef<RotationState>({ x: -0.15, y: 0.45 });
   const isDraggingRef = useRef(false);
@@ -375,6 +392,14 @@ export function ProjectModelViewer({
       useLoader.preload(GLTFLoader, src);
     });
   }, [hasBeenVisible, modelSources]);
+
+  useEffect(() => {
+    if (onResetCamera) {
+      onResetCamera(() => {
+        rotationRef.current = { x: -0.15, y: 0.45 };
+      });
+    }
+  }, [onResetCamera]);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     event.currentTarget.setPointerCapture(event.pointerId);
