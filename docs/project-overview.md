@@ -21,6 +21,7 @@ The application is built using modern web technologies:
 The application operates fundamentally as a web-based "operating system" simulation.
 
 Key user-facing features include:
+
 - **Virtual Desktop:** A customizable workspace where users can arrange icons and windows.
 - **Finder-style Icons:** Interactive icons for folders, files, and applications.
 - **Window Management:** Movable and resizable windows that can be opened, closed, and layered.
@@ -31,6 +32,7 @@ Key user-facing features include:
 ## Built-in Apps
 
 The desktop includes several fully-functional mini-applications:
+
 - **Icon Painter:** A 32x32 pixel icon editor.
 - **Dither Studio:** A tool for applying dithering algorithms to images.
 - **Model Viewer:** An application for browsing 3D models using React Three Fiber.
@@ -39,6 +41,7 @@ The desktop includes several fully-functional mini-applications:
 ## Design Constraints and Aesthetic Goals
 
 The project adheres strongly to the classic Macintosh aesthetic:
+
 - **Monochrome / Restricted Palette:** True to System 6/7 roots, relying heavily on dithered patterns and crisp, high-contrast monochrome UI elements.
 - **Pixel Perfection:** Cursors, icons, and UI borders are designed to look sharp and pixelated, avoiding soft anti-aliasing where possible.
 - **Native Feel:** Interactions should mimic native OS behaviors—windows shouldn't feel like mere HTML elements, but rather like solid, draggable OS windows.

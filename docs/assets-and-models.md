@@ -31,6 +31,7 @@ The project provides utility functions in `src/utils/assets.ts` to resolve asset
 ## Managing 3D Models
 
 Models in `public/models/` should be optimized for the web.
+
 - Prefer `.glb` formats as they bundle textures and geometry efficiently.
 - Be aware of file sizes. A massive unoptimized model will severely impact the initial load time of the `ModelViewerApp`.
 

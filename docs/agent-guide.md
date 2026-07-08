@@ -37,6 +37,7 @@ This project is a modern React 19 application built with Vite 7 and TypeScript 5
 ## Where to Start Reading
 
 If you are assigned a new task, start by consulting these documents in order:
+
 1. **The Task Description**: Understand what is being asked.
 2. [**File Map**](./file-map.md): Find out which directory likely contains the code you need to touch.
 3. [**Architecture**](./architecture.md) & [**State Management**](./state-management.md): Understand how data flows between stores and the UI.
@@ -57,7 +58,7 @@ If you are assigned a new task, start by consulting these documents in order:
 
 1. **Do not invent abstractions.** If you need a utility, check `src/utils/` first. If you need a UI component, check `src/components/UIKit/` or similar directories before building from scratch.
 2. **Use existing constants.** Do not hardcode z-indexes, animation durations, or breakpoints. Use the files in `src/constants/`.
-3. **Handle `localStorage` safely.** The app persists state heavily. If you change the shape of an interface in `useFileSystem` or `useWindowManager`, existing users will have old data in their browsers. You *must* consider how to handle versioning or provide fallback defaults so the app does not crash on load.
+3. **Handle `localStorage` safely.** The app persists state heavily. If you change the shape of an interface in `useFileSystem` or `useWindowManager`, existing users will have old data in their browsers. You _must_ consider how to handle versioning or provide fallback defaults so the app does not crash on load.
 
 ---
 
@@ -74,6 +75,7 @@ This project targets 60fps across the board and must run smoothly on lower-end d
 ## Avoiding Visual Style Breakage
 
 This app perfectly replicates a specific retro aesthetic (Macintosh System 6/7).
+
 - **Strictly adhere to the monochrome/dithered look.** Do not add soft shadows, gradients, or non-system fonts unless specifically requested.
 - **Borders are 1px solid black.**
 - **UI Scaling:** All UI dimensions that interact with JavaScript layout calculations must go through the scale helpers. Do not assume `1px` on screen equals `1px` in logic. See [**UI System**](./ui-system.md) for style token guidelines.

@@ -24,6 +24,7 @@ These commands are defined in `package.json` and are verified to work:
 ## Vite Configuration (`vite.config.mjs`)
 
 The Vite configuration handles several critical tasks:
+
 - **Path Aliases:** Allows imports like `~/components/` instead of `../../components/`.
 - **SCSS Preprocessing:** Configures global styles and CSS module behavior.
 - **Manual Chunking:** Aggressively splits vendor code (React, Three.js, Framer Motion) from application code to optimize caching and initial load times.
@@ -34,10 +35,12 @@ The Vite configuration handles several critical tasks:
 The application is deployed as a static Single Page Application (SPA).
 
 ### Vercel
+
 - Configuration is provided in `vercel.json`.
 - **SPA Rewrites:** All requests that do not match a static file are rewritten to `index.html`, allowing client-side routing (if used) to function correctly.
 - **Caching:** Headers are configured to aggressively cache immutable static assets while ensuring `index.html` is revalidated.
 
 ### GitHub Pages
+
 - Uses the `build:github` script.
 - Since GitHub Pages serves out of a subpath (e.g., `username.github.io/repo-name/`), Vite must be told the correct base URL so asset links do not break. The `assets.ts` utility helps resolve these paths at runtime.
