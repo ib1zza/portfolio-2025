@@ -47,6 +47,9 @@ export const AudioPlayer = memo(function AudioPlayer({
   const [isDragging, setIsDragging] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  const volumeRef = useRef(volume);
+  const loopRef = useRef(loop);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -89,8 +92,8 @@ export const AudioPlayer = memo(function AudioPlayer({
 
   const setupAudioElement = useCallback(
     (audio: HTMLAudioElement, trackName: string) => {
-      audio.volume = volume;
-      audio.loop = loop;
+      audio.volume = volumeRef.current;
+      audio.loop = loopRef.current;
 
       audio.addEventListener("loadedmetadata", () => {
         setDuration(audio.duration);
@@ -123,7 +126,7 @@ export const AudioPlayer = memo(function AudioPlayer({
       setIsPlaying(false);
       setIsInitialized(true);
     },
-    [loop, volume],
+    [],
   );
 
   const loadFromUrl = useCallback(
@@ -199,6 +202,7 @@ export const AudioPlayer = memo(function AudioPlayer({
     if (audio) {
       audio.volume = value;
     }
+    volumeRef.current = value;
     setVolume(value);
   }, []);
 
@@ -208,6 +212,7 @@ export const AudioPlayer = memo(function AudioPlayer({
     if (audio) {
       audio.loop = nextLoop;
     }
+    loopRef.current = nextLoop;
     setLoop(nextLoop);
   }, [loop]);
 
