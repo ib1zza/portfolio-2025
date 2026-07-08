@@ -82,11 +82,17 @@ vi.mock('../../utils/uiScale', () => ({
   scaleUiSize: (s: { width: number; height: number }) => s,
 }));
 
+import { useMenuStore } from '../../store/useMenuStore';
 import { Topbar } from './Topbar';
 
 describe('Topbar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useMenuStore.setState({
+      fileMenuOverrides: null,
+      editMenuOverrides: [{ title: 'Undo', action: vi.fn() }],
+      customTabs: [],
+    });
   });
 
   test('renders all main tabs', () => {

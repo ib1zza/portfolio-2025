@@ -211,26 +211,22 @@ export function Topbar() {
         submenu: fileMenuOverrides
           ? [...fileMenuOverrides]
           : [
-              ...(isDesktopMode
-                ? [
-                    {
-                      title: "Open About",
-                      action: () => openPortfolioWindow("about", "About Me"),
-                    },
-                    {
-                      title: "Open Projects",
-                      action: () => openPortfolioWindow("projects", "Projects"),
-                    },
-                    {
-                      title: "Open Education",
-                      action: () => openPortfolioWindow("education", "Education"),
-                    },
-                    {
-                      title: "Open Contact",
-                      action: () => openPortfolioWindow("contact", "Contact"),
-                    },
-                  ]
-                : []),
+              {
+                title: "Open About",
+                action: () => openPortfolioWindow("about", "About Me"),
+              },
+              {
+                title: "Open Projects",
+                action: () => openPortfolioWindow("projects", "Projects"),
+              },
+              {
+                title: "Open Education",
+                action: () => openPortfolioWindow("education", "Education"),
+              },
+              {
+                title: "Open Contact",
+                action: () => openPortfolioWindow("contact", "Contact"),
+              },
             ],
       },
       {
