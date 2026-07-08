@@ -62,6 +62,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const proxyCanvasRef = useRef<HTMLCanvasElement>(null);
   const displayRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -73,7 +74,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   useDither(
     canvasRef as never,
-    videoRef as never,
+    proxyCanvasRef as never,
     {
       mode: ditherMode,
       resolution: Number(resolution),
@@ -81,6 +82,54 @@ export const VideoPlayer = memo(function VideoPlayer({
       matrixSize: Number(matrixSize) as 2 | 4 | 8,
     },
   );
+
+  // Sync frames from source video to proxy canvas to stabilize WebGL video texture upload
+  useEffect(() => {
+    const video = videoRef.current;
+    const proxyCanvas = proxyCanvasRef.current;
+    if (!video || !proxyCanvas) return;
+
+    let animId: number;
+
+    const drawFrame = () => {
+      const ctx = proxyCanvas.getContext("2d");
+      if (ctx && video.videoWidth && video.videoHeight) {
+        if (proxyCanvas.width === 0 || proxyCanvas.height === 0) {
+          let pw = video.videoWidth;
+          let ph = video.videoHeight;
+          const MAX_PROXY_SIZE = 640;
+          if (pw > MAX_PROXY_SIZE || ph > MAX_PROXY_SIZE) {
+            const scale = MAX_PROXY_SIZE / Math.max(pw, ph);
+            pw = Math.round(pw * scale);
+            ph = Math.round(ph * scale);
+          }
+          proxyCanvas.width = pw;
+          proxyCanvas.height = ph;
+        }
+        ctx.drawImage(video, 0, 0, proxyCanvas.width, proxyCanvas.height);
+      }
+    };
+
+    const render = () => {
+      if (!video.paused && !video.ended) {
+        drawFrame();
+      }
+      animId = requestAnimationFrame(render);
+    };
+
+    video.addEventListener("seeked", drawFrame);
+    video.addEventListener("timeupdate", drawFrame);
+    video.addEventListener("loadeddata", drawFrame);
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      video.removeEventListener("seeked", drawFrame);
+      video.removeEventListener("timeupdate", drawFrame);
+      video.removeEventListener("loadeddata", drawFrame);
+    };
+  }, []);
 
   const fitCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -119,6 +168,12 @@ export const VideoPlayer = memo(function VideoPlayer({
       video.volume = volume;
       video.loop = loop;
       video.load();
+
+      const proxyCanvas = proxyCanvasRef.current;
+      if (proxyCanvas) {
+        proxyCanvas.width = 0;
+        proxyCanvas.height = 0;
+      }
 
       if (displayRef.current) {
         displayRef.current.src = url;
@@ -516,6 +571,10 @@ export const VideoPlayer = memo(function VideoPlayer({
         ref={videoRef}
         className={s.sourceVideo}
         playsInline
+      />
+      <canvas
+        ref={proxyCanvasRef}
+        style={{ display: "none" }}
       />
 
       <input
