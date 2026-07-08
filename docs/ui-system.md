@@ -23,6 +23,7 @@ The window system is managed visually by the `Window` component (`src/components
 - **Drag & Resize:** Operations are intercepted and passed to `useWindowManager` to persist state.
 - **Z-Index Rules:** Because overlapping windows are a core feature, `src/constants/zIndex.ts` defines a strict hierarchy. The focused window is dynamically assigned the highest z-index among standard windows. The Topbar, custom cursors, and system dialogs must always sit above _all_ standard windows.
 - **Animations:** Framer Motion is used for smooth "morphing" animations when opening or minimizing windows, providing a modern touch to the retro UI. Timing is configured in `src/constants/windowAnimation.ts`.
+- **Instant Render (Prefetching):** Rather than standard lazy loading which causes a single-frame "Loading..." flash on open, window contents use a `lazyWithPreload` helper. Components are prefetched in the background when the app is idle. Once preloaded, they render synchronously on the first frame without triggering `<Suspense>` fallbacks.
 
 ---
 

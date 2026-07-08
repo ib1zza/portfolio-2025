@@ -9,6 +9,7 @@ This document outlines the lifecycle of the application, from initial load to co
 1. **Vite Entry Point:** The browser loads `index.html` and executes the compiled React entry script.
 2. **State Hydration:** Zustand stores (`useFileSystem` and `useWindowManager`) initialize. If persistence is configured, they attempt to read their previous state from `localStorage` (e.g., restoring window positions or previously opened apps).
 3. **Global Layout Mount:** The root App component mounts the `Desktop`, `Topbar`, and `CursorProvider`.
+4. **Lazy Loading & Background Prefetching:** Once the main layout is ready and the loading screen fades out, the application schedules background prefetching of all heavy sub-modules (like `Window`, `Terminal`, `ModelViewerApp`, etc.) during browser idle time using `requestIdleCallback`. A custom `lazyWithPreload` utility is used to pre-render these modules synchronously once they are preloaded, completely bypassing the standard 1-frame visual flash of the Suspense `Loading...` fallback when a window is first opened.
 
 ## 2. Desktop Render
 

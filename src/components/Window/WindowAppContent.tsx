@@ -1,81 +1,74 @@
-import { lazy, memo, Suspense } from "react";
+import { memo, Suspense } from "react";
 
 import type { AppItem } from "../../store/useFileSystem";
 import s from "./Window.module.scss";
+import { lazyWithPreload } from "../../utils/lazyWithPreload";
 
-const IconPainter = lazy(() =>
-  import("../IconPainter").then((module) => ({
-    default: module.IconPainter,
-  })),
-);
-
-const DitherStudio = lazy(() =>
-  import("../DitherStudio").then((module) => ({
-    default: module.DitherStudio,
-  })),
-);
-
-const ModelViewerApp = lazy(() =>
-  import("../ModelViewerApp").then((module) => ({
-    default: module.ModelViewerApp,
-  })),
-);
-
-const BadgeGenerator = lazy(() =>
-  import("../BadgeGenerator").then((module) => ({
-    default: module.BadgeGenerator,
-  })),
-);
-
-const AudioPlayer = lazy(() =>
-  import("../AudioPlayer").then((module) => ({
-    default: module.AudioPlayer,
-  })),
-);
-
-const VideoPlayer = lazy(() =>
-  import("../VideoPlayer").then((module) => ({
-    default: module.VideoPlayer,
-  })),
-);
-
-const SpaceInvaders = lazy(() =>
-  import("../SpaceInvaders").then((module) => ({
-    default: module.SpaceInvaders,
-  })),
-);
-
-const PortfolioAssistant = lazy(() =>
-  import("../PortfolioAssistant").then((module) => ({
-    default: module.PortfolioAssistant,
-  })),
-);
-
-const HyperCardStack = lazy(() =>
-  import("../../features/easter-eggs/components/HyperCardStack").then(
-    (module) => ({
-      default: module.HyperCardStack,
-    }),
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadedApps = {
+  IconPainter: lazyWithPreload(() =>
+    import("../IconPainter").then((module) => ({
+      default: module.IconPainter,
+    })),
   ),
-);
-
-const ImageViewer = lazy(() =>
-  import("../ImageViewer").then((module) => ({
-    default: module.ImageViewer,
-  })),
-);
-
-const SimpleVideoPlayer = lazy(() =>
-  import("../SimpleVideoPlayer").then((module) => ({
-    default: module.SimpleVideoPlayer,
-  })),
-);
-
-const Terminal = lazy(() =>
-  import("../Terminal").then((module) => ({
-    default: module.Terminal,
-  })),
-);
+  DitherStudio: lazyWithPreload(() =>
+    import("../DitherStudio").then((module) => ({
+      default: module.DitherStudio,
+    })),
+  ),
+  ModelViewerApp: lazyWithPreload(() =>
+    import("../ModelViewerApp").then((module) => ({
+      default: module.ModelViewerApp,
+    })),
+  ),
+  BadgeGenerator: lazyWithPreload(() =>
+    import("../BadgeGenerator").then((module) => ({
+      default: module.BadgeGenerator,
+    })),
+  ),
+  AudioPlayer: lazyWithPreload(() =>
+    import("../AudioPlayer").then((module) => ({
+      default: module.AudioPlayer,
+    })),
+  ),
+  VideoPlayer: lazyWithPreload(() =>
+    import("../VideoPlayer").then((module) => ({
+      default: module.VideoPlayer,
+    })),
+  ),
+  SpaceInvaders: lazyWithPreload(() =>
+    import("../SpaceInvaders").then((module) => ({
+      default: module.SpaceInvaders,
+    })),
+  ),
+  PortfolioAssistant: lazyWithPreload(() =>
+    import("../PortfolioAssistant").then((module) => ({
+      default: module.PortfolioAssistant,
+    })),
+  ),
+  HyperCardStack: lazyWithPreload(() =>
+    import("../../features/easter-eggs/components/HyperCardStack").then(
+      (module) => ({
+        default: module.HyperCardStack,
+      }),
+    ),
+  ),
+  ImageViewer: lazyWithPreload(() =>
+    import("../ImageViewer").then((module) => ({
+      default: module.ImageViewer,
+    })),
+  ),
+  SimpleVideoPlayer: lazyWithPreload(() =>
+    import("../SimpleVideoPlayer").then((module) => ({
+      default: module.SimpleVideoPlayer,
+    })),
+  ),
+  Terminal: lazyWithPreload(() =>
+    import("../Terminal").then((module) => ({
+      default: module.Terminal,
+    })),
+  ),
+};
 
 interface WindowAppContentProps {
   app: AppItem["app"];
@@ -94,6 +87,19 @@ export const WindowAppContent = memo(function WindowAppContent({
   windowId,
   fileUrl,
 }: WindowAppContentProps) {
+  const IconPainter = preloadedApps.IconPainter.getLoaded() || preloadedApps.IconPainter.Component;
+  const DitherStudio = preloadedApps.DitherStudio.getLoaded() || preloadedApps.DitherStudio.Component;
+  const ModelViewerApp = preloadedApps.ModelViewerApp.getLoaded() || preloadedApps.ModelViewerApp.Component;
+  const BadgeGenerator = preloadedApps.BadgeGenerator.getLoaded() || preloadedApps.BadgeGenerator.Component;
+  const AudioPlayer = preloadedApps.AudioPlayer.getLoaded() || preloadedApps.AudioPlayer.Component;
+  const VideoPlayer = preloadedApps.VideoPlayer.getLoaded() || preloadedApps.VideoPlayer.Component;
+  const SpaceInvaders = preloadedApps.SpaceInvaders.getLoaded() || preloadedApps.SpaceInvaders.Component;
+  const PortfolioAssistant = preloadedApps.PortfolioAssistant.getLoaded() || preloadedApps.PortfolioAssistant.Component;
+  const HyperCardStack = preloadedApps.HyperCardStack.getLoaded() || preloadedApps.HyperCardStack.Component;
+  const ImageViewer = preloadedApps.ImageViewer.getLoaded() || preloadedApps.ImageViewer.Component;
+  const SimpleVideoPlayer = preloadedApps.SimpleVideoPlayer.getLoaded() || preloadedApps.SimpleVideoPlayer.Component;
+  const Terminal = preloadedApps.Terminal.getLoaded() || preloadedApps.Terminal.Component;
+
   return (
     <Suspense fallback={<div className={s.contentText}>Loading...</div>}>
       {app === "icon-painter" && (
