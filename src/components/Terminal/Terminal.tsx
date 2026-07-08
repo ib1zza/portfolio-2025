@@ -412,14 +412,18 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         const preferredSize =
           child.type === "app"
             ? getAppWindowSize(child.app as WindowAppId)
-            : child.type === "file" && child.documentStyle === "centered-note"
+            : child.type === "file" &&
+              (child.documentStyle === "centered-note" ||
+                child.documentStyle === "easter-eggs-log")
               ? getDocumentNoteWindowSize()
               : undefined;
 
         const windowOptions =
           child.type === "file" && child.documentStyle === "centered-note"
             ? { resizable: false, windowVariant: "note" as const }
-            : undefined;
+            : child.type === "file" && child.documentStyle === "easter-eggs-log"
+              ? { resizable: true, windowVariant: "note" as const }
+              : undefined;
 
         // Open via windowManager
         openWindow(child.id, child.name, child.parentId, undefined, preferredSize, undefined, windowOptions);
