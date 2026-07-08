@@ -157,8 +157,10 @@ export const Folder = memo(function Folder({
         : hasProjectModel
           ? getProjectModelWindowSize()
           : undefined;
-    const windowOptions = isCenteredNote || isEggLog
+    const windowOptions = isCenteredNote
       ? { resizable: false, windowVariant: "note" as const }
+      : isEggLog
+        ? { resizable: true, windowVariant: "note" as const }
       : undefined;
 
     setActive(id);
