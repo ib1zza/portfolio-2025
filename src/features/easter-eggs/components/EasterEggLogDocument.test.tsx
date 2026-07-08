@@ -17,12 +17,12 @@ import { EasterEggLogDocument } from './EasterEggLogDocument';
 describe('EasterEggLogDocument', () => {
   test('shows found count', () => {
     render(<EasterEggLogDocument />);
-    expect(screen.getByText('Found 2 of 5')).toBeInTheDocument();
+    expect(screen.getByText('Found 2 of 6')).toBeInTheDocument();
   });
 
   test('shows progress', () => {
     render(<EasterEggLogDocument />);
-    expect(screen.getByTestId('progress')).toHaveTextContent('2/5');
+    expect(screen.getByTestId('progress')).toHaveTextContent('2/6');
   });
 
   test('renders found egg labels', () => {

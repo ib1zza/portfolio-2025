@@ -8,9 +8,9 @@ import {
 } from './easterEggDefinitions';
 
 describe('easterEggDefinitions', () => {
-  test('defines 5 eggs', () => {
-    expect(EASTER_EGG_DEFINITIONS).toHaveLength(5);
-    expect(EASTER_EGG_COUNT).toBe(5);
+  test('defines 6 eggs', () => {
+    expect(EASTER_EGG_DEFINITIONS).toHaveLength(6);
+    expect(EASTER_EGG_COUNT).toBe(6);
   });
 
   test('each egg has id and label', () => {
@@ -34,6 +34,7 @@ describe('easterEggDefinitions', () => {
       'special-menu',
       'last-disk',
       'trash-bomb',
+      'terminal-matrix',
     ];
     expect(ids.sort()).toEqual(expected.sort());
   });

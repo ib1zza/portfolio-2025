@@ -31,6 +31,14 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
 
   const [currentFolderId, setCurrentFolderId] = useState<string>("root");
   const [inputValue, setInputValue] = useState<string>("");
+  const [selectionStart, setSelectionStart] = useState(0);
+  const [isFocused, setIsFocused] = useState(true);
+
+  const changeInputValue = useCallback((newValue: string) => {
+    setInputValue(newValue);
+    setSelectionStart(newValue.length);
+  }, []);
+
   const [lines, setLines] = useState<TerminalLine[]>(SYSTEM_WELCOME);
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
@@ -77,28 +85,9 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
 
     // Color definitions
     // Default classic theme is black on white
-    let textColor = "#000000";
-    let clearColor = "rgba(255, 255, 255, 0.12)"; // fading overlay
-    let bgColor = "#ffffff";
-
-    // Detect computed theme color from container if needed (e.g. green or amber phosphor screens)
-    const computedStyle = window.getComputedStyle(container);
-    const textCol = computedStyle.color;
-    const bgCol = computedStyle.backgroundColor;
-
-    if (textCol && textCol !== "rgba(0, 0, 0, 0)" && textCol !== "transparent") {
-      textColor = textCol;
-    }
-    if (bgCol && bgCol !== "rgba(0, 0, 0, 0)" && bgCol !== "transparent") {
-      bgColor = bgCol;
-    }
-
-    // Adapt fading trail overlay to theme colors
-    if (textColor.includes("rgb(51, 255, 51)") || textColor === "#33ff33") {
-      clearColor = "rgba(8, 10, 8, 0.12)"; // Green CRT fade
-    } else if (textColor.includes("rgb(255, 176, 0)") || textColor === "#ffb000") {
-      clearColor = "rgba(13, 10, 5, 0.12)"; // Amber CRT fade
-    }
+    const textColor = "#000000";
+    const clearColor = "rgba(255, 255, 255, 0.12)"; // fading overlay
+    const bgColor = "#ffffff";
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -114,7 +103,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
       animationFrameId = requestAnimationFrame(tick);
 
       // Throttling frame rate to ~15 FPS (every ~70ms) to fit retro terminal look
-      if (timestamp - lastTime < 120) return;
+      if (timestamp - lastTime < 100) return;
       lastTime = timestamp;
 
       // Draw alpha rectangle to fade older frames
@@ -476,7 +465,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         const matches = candidates.filter((c) => c.startsWith(partialCmd));
 
         if (matches.length > 0) {
-          setInputValue(matches[0] + " ");
+          changeInputValue(matches[0] + " ");
         }
       } else {
         // Autocomplete file/folder/app name in the current directory
@@ -494,13 +483,13 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
           );
 
           if (matches.length > 0) {
-            setInputValue(commandPart + matches[0]);
+            changeInputValue(commandPart + matches[0]);
           }
         }
       }
     } else if (e.key === "Enter") {
       executeCommand(inputValue);
-      setInputValue("");
+      changeInputValue("");
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (history.length === 0) return;
@@ -508,33 +497,31 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
       const prevIndex = historyIndex - 1;
       if (prevIndex >= 0) {
         setHistoryIndex(prevIndex);
-        setInputValue(history[prevIndex]);
+        changeInputValue(history[prevIndex]);
       }
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       const nextIndex = historyIndex + 1;
       if (nextIndex < history.length) {
         setHistoryIndex(nextIndex);
-        setInputValue(history[nextIndex]);
+        changeInputValue(history[nextIndex]);
       } else {
         setHistoryIndex(history.length);
-        setInputValue("");
+        changeInputValue("");
       }
     }
-  }, [executeCommand, history, historyIndex, inputValue, currentFolderId, fileSystemItems]);
+  }, [executeCommand, history, historyIndex, inputValue, currentFolderId, fileSystemItems, changeInputValue]);
 
   // Initial focus
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  const themeClass = s.themeClassic;
-
   if (isAnimating) {
     return (
       <div
         ref={containerRef}
-        className={`${s.terminalContainer} ${themeClass} ${s.animationActive}`}
+        className={`${s.terminalContainer} ${s.animationActive}`}
         onClick={handleTerminalClick}
       >
         <canvas ref={canvasRef} className={s.animationCanvas} />
@@ -562,7 +549,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
   return (
     <div
       ref={containerRef}
-      className={`${s.terminalContainer} ${themeClass}`}
+      className={s.terminalContainer}
       onClick={handleTerminalClick}
     >
       <div className={s.outputContent}>
@@ -585,18 +572,35 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         ))}
         <div className={s.promptRow}>
           <span className={s.promptLabel}>macintosh:{getPathString(currentFolderId)} &gt;</span>
-          <input
-            ref={inputRef}
-            type="text"
-            className={s.promptInput}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value.replace(/[^\x20-\x7E]/g, ""))}
-            onKeyDown={handleKeyDown}
-            autoComplete="off"
-            autoCapitalize="off"
-            spellCheck={false}
-          />
-          <span className={s.cursorBlock}>■</span>
+          <div className={s.promptInputWrapper}>
+            <div className={s.promptRepresentation}>
+              <span>{inputValue.slice(0, selectionStart)}</span>
+              <span className={`${s.cursorBlock} ${isFocused ? s.focused : ""}`}>
+                {inputValue[selectionStart] || "\u00A0"}
+              </span>
+              <span>{inputValue.slice(selectionStart + 1)}</span>
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              className={s.promptInput}
+              value={inputValue}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^\x20-\x7E]/g, "");
+                setInputValue(val);
+                setSelectionStart(e.target.selectionStart ?? 0);
+              }}
+              onKeyDown={handleKeyDown}
+              onSelect={(e) => setSelectionStart(e.currentTarget.selectionStart ?? 0)}
+              onKeyUp={(e) => setSelectionStart(e.currentTarget.selectionStart ?? 0)}
+              onClick={(e) => setSelectionStart(e.currentTarget.selectionStart ?? 0)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+            />
+          </div>
         </div>
       </div>
     </div>

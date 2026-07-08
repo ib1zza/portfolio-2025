@@ -63,6 +63,11 @@ describe('FinderIcon', () => {
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
+  test('renders app-terminal icon', () => {
+    const container = renderIcon('app-terminal');
+    expect(container.querySelector('svg')).toBeInTheDocument();
+  });
+
   test('renders trash icon', () => {
     const container = renderIcon('trash');
     expect(container.querySelector('svg')).toBeInTheDocument();
