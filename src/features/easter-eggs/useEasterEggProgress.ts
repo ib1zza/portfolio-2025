@@ -14,6 +14,13 @@ interface EasterEggProgressStore {
 
 const STORAGE_KEY = "portfolio-2025-easter-egg-progress";
 
+// ⚡ Bolt: pre-compute Set for O(1) lookups during migration
+// 💡 What: Extracted validEggIds Set outside the component/migration function.
+// 🎯 Why: Avoids recreating the Set on every store migration and changes O(N*M) lookup to O(N).
+// 📊 Impact: Eliminates redundant array scanning and Set instantiation overhead.
+// 🔬 Measurement: Observe lower execution time during state hydration/migration.
+const validEggIds = new Set(EASTER_EGG_DEFINITIONS.map((egg) => egg.id));
+
 export const useEasterEggProgress = create<EasterEggProgressStore>()(
   persist(
     (set) => ({
@@ -46,7 +53,7 @@ export const useEasterEggProgress = create<EasterEggProgressStore>()(
         return {
           foundEggIds: Array.isArray(foundEggIds)
             ? foundEggIds.filter((eggId): eggId is EasterEggId =>
-                EASTER_EGG_DEFINITIONS.some((egg) => egg.id === eggId),
+                validEggIds.has(eggId as EasterEggId),
               )
             : [],
         };
