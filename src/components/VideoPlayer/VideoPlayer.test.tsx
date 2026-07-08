@@ -13,8 +13,8 @@ class ResizeObserverMock {
 }
 vi.stubGlobal('ResizeObserver', ResizeObserverMock);
 
-vi.mock('ditherwave', () => ({
-  useDither: vi.fn(),
+vi.mock('../../hooks/useThreeDither', () => ({
+  useThreeDither: vi.fn(),
 }));
 
 vi.mock('../../utils/assets', () => ({
