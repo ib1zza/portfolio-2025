@@ -120,7 +120,6 @@ export const ModelViewerApp = memo(function ModelViewerApp({
       </section>
 
       <section className={s.controlsPanel}>
-        <div className={s.title}>3D Model Viewer</div>
         <PopupSelect
           label="Project:"
           value={selectedPresetId}

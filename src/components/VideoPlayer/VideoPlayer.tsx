@@ -393,7 +393,6 @@ export const VideoPlayer = memo(function VideoPlayer({
 
             {!isInitialized && (
               <div className={s.welcomeOverlay}>
-                <span className={s.welcomeTitle}>Video Player</span>
                 <span className={s.welcomeText}>
                   Load an MP4 or WebM file to start
                 </span>

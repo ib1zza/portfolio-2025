@@ -45,9 +45,9 @@ describe('BadgeGenerator', () => {
     vi.clearAllMocks();
   });
 
-  test('renders title', () => {
+  test('renders input fields', () => {
     renderBadge();
-    expect(screen.getByText('Badge Generator')).toBeInTheDocument();
+    expect(screen.getByText('Name:')).toBeInTheDocument();
   });
 
   test('renders name field with default value', () => {

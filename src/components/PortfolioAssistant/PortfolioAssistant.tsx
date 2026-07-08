@@ -156,7 +156,6 @@ export const PortfolioAssistant = memo(function PortfolioAssistant() {
   return (
     <section className={s.assistant} aria-label="Assistant" ref={containerRef}>
       <div className={s.queryPanel} ref={queryRef}>
-        <div className={s.title}>Assistant</div>
         <form className={s.searchForm} onSubmit={handleSubmit}>
           <MacTextInput
             aria-label="Ask about portfolio"

@@ -46,7 +46,7 @@ describe('ModelViewerApp', () => {
 
   test('renders without crashing', () => {
     render(<ModelViewerApp isActive windowId="test-win" />);
-    expect(screen.getByText('3D Model Viewer')).toBeInTheDocument();
+    expect(screen.getByText('Project:')).toBeInTheDocument();
   });
 
   test('renders preset selector with project names', () => {

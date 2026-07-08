@@ -236,8 +236,6 @@ export const BadgeGenerator = memo(function BadgeGenerator({
       </section>
 
       <section className={s.controlsPanel}>
-        <div className={s.title}>Badge Generator</div>
-
         <label className={s.field}>
           <span>Name:</span>
           <MacTextInput
