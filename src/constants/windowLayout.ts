@@ -14,7 +14,8 @@ export type WindowAppId =
   | "hypercard-stack"
   | "image-viewer"
   | "video-viewer"
-  | "terminal";
+  | "terminal"
+  | "dither-camera";
 
 // ─── Base sizes (plain numbers, unscaled) ────────────────────────────────
 
@@ -61,6 +62,7 @@ const APP_WINDOW_SIZES: Record<WindowAppId, { width: number; height: number }> =
     "image-viewer": SIZE.largeAppSize,
     "video-viewer": SIZE.videoPlayerSize,
     "terminal": SIZE.terminalSize,
+    "dither-camera": SIZE.videoPlayerSize,
   };
 
 // ─── Mobile ──────────────────────────────────────────────────────────────

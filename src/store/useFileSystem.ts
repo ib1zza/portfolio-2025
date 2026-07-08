@@ -78,7 +78,8 @@ export interface AppItem extends BaseItem {
     | "hypercard-stack"
     | "image-viewer"
     | "video-viewer"
-    | "terminal";
+    | "terminal"
+    | "dither-camera";
   savedIconId?: string;
 }
 
@@ -489,6 +490,7 @@ const ROOT_APP_ITEM_IDS: readonly string[] = [
   "spaceInvaders",
   "portfolioAssistant",
   "terminal",
+  "ditherCamera",
 ];
 const ROOT_FILE_ITEM_IDS: readonly string[] = ["credits"];
 const ROOT_SYSTEM_ITEM_IDS: readonly string[] = ["mediaHd"];
@@ -969,6 +971,14 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       parentId: "root",
       position: getAppPosition(8),
       app: "terminal",
+    },
+    ditherCamera: {
+      id: "ditherCamera",
+      name: "Dither Camera",
+      type: "app",
+      parentId: "root",
+      position: getAppPosition(9),
+      app: "dither-camera",
     },
     credits: {
       id: "credits",

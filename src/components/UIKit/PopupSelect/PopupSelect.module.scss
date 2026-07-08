@@ -9,9 +9,7 @@
   align-items: center;
   height: var(--mac-popup-height);
   color: $black;
-}
 
-.stackedOnMobile {
   @include mobile-touch {
     display: flex;
     flex-direction: column;
@@ -28,6 +26,10 @@
       width: 100%;
     }
   }
+}
+
+.stackedOnMobile {
+  // Kept for backward compatibility
 }
 
 .openRoot {

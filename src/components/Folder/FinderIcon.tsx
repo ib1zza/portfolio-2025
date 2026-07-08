@@ -14,6 +14,7 @@ import VideoPlayerSvg from "../../assets/icons/video-player.svg?react";
 import SpaceInvadersSvg from "../../assets/icons/space-invaders.svg?react";
 import PortfolioAssistantSvg from "../../assets/icons/portfolio-assistant.svg?react";
 import TerminalSvg from "../../assets/icons/terminal.svg?react";
+import DitherCameraSvg from "../../assets/icons/dither-camera.svg?react";
 
 export type FinderIconType =
   | "folder"
@@ -37,7 +38,8 @@ export type FinderIconType =
   | "app-videoPlayer"
   | "app-spaceInvaders"
   | "app-portfolioAssistant"
-  | "app-terminal";
+  | "app-terminal"
+  | "app-ditherCamera";
 
 interface FinderIconProps {
   id: string;
@@ -75,6 +77,8 @@ export const FinderIcon = memo(function FinderIcon({
   if (type === "app-portfolioAssistant") return <PortfolioAssistantSvg />;
 
   if (type === "app-terminal") return <TerminalSvg />;
+
+  if (type === "app-ditherCamera") return <DitherCameraSvg />;
 
   if (type === "saved-icon") {
     return <SavedIcon savedIconId={savedIconId} />;

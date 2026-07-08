@@ -11,6 +11,7 @@ interface DitherOptions {
   brightness?: number;
   charset?: string;
   animate?: boolean;
+  preserveDrawingBuffer?: boolean;
 }
 
 // Helper to create an ASCII characters texture atlas
@@ -68,6 +69,7 @@ export function useThreeDither(
       antialias: false,
       powerPreference: "high-performance",
       alpha: false,
+      preserveDrawingBuffer: options.preserveDrawingBuffer ?? false,
     });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     rendererRef.current = renderer;
@@ -467,7 +469,8 @@ export function useThreeDither(
   // Update uniforms dynamically when options change
   useEffect(() => {
     const material = materialRef.current;
-    if (!material) return;
+    const canvas = canvasRef.current;
+    if (!material || !canvas) return;
 
     material.uniforms.u_palette.value = parsePalette(options.palette);
     material.uniforms.u_paletteCount.value = options.palette.length;
@@ -483,8 +486,26 @@ export function useThreeDither(
             ? 2
             : 3;
     material.uniforms.u_matrixSize.value = options.matrixSize;
+
+    // Dynamically recalculate resolution and aspect ratio grid cells
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (w && h) {
+      material.uniforms.u_canvasSize.value.set(w, h);
+      material.uniforms.u_halftoneRadius.value = Math.max(2.0, w / options.resolution);
+
+      const pe = w / h;
+      const re = Math.max(4, Math.floor(options.resolution));
+      const ve = Math.max(4, Math.floor(re / pe));
+      material.uniforms.u_res.value.set(re, ve);
+
+      const asciiRes = Math.max(4, Math.floor(options.resolution / 4));
+      const asciiDown = Math.max(4, Math.floor(asciiRes / pe));
+      material.uniforms.u_cell.value.set(asciiRes, asciiDown);
+    }
   }, [
     options.mode,
+    options.resolution,
     options.palette.join(","),
     options.matrixSize,
     options.intensity,

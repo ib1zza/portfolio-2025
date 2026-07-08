@@ -1,0 +1,29 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="1" y="1" width="30" height="30" fill="white"/>
+  <path d="M2 1H30V0H2V1Z" fill="black"/>
+  <path d="M1 2H0V30H1V2Z" fill="black"/>
+  <path d="M30 31H2V32H30V31Z" fill="black"/>
+  <path d="M31 30H32V2H31V30Z" fill="black"/>
+  <path d="M12 9H20V10H12V9Z" fill="black"/>
+  <path d="M11 10H12V11H11V10Z" fill="black"/>
+  <path d="M20 10H21V11H20V10Z" fill="black"/>
+  <path d="M6 7H9V9H6V7Z" fill="black"/>
+  <path d="M5 11H27V12H5V11Z" fill="black"/>
+  <path d="M5 24H27V25H5V24Z" fill="black"/>
+  <path d="M4 12H5V24H4V12Z" fill="black"/>
+  <path d="M27 12H28V24H27V12Z" fill="black"/>
+  <path d="M13 13H19V14H13V13Z" fill="black"/>
+  <path d="M13 23H19V24H13V23Z" fill="black"/>
+  <path d="M11 15H12V22H11V15Z" fill="black"/>
+  <path d="M20 15H21V22H20V15Z" fill="black"/>
+  <path d="M12 14H13V15H12V14Z" fill="black"/>
+  <path d="M19 14H20V15H19V14Z" fill="black"/>
+  <path d="M12 22H13V23H12V22Z" fill="black"/>
+  <path d="M19 22H20V23H19V22Z" fill="black"/>
+  <path d="M14 16H18V17H14V16Z" fill="black"/>
+  <path d="M14 20H18V21H14V20Z" fill="black"/>
+  <path d="M13 17H14V20H13V17Z" fill="black"/>
+  <path d="M18 17H19V20H18V17Z" fill="black"/>
+  <rect x="15" y="18" width="1" height="1" fill="black"/>
+  <rect x="6" y="13" width="4" height="3" fill="black"/>
+</svg>
