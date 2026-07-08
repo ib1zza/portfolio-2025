@@ -1,5 +1,4 @@
 import {
-  lazy,
   Suspense,
   useCallback,
   useEffect,
@@ -23,17 +22,21 @@ import {
   type SpecialAction,
 } from "./EasterEggContext";
 
-const SpecialActionDialogHost = lazy(() =>
-  import("./components/SpecialActionDialogHost").then((module) => ({
-    default: module.SpecialActionDialogHost,
-  })),
-);
+import { lazyWithPreload } from "../../utils/lazyWithPreload";
 
-const SystemCrashOverlay = lazy(() =>
-  import("./components/SystemCrashOverlay").then((module) => ({
-    default: module.SystemCrashOverlay,
-  })),
-);
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadedEasterEggs = {
+  SpecialActionDialogHost: lazyWithPreload(() =>
+    import("./components/SpecialActionDialogHost").then((module) => ({
+      default: module.SpecialActionDialogHost,
+    })),
+  ),
+  SystemCrashOverlay: lazyWithPreload(() =>
+    import("./components/SystemCrashOverlay").then((module) => ({
+      default: module.SystemCrashOverlay,
+    })),
+  ),
+};
 
 const EASTER_EGGS_ENABLED = true;
 const HYPERCARD_SEQUENCE = "HYPERCARD";
@@ -333,6 +336,14 @@ export function EasterEggProvider({ children }: { children: ReactNode }) {
       runSpecialAction,
     ],
   );
+
+  const SpecialActionDialogHost =
+    preloadedEasterEggs.SpecialActionDialogHost.getLoaded() ||
+    preloadedEasterEggs.SpecialActionDialogHost.Component;
+
+  const SystemCrashOverlay =
+    preloadedEasterEggs.SystemCrashOverlay.getLoaded() ||
+    preloadedEasterEggs.SystemCrashOverlay.Component;
 
   return (
     <EasterEggContext.Provider value={value}>

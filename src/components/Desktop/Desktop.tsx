@@ -3,7 +3,7 @@ import { Topbar } from "../Topbar";
 import { getChildItems, useFileSystem } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import Folder from "../Folder";
-import { lazy, Suspense, useCallback, useEffect, useRef, type MouseEventHandler } from "react";
+import { Suspense, useCallback, useEffect, useRef, type MouseEventHandler } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { WindowOpenAnimationProvider } from "../WindowOpenAnimation";
 import { useWindowOpenAnimation } from "../WindowOpenAnimation";
@@ -16,10 +16,13 @@ import {
 import type { FinderIconType } from "../Folder/FinderIcon";
 import { EasterEggProvider } from "../../features/easter-eggs/EasterEggProvider";
 import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
+import { lazyWithPreload } from "../../utils/lazyWithPreload";
 
-const LazyWindowContainer = lazy(() =>
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadedWindowContainer = lazyWithPreload(() =>
   import("../Window").then((m) => ({ default: m.WindowContainer })),
 );
+
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) return false;
@@ -372,11 +375,16 @@ function DesktopContent() {
       )}
 
       {/* Окна */}
-      {windowIds.map((windowId) => (
-        <Suspense fallback={null} key={windowId}>
-          <LazyWindowContainer id={windowId} />
-        </Suspense>
-      ))}
+      {windowIds.map((windowId) => {
+        const WindowContainer =
+          preloadedWindowContainer.getLoaded() ||
+          preloadedWindowContainer.Component;
+        return (
+          <Suspense fallback={null} key={windowId}>
+            <WindowContainer id={windowId} />
+          </Suspense>
+        );
+      })}
     </div>
   );
 }

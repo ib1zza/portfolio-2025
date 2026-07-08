@@ -96,6 +96,59 @@ function App() {
     };
   }, [isStandaloneRoute]);
 
+  useEffect(() => {
+    if (isStandaloneRoute || isLoaderVisible) return;
+
+    const timeoutIds: number[] = [];
+
+    const prefetchRemaining = async () => {
+      try {
+        const [
+          { preloadedWindowContainer },
+          { preloadedApps },
+          { preloadedDocs },
+          { preloadedEasterEggs },
+        ] = await Promise.all([
+          import("./components/Desktop"),
+          import("./components/Window/WindowAppContent"),
+          import("./components/Window/WindowDocumentContent"),
+          import("./features/easter-eggs/EasterEggProvider"),
+        ]);
+
+        const preloadedComponents = [
+          preloadedWindowContainer,
+          ...Object.values(preloadedApps),
+          ...Object.values(preloadedDocs),
+          ...Object.values(preloadedEasterEggs),
+        ];
+
+        preloadedComponents.forEach((preloaded, index) => {
+          const id = window.setTimeout(() => {
+            preloaded.preload().catch(() => {});
+          }, index * 50);
+          timeoutIds.push(id);
+        });
+      } catch (err) {
+        console.error("Prefetch failed:", err);
+      }
+    };
+
+    const idleCallback =
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).requestIdleCallback ||
+      ((cb: () => void) => window.setTimeout(cb, 1000));
+
+    idleCallback(() => {
+      void prefetchRemaining();
+    });
+
+    return () => {
+      timeoutIds.forEach((id) => window.clearTimeout(id));
+    };
+  }, [isLoaderVisible, isStandaloneRoute]);
+
+
+
   if (isTestRoute) {
     return (
       <Suspense fallback={null}>

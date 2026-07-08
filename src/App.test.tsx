@@ -3,6 +3,7 @@ import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('./components/Desktop', () => ({
   default: () => <div data-testid="desktop">Desktop</div>,
+  preloadedWindowContainer: { preload: vi.fn().mockResolvedValue(null), getLoaded: vi.fn().mockReturnValue(null) },
 }));
 
 vi.mock('./components/CustomCursor', () => ({
@@ -15,6 +16,19 @@ vi.mock('./components/BadgeSharePage', () => ({
 
 vi.mock('./components/HapticsTester/HapticsTester', () => ({
   HapticsTester: () => <div data-testid="haptics-tester">Haptics</div>,
+}));
+
+vi.mock('./components/Window/WindowAppContent', () => ({
+  preloadedApps: {},
+}));
+
+vi.mock('./components/Window/WindowDocumentContent', () => ({
+  preloadedDocs: {},
+}));
+
+vi.mock('./features/easter-eggs/EasterEggProvider', () => ({
+  EasterEggProvider: ({ children }: { children: React.ReactNode }) => children,
+  preloadedEasterEggs: {},
 }));
 
 const originalLocation = window.location;

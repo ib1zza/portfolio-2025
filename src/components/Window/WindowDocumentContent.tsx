@@ -1,15 +1,19 @@
-import { lazy, memo, Suspense } from "react";
+import { memo, Suspense } from "react";
 
 import type { DocumentBlock } from "../../store/useFileSystem";
 import { getAssetPath } from "../../utils/assets";
 import s from "./Window.module.scss";
 import { EasterEggLogDocument } from "../../features/easter-eggs/components/EasterEggLogDocument";
+import { lazyWithPreload } from "../../utils/lazyWithPreload";
 
-const ProjectModelViewer = lazy(() =>
-  import("../ProjectModelViewer").then((module) => ({
-    default: module.ProjectModelViewer,
-  })),
-);
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadedDocs = {
+  ProjectModelViewer: lazyWithPreload(() =>
+    import("../ProjectModelViewer").then((module) => ({
+      default: module.ProjectModelViewer,
+    })),
+  ),
+};
 
 interface WindowDocumentContentProps {
   content: string | DocumentBlock[];
@@ -24,6 +28,10 @@ export const WindowDocumentContent = memo(function WindowDocumentContent({
   isActive,
   onImageLoad,
 }: WindowDocumentContentProps) {
+  const ProjectModelViewer =
+    preloadedDocs.ProjectModelViewer.getLoaded() ||
+    preloadedDocs.ProjectModelViewer.Component;
+
   if (documentStyle === "easter-eggs-log") {
     return <EasterEggLogDocument />;
   }
