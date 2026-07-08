@@ -77,11 +77,6 @@
   width: 100%;
   aspect-ratio: 2 / 1;
   image-rendering: crisp-edges;
-
-  @include mobile-touch {
-    height: 100%;
-    aspect-ratio: auto;
-  }
 }
 
 .visualizerWrap {
@@ -90,9 +85,7 @@
   gap: ui(8px);
 
   @include mobile-touch {
-    flex: 1;
     gap: ui(4px);
-    min-height: 0;
   }
 }
 
