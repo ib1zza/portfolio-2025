@@ -8,8 +8,9 @@
 `src/store/useMenuStore.ts`
 
 **Структура стора:**
+
 ```typescript
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface MenuAction {
   title: string;
@@ -32,12 +33,13 @@ interface MenuStore {
     appName: string,
     customTabs?: CustomTab[],
     fileOverrides?: Array<MenuAction | null>,
-    editOverrides?: Array<MenuAction | null>
+    editOverrides?: Array<MenuAction | null>,
   ) => void;
   clearAppMenu: () => void;
 }
 ```
-*Важно:* Стор не должен оборачиваться в `persist` middleware, так как содержит ссылки на функции (`action`).
+
+_Важно:_ Стор не должен оборачиваться в `persist` middleware, так как содержит ссылки на функции (`action`).
 
 ## Шаг 2: Рефакторинг `Topbar.tsx`
 
@@ -76,13 +78,17 @@ interface MenuStore {
 В `src/components/IconPainter/IconPainter.tsx` (или в родительском компоненте-обертке окна):
 
 1. Отслеживать фокус окна:
+
    ```typescript
-   const isFocused = useWindowManager(state => state.focusedWindowId === myWindowId);
-   const setAppMenu = useMenuStore(state => state.setAppMenu);
-   const clearAppMenu = useMenuStore(state => state.clearAppMenu);
+   const isFocused = useWindowManager(
+     (state) => state.focusedWindowId === myWindowId,
+   );
+   const setAppMenu = useMenuStore((state) => state.setAppMenu);
+   const clearAppMenu = useMenuStore((state) => state.clearAppMenu);
    ```
 
 2. При `isFocused === true` регистрировать меню через `useEffect`:
+
    ```typescript
    useEffect(() => {
      if (!isFocused) return;
@@ -96,36 +102,47 @@ interface MenuStore {
              { title: "Pencil", action: () => selectTool("pencil") },
              { title: "Fill", action: () => selectTool("fill") },
              // ...
-           ]
+           ],
          },
          {
            title: "Image",
            submenu: [
              { title: "Clear Canvas", action: clearCanvas },
-             { title: "Invert Colors", action: invertColors }
-           ]
-         }
+             { title: "Invert Colors", action: invertColors },
+           ],
+         },
        ],
        // File overrides
        [
          { title: "Save", action: saveIcon },
-         { title: "Export...", action: exportIcon }
+         { title: "Export...", action: exportIcon },
        ],
        // Edit overrides
        [
          { title: "Undo", action: undo, disabled: !canUndo },
-         { title: "Redo", action: redo, disabled: !canRedo }
-       ]
+         { title: "Redo", action: redo, disabled: !canRedo },
+       ],
      );
 
      return () => clearAppMenu();
-   }, [isFocused, selectTool, clearCanvas, invertColors, saveIcon, exportIcon, undo, redo]);
+   }, [
+     isFocused,
+     selectTool,
+     clearCanvas,
+     invertColors,
+     saveIcon,
+     exportIcon,
+     undo,
+     redo,
+   ]);
    ```
-   *Рекомендация:* Использовать `useRef` для сохранения актуальных callback-функций, чтобы избежать проблем со stale closures в `useEffect`, либо аккуратно пересоздавать меню при изменении зависимостей.
+
+   _Рекомендация:_ Использовать `useRef` для сохранения актуальных callback-функций, чтобы избежать проблем со stale closures в `useEffect`, либо аккуратно пересоздавать меню при изменении зависимостей.
 
 ## Шаг 5: Интеграция с остальными приложениями
 
 Аналогичным образом зарегистрировать меню для:
+
 - **Dither Studio:** Вкладки `Adjust` (яркость/контраст) и `Palette` (смена пресетов).
 - **Model Viewer:** Вкладка `View` (Wireframe, Reset Camera).
 

@@ -166,11 +166,11 @@ This document provides a map of the important directories and files in the repos
 
 These are highly critical non-UI modules in the project, located in `src/utils/`:
 
-| Module | Location | Purpose |
-|--------|----------|---------|
-| **Asset Resolver** | `src/utils/assets.ts` | `getAssetPath()` — resolves asset URLs with base path awareness, crucial for supporting deep subpaths such as GitHub Pages deployments. |
+| Module                | Location               | Purpose                                                                                                                                                                                                                   |
+| --------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Asset Resolver**    | `src/utils/assets.ts`  | `getAssetPath()` — resolves asset URLs with base path awareness, crucial for supporting deep subpaths such as GitHub Pages deployments.                                                                                   |
 | **Throttled Storage** | `src/utils/storage.ts` | `createThrottledLocalStorage(delay)` — debounces writes to localStorage (defaults to 250ms) to ensure continuous 60fps window-dragging/resizing; also exposes versioned storage readers/writers with migration pipelines. |
-| **UI Scaler** | `src/utils/uiScale.ts` | Exposes layout helpers `getUiScale()`, `scaleUiValue()`, and `scaleUiSize()` which scale absolute numbers based on the active device profile (1x, 1.5x, 2x) matching custom CSS property `--ui-scale`. |
+| **UI Scaler**         | `src/utils/uiScale.ts` | Exposes layout helpers `getUiScale()`, `scaleUiValue()`, and `scaleUiSize()` which scale absolute numbers based on the active device profile (1x, 1.5x, 2x) matching custom CSS property `--ui-scale`.                    |
 
 ---
 

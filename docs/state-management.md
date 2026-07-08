@@ -11,19 +11,23 @@ This project uses [Zustand](https://github.com/pmndrs/zustand) for global state 
 There are two primary stores that manage the "operating system" layer of the project:
 
 ### 1. `useFileSystem`
+
 **Path:** `src/store/useFileSystem.ts`
 
 This store acts as the virtual file system.
+
 - **Responsibilities:** Keeps track of files, folders, and applications that exist on the user's desktop. It stores their metadata (names, icons, types) and their exact coordinates on the screen.
-- **State Ownership:** It owns the definition of *what exists*. It does not care if something is currently open or rendering as a window; it only tracks that the item lives on the desktop.
+- **State Ownership:** It owns the definition of _what exists_. It does not care if something is currently open or rendering as a window; it only tracks that the item lives on the desktop.
 - **Key Actions:** `updateItemPosition`, `addItem`, `removeItem`.
 
 ### 2. `useWindowManager`
+
 **Path:** `src/store/useWindowManager.ts`
 
 This store manages the window lifecycle and visual state.
+
 - **Responsibilities:** Tracks which windows are open, their dimensions, positions, z-indexes, and minimized states. It also keeps track of the currently "active" or focused window.
-- **State Ownership:** It owns the definition of *what is open*. It receives references to underlying items (from `useFileSystem`) but only manages their temporary runtime window representation.
+- **State Ownership:** It owns the definition of _what is open_. It receives references to underlying items (from `useFileSystem`) but only manages their temporary runtime window representation.
 - **Key Actions:** `openWindow`, `closeWindow`, `focusWindow`, `updateWindowLayout`, `minimizeWindow`.
 
 ---
@@ -33,61 +37,72 @@ This store manages the window lifecycle and visual state.
 These shapes represent the underlying structures utilized inside the stores and UI components:
 
 ### `FileSystemItem` (Unified Virtual File System Node)
+
 Located in `src/store/useFileSystem.ts`.
+
 ```typescript
-type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem
+type FileSystemItem = FolderItem | FileItem | LinkItem | AppItem;
 
 interface BaseItem {
-  id: string
-  name: string
-  type: "folder" | "file" | "link" | "app" | "system"
-  parentId?: string
-  position?: { x: number; y: number }
-  active?: boolean
+  id: string;
+  name: string;
+  type: "folder" | "file" | "link" | "app" | "system";
+  parentId?: string;
+  position?: { x: number; y: number };
+  active?: boolean;
 }
 
 interface FolderItem extends BaseItem {
-  type: "folder"
-  children: string[] // List of child item IDs
+  type: "folder";
+  children: string[]; // List of child item IDs
 }
 
 interface FileItem extends BaseItem {
-  type: "file"
-  content: string | DocumentBlock[] // Raw text or structured rich documents
+  type: "file";
+  content: string | DocumentBlock[]; // Raw text or structured rich documents
 }
 
 interface LinkItem extends BaseItem {
-  type: "link"
-  href: string
-  icon: "vk" | "telegram" | "email" | "github"
+  type: "link";
+  href: string;
+  icon: "vk" | "telegram" | "email" | "github";
 }
 
 interface AppItem extends BaseItem {
-  type: "app"
-  app: "icon-painter" | "dither-studio" | "model-viewer" | "badge-generator" | "space-invaders"
-  savedIconId?: string
+  type: "app";
+  app:
+    | "icon-painter"
+    | "dither-studio"
+    | "model-viewer"
+    | "badge-generator"
+    | "space-invaders";
+  savedIconId?: string;
 }
 ```
 
 ### `WindowInstance` (Active Window Layout State)
+
 Located in `src/store/useWindowManager.ts`.
+
 ```typescript
 interface WindowInstance {
-  id: string
-  title: string
-  parentId?: string
-  openerWindowId?: string
-  fileId?: string
-  position: { x: number; y: number }
-  size: { width: number; height: number }
-  zIndex: number
-  isMinimized?: boolean
-  isMaximized?: boolean
+  id: string;
+  title: string;
+  parentId?: string;
+  openerWindowId?: string;
+  fileId?: string;
+  position: { x: number; y: number };
+  size: { width: number; height: number };
+  zIndex: number;
+  isMinimized?: boolean;
+  isMaximized?: boolean;
 }
 ```
 
 ### `CursorType` (Custom Pointer Graphics)
+
 Located in `src/types/cursor.ts`.
+
 ```typescript
 type CursorType =
   | "arrow"
@@ -101,7 +116,7 @@ type CursorType =
   | "precision"
   | "resize"
   | "resize_02"
-  | "watch"
+  | "watch";
 ```
 
 ---
@@ -115,18 +130,18 @@ Both core stores utilize Zustand's `persist` middleware to save state to the bro
 
 ### Store Persistence Details
 
-| Store | localStorage key | Version | Persisted data |
-|-------|-----------------|---------|---------------|
-| **`useWindowManager`** | `portfolio-2025-window-manager` | 2 | `windowHistory` (last coordinates + dimensions per window ID) |
-| **`useFileSystem`** | `portfolio-2025-file-system` | 2 | `itemPositions` (custom coordinate positions of items on the grid) |
-| **Icon Painter Canvas** | `portfolio-2025-icon-painter` | 1 | Currently active canvas drawing state |
-| **Icon Desktop** | `portfolio-2025-icon-painter-desktop` | 1 | Saved desktop-facing custom canvas icon data |
-| **Icon Library** | `portfolio-2025-icon-painter-library` | 1 | Completed icon collection |
+| Store                   | localStorage key                      | Version | Persisted data                                                     |
+| ----------------------- | ------------------------------------- | ------- | ------------------------------------------------------------------ |
+| **`useWindowManager`**  | `portfolio-2025-window-manager`       | 2       | `windowHistory` (last coordinates + dimensions per window ID)      |
+| **`useFileSystem`**     | `portfolio-2025-file-system`          | 2       | `itemPositions` (custom coordinate positions of items on the grid) |
+| **Icon Painter Canvas** | `portfolio-2025-icon-painter`         | 1       | Currently active canvas drawing state                              |
+| **Icon Desktop**        | `portfolio-2025-icon-painter-desktop` | 1       | Saved desktop-facing custom canvas icon data                       |
+| **Icon Library**        | `portfolio-2025-icon-painter-library` | 1       | Completed icon collection                                          |
 
 ---
 
 ## Where State Belongs
 
 - **Global OS State:** Use `useFileSystem` or `useWindowManager`.
-- **Application Specific Global State:** If an app (like Icon Painter) needs state shared across deeply nested components within that app *but nowhere else*, consider creating a scoped Zustand store or using React Context for that specific app tree.
+- **Application Specific Global State:** If an app (like Icon Painter) needs state shared across deeply nested components within that app _but nowhere else_, consider creating a scoped Zustand store or using React Context for that specific app tree.
 - **Local Component State:** Standard UI toggles (dropdowns open/close, hover states) should remain standard `useState` within the relevant component.
