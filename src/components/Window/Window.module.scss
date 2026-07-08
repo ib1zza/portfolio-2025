@@ -267,11 +267,11 @@
   display: contents;
 
   @include mobile-touch {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    justify-items: center;
     align-content: flex-start;
-    align-items: flex-start;
-    gap: var(--desktop-mobile-gap-x) var(--desktop-mobile-gap-y);
+    gap: var(--desktop-mobile-gap-y) var(--desktop-mobile-gap-x);
     padding: var(--window-scrollbar-size) var(--app-padding);
     min-width: 0;
     box-sizing: border-box;
