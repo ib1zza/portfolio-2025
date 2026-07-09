@@ -19,6 +19,7 @@ import {
   type BadgeContact,
 } from "./badgeCard";
 import s from "./BadgeGenerator.module.scss";
+import { ShareDialog } from "./ShareDialog";
 import { getAppWindowSize } from "../../constants/windowLayout";
 import { isMobilePointerMode } from "../../constants/responsive";
 import TrashSmallSvg from "../../assets/icons/trash-small.svg?react";
@@ -340,35 +341,7 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   );
 });
 
-const ShareDialog = memo(function ShareDialog({
-  onClose,
-  onCopy,
-  onOpen,
-  qrDataUrl,
-}: {
-  onClose: () => void;
-  onCopy: () => void;
-  onOpen: () => void;
-  qrDataUrl: string;
-}) {
-  return (
-    <div className={s.dialogBackdrop}>
-      <div className={s.popupWindow}>
-        <div className={s.dialogTitle}>Share Badge</div>
-        <div className={s.qrFrame}>
-          {qrDataUrl ? <img src={qrDataUrl} alt="Badge QR code" /> : null}
-        </div>
-        <div className={s.dialogActions}>
-          <MacButton onClick={onClose}>close</MacButton>
-          <MacButton onClick={onOpen}>open</MacButton>
-          <MacButton variant="default" onClick={onCopy}>
-            copy link
-          </MacButton>
-        </div>
-      </div>
-    </div>
-  );
-});
+
 
 const IconImportDialog = memo(function IconImportDialog({
   icons,

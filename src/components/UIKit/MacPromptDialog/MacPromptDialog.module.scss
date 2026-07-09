@@ -6,6 +6,15 @@
   place-items: start center;
   padding-top: ui(22px);
   background: rgb(255 255 255 / 72%);
+
+  @include mobile-touch {
+    position: fixed;
+    z-index: 100000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: ui(48px) ui(14px) ui(14px);
+  }
 }
 
 .dialog {
@@ -13,6 +22,12 @@
   border: $border;
   background: $white;
   box-shadow: ui(3px) ui(3px) 0 $black;
+
+  @include mobile-touch {
+    width: 100%;
+    max-width: ui(400px);
+    box-sizing: border-box;
+  }
 }
 
 .titleBar {
@@ -32,11 +47,9 @@
 
 .titleLines {
   height: var(--content-height);
-  background-image: repeating-linear-gradient(
-    to bottom,
-    $black 0 ui(1px),
-    transparent ui(1px) ui(2px)
-  );
+  background-image: repeating-linear-gradient(to bottom,
+      $black 0 ui(1px),
+      transparent ui(1px) ui(2px));
 }
 
 .title {

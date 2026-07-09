@@ -12,6 +12,7 @@ import {
   type BadgeContact,
 } from "../BadgeGenerator/badgeCard";
 import s from "./BadgeSharePage.module.scss";
+import { ShareDialog } from "../BadgeGenerator/ShareDialog";
 
 const FALLBACK_BADGE: BadgeInput = {
   name: portfolio.profile.name,
@@ -80,6 +81,7 @@ export function BadgeSharePage() {
           onCopy={copyLink}
           onOpen={openPage}
           qrDataUrl={qrDataUrl}
+          backdropClassName={s.dialogBackdrop}
         />
       )}
 
@@ -93,33 +95,7 @@ export function BadgeSharePage() {
   );
 }
 
-const ShareDialog = ({
-  onClose,
-  onCopy,
-  onOpen,
-  qrDataUrl,
-}: {
-  onClose: () => void;
-  onCopy: () => void;
-  onOpen: () => void;
-  qrDataUrl: string;
-}) => (
-  <div className={s.dialogBackdrop}>
-    <div className={s.popupWindow}>
-      <div className={s.dialogTitle}>Share Badge</div>
-      <div className={s.qrFrame}>
-        {qrDataUrl ? <img src={qrDataUrl} alt="Badge QR code" /> : null}
-      </div>
-      <div className={s.dialogActions}>
-        <MacButton onClick={onClose}>close</MacButton>
-        <MacButton onClick={onOpen}>open</MacButton>
-        <MacButton variant="default" onClick={onCopy}>
-          copy link
-        </MacButton>
-      </div>
-    </div>
-  </div>
-);
+
 
 const ContactsDialog = ({
   contacts,

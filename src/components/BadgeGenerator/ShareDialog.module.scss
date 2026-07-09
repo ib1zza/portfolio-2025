@@ -1,0 +1,96 @@
+.dialogBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: transparent;
+
+  @include mobile-touch {
+    position: fixed;
+    z-index: 100000;
+    display: flex;
+    place-items: center;
+
+    --top: calc(var(--window-titlebar-height, 0px) + var(--mobile-window-top, 0px));
+    --bottom: calc(var(--window-scrollbar-size, 0px) + var(--mobile-window-bottom, 0px));
+    --left: calc(var(--mobile-window-inset, 0px));
+    --right: calc(var(--mobile-window-inset, 0px) + var(--window-scrollbar-size, 0px) + #{ui(4px)});
+
+    --additional-padding: #{ui(6px)};
+
+    padding-top: calc(var(--top) + var(--additional-padding));
+    padding-bottom: calc(var(--bottom) + var(--additional-padding));
+    padding-left: calc(var(--left) + var(--additional-padding));
+    padding-right: calc(var(--right) + var(--additional-padding));
+
+    box-sizing: border-box;
+  }
+}
+
+.popupWindow {
+  width: min(ui(240px), calc(100vw - var(--dialog-mobile-inline-gap)));
+  border: $border;
+  padding: var(--panel-padding);
+  background: $white;
+  box-shadow: ui(3px) ui(3px) 0 $black;
+
+  @include mobile-touch {
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box;
+  }
+}
+
+.qrFrame {
+  display: grid;
+  place-items: center;
+  padding: var(--app-gap) 0 var(--panel-padding);
+
+  img {
+    display: block;
+    width: var(--qr-size);
+    height: var(--qr-size);
+    border: $border;
+    image-rendering: pixelated;
+
+    @include mobile-touch {
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
+.dialogActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--panel-padding);
+  width: 100%;
+  align-items: center;
+}
+
+.dialogSeparator {
+  display: block;
+  grid-column: 1 / -1;
+  height: var(--line-size, 1px);
+  background: $black;
+  border: none;
+  margin: ui(4px) 0;
+  width: 100%;
+}
+
+.openBtn,
+.copyBtn {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.closeBtn {
+  grid-column: 1 / -1;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.dialogTitle {
+  display: none;
+}

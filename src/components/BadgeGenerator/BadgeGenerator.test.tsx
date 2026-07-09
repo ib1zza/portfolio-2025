@@ -93,7 +93,7 @@ describe('BadgeGenerator', () => {
   test('opens share dialog', async () => {
     renderBadge();
     fireEvent.click(screen.getByText('share'));
-    expect(await screen.findByText('Share Badge')).toBeInTheDocument();
+    expect(await screen.findByText('copy link')).toBeInTheDocument();
     expect(mocks.qrToDataURL).toHaveBeenCalled();
   });
 
