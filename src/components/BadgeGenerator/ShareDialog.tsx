@@ -28,11 +28,11 @@ export const ShareDialog = memo(function ShareDialog({
           <MacButton onClick={onOpen} className={s.openBtn}>
             open
           </MacButton>
-          <MacButton variant="default" onClick={onCopy} className={s.copyBtn}>
+          <MacButton onClick={onCopy} className={s.copyBtn}>
             copy link
           </MacButton>
           <div className={s.dialogSeparator} />
-          <MacButton onClick={onClose} className={s.closeBtn}>
+          <MacButton variant="default" onClick={onClose} className={s.closeBtn}>
             close
           </MacButton>
         </div>

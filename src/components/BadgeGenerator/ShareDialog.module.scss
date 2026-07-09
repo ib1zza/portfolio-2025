@@ -1,16 +1,28 @@
 .dialogBackdrop {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 100000;
   display: grid;
   place-items: center;
   background: transparent;
+  overflow: hidden;
+
+  --top: calc(var(--window-titlebar-height, 0px) + var(--window-scrollbar-size, 0px));
+  --bottom: calc(var(--window-scrollbar-size, 0px));
+  --left: calc(var(--window-scrollbar-size, 0px));
+  --right: calc(var(--window-scrollbar-size, 0px));
+  --additional-padding: #{ui(6px)};
+
+  padding-top: calc(var(--top) + var(--additional-padding));
+  margin-bottom: calc(var(--bottom));
+  padding-left: calc(var(--left) + var(--additional-padding));
+  padding-right: calc(var(--right) + var(--additional-padding));
 
   @include mobile-touch {
     position: fixed;
-    z-index: 100000;
     display: flex;
     place-items: center;
+    margin: unset;
 
     --top: calc(var(--window-titlebar-height, 0px) + var(--mobile-window-top, 0px));
     --bottom: calc(var(--window-scrollbar-size, 0px) + var(--mobile-window-bottom, 0px));
@@ -34,6 +46,9 @@
   padding: var(--panel-padding);
   background: $white;
   box-shadow: ui(3px) ui(3px) 0 $black;
+  display: flex;
+  flex-direction: column;
+  gap: var(--panel-gap);
 
   @include mobile-touch {
     width: 100% !important;
@@ -45,7 +60,7 @@
 .qrFrame {
   display: grid;
   place-items: center;
-  padding: var(--app-gap) 0 var(--panel-padding);
+  // padding: var(--app-gap) 0 var(--panel-padding);
 
   img {
     display: block;
@@ -64,7 +79,7 @@
 .dialogActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--panel-padding);
+  gap: ui(8px);
   width: 100%;
   align-items: center;
 }
@@ -75,7 +90,6 @@
   height: var(--line-size, 1px);
   background: $black;
   border: none;
-  margin: ui(4px) 0;
   width: 100%;
 }
 

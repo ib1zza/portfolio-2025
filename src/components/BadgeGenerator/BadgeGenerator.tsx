@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import QRCode from "qrcode";
 
 import { portfolio } from "../../data/portfolio";
@@ -56,6 +57,16 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState("");
+  const [portalTarget, setPortalTarget] = useState<Element | null>(null);
+
+  useEffect(() => {
+    if (isShareOpen || isImportOpen) {
+      const target = document.querySelector(`[data-window-id="${windowId}"]`);
+      setPortalTarget(target || containerRef.current);
+    } else {
+      setPortalTarget(null);
+    }
+  }, [isShareOpen, isImportOpen, windowId]);
 
   useEffect(() => {
     const syncSavedIcons = () => {
@@ -319,23 +330,25 @@ export const BadgeGenerator = memo(function BadgeGenerator({
         </div>
       </section>
 
-      {isShareOpen && (
+      {portalTarget && isShareOpen && createPortal(
         <ShareDialog
           onClose={() => setIsShareOpen(false)}
           onCopy={copyBadgeUrl}
           onOpen={openBadgeUrl}
           qrDataUrl={qrDataUrl}
-        />
+        />,
+        portalTarget
       )}
 
-      {isImportOpen && (
+      {portalTarget && isImportOpen && createPortal(
         <IconImportDialog
           icons={savedIcons}
           selectedIconId={dialogIconId}
           onCancel={() => setIsImportOpen(false)}
           onChoose={chooseIcon}
           onSelect={setDialogIconId}
-        />
+        />,
+        portalTarget
       )}
     </div>
   );
