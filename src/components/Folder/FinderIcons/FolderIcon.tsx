@@ -1,15 +1,9 @@
-import { OpenedPattern } from "./OpenedPattern";
-
 interface FolderIconProps {
-  openedFill: string;
   folderClipId: string;
-  patternId: string;
 }
 
 export const FolderIcon = ({
-  openedFill,
   folderClipId,
-  patternId,
 }: FolderIconProps) => (
   <svg
     width="32"
@@ -22,7 +16,7 @@ export const FolderIcon = ({
     <g clipPath={`url(#${folderClipId})`}>
       <path
         d="M11 8H5V9H4V10H3V11H2V12H1V31H30V12H14V11H13V10H12V9H11V8Z"
-        fill={openedFill}
+        fill="white"
       />
       <path d="M5 7H11V8H5V7Z" fill="black" />
       <path d="M4 9V8H5V9H4Z" fill="black" />
@@ -34,7 +28,6 @@ export const FolderIcon = ({
         fill="black"
       />
     </g>
-    <OpenedPattern id={patternId} />
     <defs>
       <clipPath id={folderClipId}>
         <rect width="32" height="32" fill="white" />

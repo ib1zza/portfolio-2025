@@ -8,17 +8,17 @@ export const DiskIcon = () => (
   >
     <rect x="1" y="20" width="30" height="8" fill="white" />
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
       fill="black"
     />
     <path
-      fill-rule="evenodd"
-      clip-rule="evenodd"
+      fillRule="evenodd"
+      clipRule="evenodd"
       d="M31 19H1V20H0V28H1V29H31V28H32V20H31V19ZM31 20V28H1V20H31Z"
       fill="black"
-      fill-opacity="0.2"
+      fillOpacity="0.2"
     />
     <rect x="4" y="25" width="2" height="1" fill="black" />
   </svg>

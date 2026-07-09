@@ -13,7 +13,7 @@ interface FinderItemProps {
   children: ReactNode;
   id: string;
   isActive: boolean;
-  isOpenedInactive: boolean;
+  isOpened: boolean;
   itemRef: RefObject<HTMLDivElement | null>;
   onClick: MouseEventHandler<HTMLDivElement>;
   onDoubleClick: () => void;
@@ -25,7 +25,7 @@ export const FinderItem = memo(function FinderItem({
   children,
   id,
   isActive,
-  isOpenedInactive,
+  isOpened,
   itemRef,
   onClick,
   onDoubleClick,
@@ -38,7 +38,7 @@ export const FinderItem = memo(function FinderItem({
       data-finder-item-id={id}
       className={clsx(s.folder, s[id], {
         [s.active]: isActive,
-        [s.opened]: isOpenedInactive,
+        [s.opened]: isOpened,
       })}
       style={{
         top: position.y,

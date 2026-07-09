@@ -8,7 +8,7 @@ function renderItem(overrides?: Record<string, unknown>) {
   const props = {
     id: 'test-item',
     isActive: false,
-    isOpenedInactive: false,
+    isOpened: false,
     itemRef: { current: null },
     onClick: vi.fn(),
     onDoubleClick: vi.fn(),

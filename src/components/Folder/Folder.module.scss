@@ -22,7 +22,11 @@
   }
 
   &.opened {
-    filter: none;
+    svg *[fill="white" i],
+    svg *[fill="#fff" i],
+    svg *[fill="#ffffff" i] {
+      fill: url(#opened-pattern) !important;
+    }
   }
 
   &.trash {

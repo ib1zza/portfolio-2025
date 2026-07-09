@@ -50,20 +50,16 @@ export type FinderIconType =
 
 interface FinderIconProps {
   id: string;
-  isOpenedInactive: boolean;
   savedIconId?: string;
   type: FinderIconType;
 }
 
 export const FinderIcon = memo(function FinderIcon({
   id,
-  isOpenedInactive,
   savedIconId,
   type,
 }: FinderIconProps) {
-  const patternId = `opened-pattern-${id}`;
   const folderClipId = `folder-clip-${id}`;
-  const openedFill = isOpenedInactive ? `url(#${patternId})` : "white";
 
   if (type === "app-iconPainter") {
     return <IconPainterSvg />;
@@ -112,7 +108,7 @@ export const FinderIcon = memo(function FinderIcon({
   }
 
   if (type === "file") {
-    return <FileIcon openedFill={openedFill} patternId={patternId} />;
+    return <FileIcon />;
   }
 
   if (type === "vk") {
@@ -133,9 +129,7 @@ export const FinderIcon = memo(function FinderIcon({
 
   return (
     <FolderIcon
-      openedFill={openedFill}
       folderClipId={folderClipId}
-      patternId={patternId}
     />
   );
 });

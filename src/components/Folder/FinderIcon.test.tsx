@@ -9,7 +9,6 @@ function renderIcon(type: FinderIconType, opts?: { id?: string; savedIconId?: st
     <FinderIcon
       id={opts?.id ?? 'test'}
       type={type}
-      isOpenedInactive={false}
       savedIconId={opts?.savedIconId}
     />,
   );

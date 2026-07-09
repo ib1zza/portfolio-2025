@@ -17,6 +17,7 @@ import type { FinderIconType } from "../Folder/FinderIcon";
 import { EasterEggProvider } from "../../features/easter-eggs/EasterEggProvider";
 import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
+import { OpenedPattern } from "../Folder/FinderIcons/OpenedPattern";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const preloadedWindowContainer = lazyWithPreload(() =>
@@ -344,6 +345,9 @@ function DesktopContent() {
 
   return (
     <div className={s.desktop} ref={desktopRef} onClick={handleBgClick}>
+      <svg width="0" height="0" style={{ position: "absolute", pointerEvents: "none" }}>
+        <OpenedPattern id="opened-pattern" />
+      </svg>
       <Topbar />
 
       {/* Папки на рабочем столе */}

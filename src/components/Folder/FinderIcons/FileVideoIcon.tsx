@@ -6,7 +6,7 @@ export const FileVideoIcon = () => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#clip0_2212_9154)">
+    <g clipPath="url(#clip0_2212_9154)">
       <mask
         id="mask0_2212_9154"
         maskUnits="userSpaceOnUse"
@@ -21,15 +21,15 @@ export const FileVideoIcon = () => (
         <path d="M24 1H7V31H30V7H24V1Z" fill="white" />
         <path d="M24 1H7V31H30V7H24V1Z" fill="white" />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M25 0V1H26V2H25V6H29V5H30V6H31V32H6V0H25ZM7 31H30V7H24V1H7V31Z"
           fill="black"
         />
         <path d="M28 4H29V5H28V4Z" fill="black" />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M27 3V2H26V3H27ZM27 3H28V4H27V3Z"
           fill="black"
         />
