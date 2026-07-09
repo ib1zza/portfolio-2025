@@ -58,6 +58,11 @@ flowchart TD
     Window -->|Hosts| IconPainter
     Window -->|Hosts| DitherStudio
     Window -->|Hosts| ModelViewer
+    Window -->|Hosts| AudioPlayer
+    Window -->|Hosts| VideoPlayer
+    Window -->|Hosts| SimpleVideoPlayer
+    Window -->|Hosts| Terminal
+    Window -->|Hosts| DitherCamera
 ```
 
 ## 3D Rendering Architecture

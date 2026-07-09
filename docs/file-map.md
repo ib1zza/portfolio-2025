@@ -155,6 +155,22 @@ This document provides a map of the important directories and files in the repos
 │       │
 │       ├── SpaceInvaders/        # App: 1-bit retro mini-game
 │       │
+│       ├── AudioPlayer/        # App: custom audio player
+│       │   ├── AudioPlayer.tsx
+│       │   └── AudioPlayer.module.scss
+│       │
+│       ├── SimpleVideoPlayer/  # App: simple video playback
+│       │   ├── SimpleVideoPlayer.tsx
+│       │   └── SimpleVideoPlayer.module.scss
+│       │
+│       ├── VideoPlayer/        # App: video player with dithered playback support
+│       │   ├── VideoPlayer.tsx
+│       │   └── VideoPlayer.module.scss
+│       │
+│       ├── DitherCamera/       # App: real-time camera stream with dithering
+│       │   ├── DitherCamera.tsx
+│       │   └── DitherCamera.module.scss
+│       │
 │       ├── Terminal/             # App: retro Macintosh system terminal CLI
 │       │   ├── Terminal.tsx
 │       │   └── Terminal.module.scss
