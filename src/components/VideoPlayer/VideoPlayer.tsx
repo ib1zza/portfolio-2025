@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton, MacSlider, PopupSelect } from "../UIKit";
 import { getAssetPath } from "../../utils/assets";
+import { isMobilePointerMode } from "../../constants/responsive";
 import { useThreeDither } from "../../hooks/useThreeDither";
 import s from "./VideoPlayer.module.scss";
 
@@ -92,15 +93,16 @@ export const VideoPlayer = memo(function VideoPlayer({
     const vh = video.videoHeight;
     if (!vw || !vh) return;
 
+    const isMobile = isMobilePointerMode();
     const pw = wrap.clientWidth;
     const ph = wrap.clientHeight;
-    if (!pw || !ph) return;
+    if (!pw || (!isMobile && !ph)) return;
 
     const aspect = vw / vh;
     let cw = pw;
     let ch = pw / aspect;
 
-    if (ch > ph) {
+    if (!isMobile && ch > ph) {
       ch = ph;
       cw = ch * aspect;
     }
@@ -376,7 +378,7 @@ export const VideoPlayer = memo(function VideoPlayer({
 
   return (
     <div
-      className={s.videoPlayer}
+      className={clsx(s.videoPlayer, isInitialized && s.initialized)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -387,7 +389,7 @@ export const VideoPlayer = memo(function VideoPlayer({
         </div>
 
         <div className={s.videoArea}>
-          <div ref={wrapRef} className={s.canvasWrap}>
+          <div ref={wrapRef} className={clsx(s.canvasWrap, isInitialized && s.initialized)}>
             <canvas
               ref={canvasRef}
               className={clsx(s.ditherCanvas, !isInitialized && s.hidden)}

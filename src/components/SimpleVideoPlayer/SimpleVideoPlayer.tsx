@@ -3,6 +3,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton, MacSlider } from "../UIKit";
 import { getAssetPath } from "../../utils/assets";
+import { isMobilePointerMode } from "../../constants/responsive";
 import { useThreeDither } from "../../hooks/useThreeDither";
 import s from "./SimpleVideoPlayer.module.scss";
 
@@ -62,15 +63,16 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
     const vh = video.videoHeight;
     if (!vw || !vh) return;
 
+    const isMobile = isMobilePointerMode();
     const pw = wrap.clientWidth;
     const ph = wrap.clientHeight;
-    if (!pw || !ph) return;
+    if (!pw || (!isMobile && !ph)) return;
 
     const aspect = vw / vh;
     let cw = pw;
     let ch = pw / aspect;
 
-    if (ch > ph) {
+    if (!isMobile && ch > ph) {
       ch = ph;
       cw = ch * aspect;
     }
@@ -215,9 +217,9 @@ export const SimpleVideoPlayer = memo(function SimpleVideoPlayer({
   }, []);
 
   return (
-    <div className={s.videoPlayer}>
+    <div className={clsx(s.videoPlayer, isLoaded && s.initialized)}>
       <div className={s.videoArea}>
-        <div ref={wrapRef} className={s.videoWrap}>
+        <div ref={wrapRef} className={clsx(s.videoWrap, isLoaded && s.initialized)}>
           <canvas
             ref={ditherCanvasRef}
             className={clsx(s.ditherCanvas, isLoaded && s.visible)}

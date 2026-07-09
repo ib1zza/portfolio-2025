@@ -9,12 +9,30 @@
   padding: var(--app-padding);
   height: 100%;
   box-sizing: border-box;
+
+  @include mobile-touch {
+    height: 100%;
+
+    &.initialized {
+      height: auto;
+      min-height: 100%;
+    }
+  }
 }
 
 .videoArea {
   display: flex;
   flex: 1;
   min-height: 0;
+
+  @include mobile-touch {
+    .initialized & {
+      flex: none;
+      flex-direction: column;
+      height: auto;
+      width: 100%;
+    }
+  }
 }
 
 .videoWrap {
@@ -26,6 +44,14 @@
   background: $black;
   border: $border;
   overflow: hidden;
+
+  @include mobile-touch {
+    &.initialized {
+      flex: none;
+      width: 100%;
+      height: auto;
+    }
+  }
 }
 
 .ditherCanvas {
