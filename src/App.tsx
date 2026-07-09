@@ -140,6 +140,12 @@ function App() {
 
     idleCallback(() => {
       void prefetchRemaining();
+
+      if ("fonts" in document) {
+        document.fonts.load("12px Monaco").catch((err) => {
+          console.error("Failed to preload Monaco font:", err);
+        });
+      }
     });
 
     return () => {

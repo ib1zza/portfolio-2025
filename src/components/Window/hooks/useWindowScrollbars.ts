@@ -67,13 +67,40 @@ export const useWindowScrollbars = ({
   const [scrollMetrics, setScrollMetrics] = useState(INITIAL_SCROLL_METRICS);
   const scrollMetricsRef = useRef(INITIAL_SCROLL_METRICS);
 
+  const [scrollTarget, setScrollTarget] = useState<HTMLDivElement | null>(null);
+
+  // Dynamically find and track the actual scroll target (custom data-scroll-container or default outer wrapper)
+  useEffect(() => {
+    const node = contentRef.current;
+    if (!node) {
+      setScrollTarget(null);
+      return;
+    }
+
+    const findTarget = () => {
+      const target = node.querySelector<HTMLDivElement>(
+        '[data-scroll-container="true"]'
+      );
+      setScrollTarget(target || node);
+    };
+
+    findTarget();
+
+    const observer = new MutationObserver(findTarget);
+    observer.observe(node, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [contentRef]);
+
   const hasVerticalScroll =
     scrollMetrics.scrollHeight > scrollMetrics.clientHeight + 1;
   const hasHorizontalScroll =
     scrollMetrics.scrollWidth > scrollMetrics.clientWidth + 1;
 
   const updateScrollMetrics = useCallback(() => {
-    const node = contentRef.current;
+    const node = scrollTarget;
     if (!node) return;
 
     const nextMetrics = {
@@ -91,7 +118,7 @@ export const useWindowScrollbars = ({
 
     scrollMetricsRef.current = nextMetrics;
     setScrollMetrics(nextMetrics);
-  }, [contentRef, horizontalTrackRef, verticalTrackRef]);
+  }, [scrollTarget, horizontalTrackRef, verticalTrackRef]);
 
   const scheduleScrollMetricsUpdate = useCallback(() => {
     if (scrollMetricsFrameRef.current !== null) return;
@@ -115,8 +142,25 @@ export const useWindowScrollbars = ({
     updateScrollMetrics();
   }, [fileId, height, updateScrollMetrics, width]);
 
+  // Listen to manual scrolling on the target container to keep metrics/scrollbar in sync
   useEffect(() => {
-    const node = contentRef.current;
+    const node = scrollTarget;
+    if (!node) return;
+
+    const handleScroll = () => {
+      scheduleScrollMetricsUpdate();
+    };
+
+    node.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      node.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrollTarget, scheduleScrollMetricsUpdate]);
+
+  // Observe size changes of the scrolling container
+  useEffect(() => {
+    const node = scrollTarget;
     if (!node) return;
 
     const resizeObserver = new ResizeObserver(scheduleScrollMetricsUpdate);
@@ -124,17 +168,17 @@ export const useWindowScrollbars = ({
     if (node.firstElementChild) resizeObserver.observe(node.firstElementChild);
 
     return () => resizeObserver.disconnect();
-  }, [contentRef, fileId, scheduleScrollMetricsUpdate]);
+  }, [scrollTarget, fileId, scheduleScrollMetricsUpdate]);
 
   const scrollContent = useCallback(
     (deltaLeft: number, deltaTop: number) => {
-      contentRef.current?.scrollBy({
+      scrollTarget?.scrollBy({
         left: deltaLeft,
         top: deltaTop,
         behavior: "smooth",
       });
     },
-    [contentRef]
+    [scrollTarget]
   );
 
   const getThumbStyle = useCallback(
@@ -165,7 +209,7 @@ export const useWindowScrollbars = ({
 
   const startThumbDrag = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>, axis: "x" | "y") => {
-      const node = contentRef.current;
+      const node = scrollTarget;
       if (!node) return;
 
       const isY = axis === "y";
@@ -193,13 +237,13 @@ export const useWindowScrollbars = ({
         maxThumbOffset: Math.max(1, track - thumbSize),
       };
     },
-    [contentRef, scrollMetrics]
+    [scrollTarget, scrollMetrics]
   );
 
   useEffect(() => {
     const handlePointerMove = (event: PointerEvent) => {
       const drag = scrollDragRef.current;
-      const node = contentRef.current;
+      const node = scrollTarget;
       if (!drag || !node) return;
 
       const isY = drag.axis === "y";
@@ -230,7 +274,7 @@ export const useWindowScrollbars = ({
       document.removeEventListener("pointerup", handlePointerUp);
       document.removeEventListener("pointercancel", handlePointerUp);
     };
-  }, [contentRef, scheduleScrollMetricsUpdate]);
+  }, [scrollTarget, scheduleScrollMetricsUpdate]);
 
   return {
     getThumbStyle,
