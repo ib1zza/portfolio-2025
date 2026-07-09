@@ -322,9 +322,9 @@ export const BadgeGenerator = memo(function BadgeGenerator({
         </div>
 
         <div className={s.exportRow}>
-          <MacButton onClick={() => setIsShareOpen(true)}>share</MacButton>
+          <MacButton variant="default" onClick={() => setIsShareOpen(true)}>share</MacButton>
 
-          <MacButton variant="default" onClick={exportPng}>
+          <MacButton onClick={exportPng}>
             export png
           </MacButton>
         </div>

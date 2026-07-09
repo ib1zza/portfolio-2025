@@ -12,9 +12,9 @@
   --window-scrollbar-size: #{ui(14px)};
   --window-line-size: #{ui(1px)};
   --line-size: var(--window-line-size);
-  --mobile-window-inset: #{ui(8px)};
-  --mobile-window-top: calc(var(--topbar-height) + #{ui(8px)} + env(safe-area-inset-top, 0px));
-  --mobile-window-bottom: calc(#{ui(8px)} + env(safe-area-inset-bottom, 0px));
+  --mobile-window-inset: #{ui(6px)};
+  --mobile-window-top: calc(var(--topbar-height) + #{ui(6px)} + env(safe-area-inset-top, 0px));
+  --mobile-window-bottom: calc(#{ui(6px)} + env(safe-area-inset-bottom, 0px));
   --finder-icon-size: #{ui(32px)};
   --finder-label-font-size: #{ui(16px)};
   --finder-label-line-height: #{ui(12px)};

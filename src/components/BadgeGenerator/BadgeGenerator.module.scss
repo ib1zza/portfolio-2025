@@ -148,6 +148,11 @@
   align-items: center;
   gap: var(--panel-padding);
   margin-top: auto;
+
+  @include mobile-touch {
+    gap: 0px;
+    justify-content: space-between;
+  }
 }
 
 .dialogBackdrop {
