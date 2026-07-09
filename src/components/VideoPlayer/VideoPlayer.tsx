@@ -450,18 +450,20 @@ export const VideoPlayer = memo(function VideoPlayer({
                 {isPlaying ? "Pause" : "Play"}
               </MacButton>
               <MacButton onClick={handleStop}>Stop</MacButton>
-              <button
-                className={clsx(s.toggleBtn, loop && s.active)}
-                type="button"
-                onClick={handleLoopToggle}
-              >
-                Loop
-              </button>
-              <MacButton onClick={handleOpenClick}>Open</MacButton>
+              <div className={s.secondaryTransportControls}>
+                <button
+                  className={clsx(s.toggleBtn, loop && s.active)}
+                  type="button"
+                  onClick={handleLoopToggle}
+                >
+                  Loop
+                </button>
+                <MacButton onClick={handleOpenClick}>Open</MacButton>
+              </div>
             </div>
 
             <div className={s.optionsRow}>
-              <div className={s.volumeRow}>
+              <div className={clsx(s.volumeRow, s.mobileHidden)}>
                 <span className={s.optionLabel}>Vol</span>
                 <MacSlider
                   className={s.volumeSlider}
@@ -503,7 +505,7 @@ export const VideoPlayer = memo(function VideoPlayer({
                 Invert
               </button>
               <button
-                className={clsx(s.toggleBtn, showOriginal && s.active)}
+                className={clsx(s.toggleBtn, s.mobileHidden, showOriginal && s.active)}
                 type="button"
                 onClick={handleShowOriginalToggle}
               >

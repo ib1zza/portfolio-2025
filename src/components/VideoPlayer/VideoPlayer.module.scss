@@ -154,13 +154,27 @@
   display: flex;
   align-items: center;
   gap: ui(4px);
+
+  @include mobile-touch {
+    flex-wrap: wrap;
+  }
+}
+
+.secondaryTransportControls {
+  display: flex;
+  align-items: center;
+  gap: ui(4px);
+
+  @include mobile-touch {
+    flex-basis: 100%;
+  }
 }
 
 .timeDisplay {
   @include textMain(ui(11px), ui(16px));
   color: $black;
-  min-width: ui(80px);
-  text-align: center;
+  min-width: 12ch;
+  text-align: left;
   font-variant-numeric: tabular-nums;
 }
 
@@ -179,7 +193,14 @@
   align-items: center;
   flex-wrap: wrap;
   gap: ui(8px);
+
+  @include mobile-touch {
+    flex-direction: column;
+    align-items: stretch;
+    gap: ui(4px);
+  }
 }
+
 
 .volumeRow {
   display: flex;
@@ -214,5 +235,11 @@
   &.active {
     background: $black;
     color: $white;
+  }
+}
+
+.mobileHidden {
+  @include mobile-touch {
+    display: none;
   }
 }
