@@ -62,6 +62,28 @@ The desktop environment includes several fully functional applications. These ar
 - **State Dependencies:** Reads from `useFileSystem` for files and folders, uses `useWindowManager` to open apps, and integrates haptics.
 - **Common Modification Points:** Command parser inside `executeCommand`, autocomplete key handling, and terminal line styles in `Terminal.module.scss`.
 
+## 8. Audio Player
+
+**Location:** `src/components/AudioPlayer/`
+
+- **Purpose:** An application for playing audio files.
+- **Key Features:** Play, pause, volume control, and progress tracking.
+
+## 9. Video Player & Simple Video Player
+
+**Location:** `src/components/VideoPlayer/` and `src/components/SimpleVideoPlayer/`
+
+- **Purpose:** Applications for playing video files. `VideoPlayer` includes advanced dither-processed playback using `useThreeDither`, while `SimpleVideoPlayer` provides basic video playback.
+- **Key Features:** Dithered video processing, looping playback by default.
+- **Risks/Gotchas:** Dithered video processing can be computationally intensive on lower-end devices.
+
+## 10. Dither Camera
+
+**Location:** `src/components/DitherCamera/`
+
+- **Purpose:** Real-time camera stream processing tool.
+- **Key Features:** Captures camera input and applies live 3D dithering effects, with snapshot functionality.
+
 ## Integration Rules for Apps
 
 When modifying an existing app or creating a new one:

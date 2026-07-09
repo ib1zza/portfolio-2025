@@ -37,6 +37,9 @@ The desktop includes several fully-functional mini-applications:
 - **Dither Studio:** A tool for applying dithering algorithms to images.
 - **Model Viewer:** An application for browsing 3D models using React Three Fiber.
 - **Badge Generator:** A digital business card creator with QR code generation.
+- **Terminal:** A retro command-line interface emulator.
+- **Media Players:** Apps for playing audio and video (including dithered playback).
+- **Dither Camera:** A real-time camera stream tool with dithering effects.
 
 ## Design Constraints and Aesthetic Goals
 
