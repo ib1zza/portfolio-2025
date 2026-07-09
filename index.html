@@ -1,79 +1,107 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="%BASE_URL%favicon.ico" />
-    <link
-      id="apple-touch-icon"
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="%BASE_URL%apple-touch-icon-light.png"
-    />
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-title" content="ib1zza" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <link
-      rel="preload"
-      href="%BASE_URL%fonts/ChiKareGo2.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="%BASE_URL%favicon.ico" />
+  <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="%BASE_URL%apple-touch-icon-light.png" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ib1zza" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-    <link
-      rel="preload"
-      href="%BASE_URL%fonts/FindersKeepers.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+  <link rel="preload" href="%BASE_URL%fonts/chikarego2.woff2" as="font" type="font/woff2" crossorigin />
 
-    <meta name="description" content="Interactive 3D portfolio by Mikhail — a retro Macintosh desktop experience built with React & Three.js" />
-    <title>ib1zza</title>
+  <link rel="preload" href="%BASE_URL%fonts/finderskeepers.woff2" as="font" type="font/woff2" crossorigin />
 
-    <style>
-      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-      html{-moz-text-size-adjust:none;-webkit-text-size-adjust:none;text-size-adjust:none}
-      body{min-height:100vh;line-height:1.5;font-family:sans-serif}
-      html,body,#root{width:100%;height:100%;overflow:hidden;touch-action:manipulation}
-      img,picture{max-width:100%;display:block}
-      input,button,textarea,select{font-family:inherit;font-size:inherit}
-      button{border:none;background:none;outline:none}
-    </style>
+  <meta name="description"
+    content="Interactive 3D portfolio by Mikhail — a retro Macintosh desktop experience built with React & Three.js" />
+  <title>ib1zza</title>
 
-    <script>
-      (() => {
-        const icon = document.getElementById("apple-touch-icon");
-        const darkQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
-        const baseUrl = "%BASE_URL%";
-        const setAppleTouchIcon = () => {
-          if (!icon) return;
-          icon.href = `${baseUrl}apple-touch-icon-${
-            darkQuery?.matches ? "dark" : "light"
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      -moz-text-size-adjust: none;
+      -webkit-text-size-adjust: none;
+      text-size-adjust: none
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.5;
+      font-family: sans-serif
+    }
+
+    html,
+    body,
+    #root {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: manipulation
+    }
+
+    img,
+    picture {
+      max-width: 100%;
+      display: block
+    }
+
+    input,
+    button,
+    textarea,
+    select {
+      font-family: inherit;
+      font-size: inherit
+    }
+
+    button {
+      border: none;
+      background: none;
+      outline: none
+    }
+  </style>
+
+  <script>
+    (() => {
+      const icon = document.getElementById("apple-touch-icon");
+      const darkQuery = window.matchMedia?.("(prefers-color-scheme: dark)");
+      const baseUrl = "%BASE_URL%";
+      const setAppleTouchIcon = () => {
+        if (!icon) return;
+        icon.href = `${baseUrl}apple-touch-icon-${darkQuery?.matches ? "dark" : "light"
           }.png`;
-        };
+      };
 
-        setAppleTouchIcon();
-        darkQuery?.addEventListener?.("change", setAppleTouchIcon);
+      setAppleTouchIcon();
+      darkQuery?.addEventListener?.("change", setAppleTouchIcon);
 
-        // Prevent pinch-to-zoom on touch devices / iOS Safari
-        document.addEventListener('gesturestart', (e) => {
+      // Prevent pinch-to-zoom on touch devices / iOS Safari
+      document.addEventListener('gesturestart', (e) => {
+        e.preventDefault();
+      });
+      document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
           e.preventDefault();
-        });
-        document.addEventListener('touchmove', (e) => {
-          if (e.touches.length > 1) {
-            e.preventDefault();
-          }
-        }, { passive: false });
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        }
+      }, { passive: false });
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
