@@ -79,6 +79,7 @@ The desktop environment includes several fully functional applications. These ar
 
 ## 10. Dither Camera
 
+
 **Location:** `src/components/DitherCamera/`
 
 - **Purpose:** Real-time camera stream processing tool.
@@ -91,3 +92,7 @@ When modifying an existing app or creating a new one:
 1. **Window Wrapping:** Apps should not render their own outer window chrome. They should assume they are rendered inside a `WindowAppContent` or similar wrapper provided by `src/components/Window/`.
 2. **Topbar Menus:** If an app requires custom menu items (e.g., "File -> Export"), it should communicate this context to the global `Topbar` state when focused.
 3. **Asset References:** Ensure any default files or models loaded by apps correctly reference paths using utilities from `src/utils/assets.ts`.
+
+
+
+<!-- minor doc update to force commit -->
