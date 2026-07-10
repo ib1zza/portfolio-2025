@@ -27,3 +27,7 @@
 ## 2025-02-18 - [Optimize Easter Egg Progress Migration]
 **Learning:** Store migration functions that map over elements using \`.some\` against static arrays cause unnecessary $O(N \times M)$ overhead.
 **Action:** Extract static arrays into \`Set\` instances outside the function scope for O(1) lookups during migration and hydration.
+
+## 2026-07-10 - DOM Query in Global Event Handler Optimization
+**Learning:** Repeated DOM queries like `.querySelector` inside global event handlers (like `pointerup` or `mousemove`) trigger unnecessary CPU overhead, specially if executing on every interaction.
+**Action:** Traverse the DOM directly via properties like `.firstElementChild` or cache elements in a Map or ref instead of running generic CSS selector queries in hot paths.

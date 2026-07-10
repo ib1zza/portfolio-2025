@@ -351,14 +351,10 @@ export function Topbar() {
     (event: MouseEvent | PointerEvent) => {
       const target = event.target as Node;
       const clickedOnSubmenu = submenuRef.current?.contains(target);
-      // ⚡ Bolt: Use direct child traversal instead of DOM query in loop
-      // 💡 What: Replaced `.querySelector` inside `.some` loop with `.firstElementChild`.
-      // 🎯 Why: Repeated DOM queries inside a global event handler cause unnecessary CPU overhead.
-      // 📊 Impact: Eliminates N DOM queries per global pointerup event, improving main thread availability.
-      // 🔬 Measurement: Profile global mouse clicks; pointerup handler execution time will decrease.
       const clickedOnTabTitle = tabRefs.current.some((tab) => {
         if (!tab) return false;
-        return tab.firstElementChild?.contains(target);
+        const tabTitle = tab.querySelector(`.${s.tabTitle}`);
+        return tabTitle && tabTitle.contains(target);
       });
 
       if (clickedOnSubmenu) {
