@@ -154,7 +154,7 @@ describe('WindowOpenAnimationProvider', () => {
       'Test',
       null,
       { x: 50, y: 50 },
-      undefined,
+      { width: 600, height: 400 },
       undefined,
       undefined,
     );

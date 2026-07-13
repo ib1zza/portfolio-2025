@@ -30,6 +30,8 @@ function App() {
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
   const isStandaloneRoute = isBadgeRoute || isTestRoute;
 
+
+
   useEffect(() => {
     if (isStandaloneRoute) return;
 

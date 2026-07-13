@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, userEvent, within } from '@storybook/test';
 import { MacTextInput } from './MacTextInput';
 import { useState } from 'react';
 
@@ -32,6 +33,12 @@ export const Default: Story = {
   },
   args: {
     placeholder: 'Type something...',
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByPlaceholderText('Type something...');
+    await userEvent.type(input, 'Hello World');
+    await expect(input).toHaveValue('Hello World');
   },
 };
 

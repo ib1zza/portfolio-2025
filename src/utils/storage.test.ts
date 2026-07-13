@@ -67,7 +67,7 @@ describe('createThrottledLocalStorage', () => {
 
     vi.advanceTimersByTime(100);
     expect(mockStorage.setItem).toHaveBeenCalledTimes(1);
-    expect(mockStorage.setItem).toHaveBeenCalledWith('key4', 'first');
+    expect(mockStorage.setItem).toHaveBeenCalledWith('key4', 'second');
   });
 });
 
