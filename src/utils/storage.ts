@@ -42,7 +42,10 @@ const scheduleLocalStorageWrite = (name: string, value: string, delay: number) =
   }
 
   const timeoutId = window.setTimeout(() => {
-    window.localStorage.setItem(name, value);
+    const pending = pendingWrites.get(name);
+    if (pending) {
+      window.localStorage.setItem(name, pending.value);
+    }
     pendingWrites.delete(name);
   }, delay);
 

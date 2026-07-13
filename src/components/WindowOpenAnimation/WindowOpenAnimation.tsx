@@ -103,8 +103,8 @@ export function WindowOpenAnimationProvider({
           id,
           title,
           parentId,
-          position,
-          preferredSize,
+          targetPosition,
+          targetSize,
           openerWindowId,
           windowOptions
         );
