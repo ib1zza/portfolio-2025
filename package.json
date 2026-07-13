@@ -23,7 +23,6 @@
     "@vercel/analytics": "^2.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "clsx": "^2.1.1",
-    "ditherwave": "^0.1.0",
     "motion": "^12.42.2",
     "qrcode": "^1.5.4",
     "react": "^19.2.7",
