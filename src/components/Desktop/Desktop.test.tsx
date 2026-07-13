@@ -193,5 +193,39 @@ describe('Desktop', () => {
     expect(hoisted.fsState.setActive).not.toHaveBeenCalled();
   });
 
+  test('arrow key spatial navigation favors same row', () => {
+    const rects: Record<string, DOMRect> = {
+      item1: { left: 240, right: 312, top: 180, bottom: 244, width: 72, height: 64, x: 240, y: 180, toJSON: () => {} } as DOMRect,
+      item2: { left: 136, right: 208, top: 180, bottom: 244, width: 72, height: 64, x: 136, y: 180, toJSON: () => {} } as DOMRect,
+      item3: { left: 136, right: 208, top: 110, bottom: 174, width: 72, height: 64, x: 136, y: 110, toJSON: () => {} } as DOMRect,
+    };
+
+    const spy = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function(this: HTMLElement) {
+      const id = this.getAttribute('data-finder-item-id');
+      if (id && rects[id]) {
+        return rects[id];
+      }
+      return { left: 0, right: 0, top: 0, bottom: 0, width: 0, height: 0, x: 0, y: 0, toJSON: () => {} } as DOMRect;
+    });
+
+    hoisted.fsState.activeItemId = 'item1';
+    hoisted.fsState.items = {
+      root: hoisted.fsState.items.root,
+      item1: { id: 'item1', type: 'folder', name: 'Item 1', parentId: 'root', position: { x: 240, y: 180 }, children: [] },
+      item2: { id: 'item2', type: 'folder', name: 'Item 2', parentId: 'root', position: { x: 136, y: 180 }, children: [] },
+      item3: { id: 'item3', type: 'folder', name: 'Item 3', parentId: 'root', position: { x: 136, y: 110 }, children: [] },
+    };
+    hoisted.mockGetChildItems.mockReturnValue([
+      hoisted.fsState.items.item1,
+      hoisted.fsState.items.item2,
+      hoisted.fsState.items.item3,
+    ]);
+
+    renderDesktop();
+    fireEvent.keyDown(document, { key: 'ArrowLeft' });
+    expect(hoisted.fsState.setActive).toHaveBeenCalledWith('item2');
+
+    spy.mockRestore();
+  });
 
 });

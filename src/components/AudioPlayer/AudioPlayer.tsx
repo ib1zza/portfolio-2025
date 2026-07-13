@@ -3,28 +3,12 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 import { MacButton, MacSlider, PopupSelect } from "../UIKit";
 import type { VisualizerMode } from "./visualizers";
-import {
-  drawPixelBars,
-  drawPixelCircle,
-  drawPixelWaveform,
-} from "./visualizers";
 import { getAssetPath } from "../../utils/assets";
 import s from "./AudioPlayer.module.scss";
 
-const VISUALIZER_FRAME_MS = 45;
-const ACCEPTED_TYPES = ["audio/mpeg", "audio/ogg", "audio/wav", "audio/mp3"];
-
-const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-};
-
-const VISUALIZER_OPTIONS = [
-  { value: "bars" as VisualizerMode, label: "Pixel Bars" },
-  { value: "waveform" as VisualizerMode, label: "Pixel Waveform" },
-  { value: "circle" as VisualizerMode, label: "Pixel Circle" },
-];
+import { ACCEPTED_TYPES, VISUALIZER_OPTIONS } from "./constants";
+import { formatTime } from "./helpers";
+import { useAudioVisualizer } from "./useAudioVisualizer";
 
 interface AudioPlayerProps {
   windowId: string;
@@ -52,43 +36,20 @@ export const AudioPlayer = memo(function AudioPlayer({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animFrameRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const initAudioContext = useCallback(() => {
-    if (audioCtxRef.current) return;
-
-    const audioCtx = new AudioContext();
-    audioCtxRef.current = audioCtx;
-
-    const analyser = audioCtx.createAnalyser();
-
-    analyser.fftSize = 512;
-    analyser.smoothingTimeConstant = 0.82;
-    analyser.minDecibels = -90;
-    analyser.maxDecibels = -10;
-
-    analyserRef.current = analyser;
-  }, []);
-
-  const connectAudioNode = useCallback(() => {
-    const audio = audioRef.current;
-    const audioCtx = audioCtxRef.current;
-    const analyser = analyserRef.current;
-    if (!audio || !audioCtx || !analyser) return;
-
-    if (sourceRef.current) {
-      sourceRef.current.disconnect();
-    }
-
-    const source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    sourceRef.current = source;
-  }, []);
+  const {
+    audioCtxRef,
+    initAudioContext,
+    ensureAudioContext,
+  } = useAudioVisualizer(
+    audioRef,
+    canvasRef,
+    visualizerMode,
+    isInitialized,
+    file,
+    fileUrl,
+  );
 
   const setupAudioElement = useCallback(
     (audio: HTMLAudioElement, trackName: string) => {
@@ -153,15 +114,6 @@ export const AudioPlayer = memo(function AudioPlayer({
     [loadFromUrl],
   );
 
-  const ensureAudioContext = useCallback(() => {
-    if (audioCtxRef.current) return;
-
-    initAudioContext();
-    if (audioRef.current) {
-      connectAudioNode();
-    }
-  }, [initAudioContext, connectAudioNode]);
-
   const handlePlayPause = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -177,7 +129,7 @@ export const AudioPlayer = memo(function AudioPlayer({
     } else {
       audio.pause();
     }
-  }, [ensureAudioContext]);
+  }, [ensureAudioContext, audioCtxRef]);
 
   const handleStop = useCallback(() => {
     const audio = audioRef.current;
@@ -261,107 +213,17 @@ export const AudioPlayer = memo(function AudioPlayer({
   }, [initAudioContext]);
 
   useEffect(() => {
-    if (!isInitialized || !audioCtxRef.current) return;
-    connectAudioNode();
-  }, [isInitialized, connectAudioNode]);
-
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let lastDrawAt = 0;
-    let wasPaused = false;
-    let frequencyData: Uint8Array<ArrayBuffer> | null = null;
-    let waveformData: Uint8Array<ArrayBuffer> | null = null;
-
-    const clear = () => {
-      ctx.fillStyle = "white";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    };
-
-    const draw = (time: number) => {
-      animFrameRef.current = requestAnimationFrame(draw);
-
-      const audio = audioRef.current;
-      const analyser = analyserRef.current;
-
-      if (!audio || audio.paused || !analyser) {
-        if (!wasPaused) {
-          clear();
-          wasPaused = true;
-        }
-
-        return;
-      }
-
-      wasPaused = false;
-
-      if (time - lastDrawAt < VISUALIZER_FRAME_MS) {
-        return;
-      }
-
-      lastDrawAt = time;
-
-      if (!frequencyData) {
-        frequencyData = new Uint8Array(analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>;
-      }
-      if (!waveformData) {
-        waveformData = new Uint8Array(analyser.fftSize) as Uint8Array<ArrayBuffer>;
-      }
-
-      if (visualizerMode === "waveform") {
-        analyser.getByteTimeDomainData(waveformData);
-        drawPixelWaveform(ctx, waveformData, canvas.width, canvas.height);
-        return;
-      }
-
-      analyser.getByteFrequencyData(frequencyData);
-
-      if (visualizerMode === "circle") {
-        drawPixelCircle(ctx, frequencyData, canvas.width, canvas.height);
-        return;
-      }
-
-      drawPixelBars(ctx, frequencyData, canvas.width, canvas.height);
-    };
-
-    clear();
-    animFrameRef.current = requestAnimationFrame(draw);
-
-    return () => {
-      if (animFrameRef.current !== null) {
-        cancelAnimationFrame(animFrameRef.current);
-        animFrameRef.current = null;
-      }
-    };
-  }, [file, fileUrl, isInitialized, visualizerMode]);
-
-  useEffect(() => {
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
-      }
-      if (sourceRef.current) {
-        sourceRef.current.disconnect();
-      }
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-      }
-      if (animFrameRef.current !== null) {
-        cancelAnimationFrame(animFrameRef.current);
       }
     };
   }, []);
 
   return (
     <div
-      className={s.audioPlayer}
+      className={clsx(s.audioPlayer, isDragging && s.dragging)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -412,7 +274,6 @@ export const AudioPlayer = memo(function AudioPlayer({
                 options={VISUALIZER_OPTIONS}
                 onChange={setVisualizerMode}
                 stackedOnMobile
-
               />
             </div>
 

@@ -1,27 +1,16 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { useFileSystem, type DocumentBlock, type FileSystemItem } from "../../store/useFileSystem";
+import { useFileSystem, type DocumentBlock } from "../../store/useFileSystem";
 import { useWindowManager } from "../../store/useWindowManager";
 import { getAppWindowSize, getDocumentNoteWindowSize, type WindowAppId } from "../../constants/windowLayout";
 import { useHaptics } from "../../hooks/useHaptics";
 import { useEasterEggProgress } from "../../features/easter-eggs/useEasterEggProgress";
 import s from "./Terminal.module.scss";
 
-interface TerminalProps {
-  windowId: string;
-}
-
-interface TerminalLine {
-  text: string;
-  type: "input" | "output" | "error" | "success" | "system";
-}
-
-const SYSTEM_WELCOME = [
-  { text: "Macintosh System Terminal [Version 7.5.3]", type: "system" as const },
-  { text: "Copyright (c) 1984-2026 Apple Computer, Inc. All rights reserved.", type: "system" as const },
-  { text: "Type 'help' or '?' to list available commands.", type: "system" as const },
-  { text: "", type: "output" as const },
-];
+import type { TerminalProps, TerminalLine } from "./types";
+import { SYSTEM_WELCOME } from "./constants";
+import { useMatrixAnimation } from "./useMatrixAnimation";
+import { getPathString, resolveFolderId } from "./fileSystemHelpers";
 
 export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
   const fileSystemItems = useFileSystem((state) => state.items);
@@ -49,97 +38,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Matrix canvas animation loop
-  useEffect(() => {
-    if (!isAnimating || !canvasRef.current || !containerRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const container = containerRef.current;
-
-    let fontSize = 13;
-    let charWidth = 10;
-    let cols = 50;
-    let yPositions: number[] = [];
-    let speeds: number[] = [];
-
-    // Handle resizing and dynamic scaling dynamically
-    const resizeCanvas = () => {
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight;
-
-      const computedStyle = window.getComputedStyle(container);
-      fontSize = parseFloat(computedStyle.fontSize) || 13;
-      charWidth = Math.floor(fontSize * 0.75); // aspect ratio for columns
-
-      ctx.font = `${fontSize}px Monaco, monospace`;
-
-      const newCols = Math.floor(canvas.width / charWidth) + 1;
-      if (newCols !== cols) {
-        cols = newCols;
-        yPositions = Array(cols).fill(0).map(() => Math.floor(Math.random() * -30));
-        speeds = Array(cols).fill(0).map(() => (Math.random() > 0.5 ? 1 : 2));
-      }
-    };
-
-    // Color definitions
-    // Default classic theme is white on black
-    const textColor = "#ffffff";
-    const clearColor = "rgba(0, 0, 0, 0.12)"; // fading overlay
-    const bgColor = "#000000";
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    // Fill canvas initially
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    let animationFrameId: number;
-    let lastTime = 0;
-
-    const tick = (timestamp: number) => {
-      animationFrameId = requestAnimationFrame(tick);
-
-      // Throttling frame rate to ~15 FPS (every ~70ms) to fit retro terminal look
-      if (timestamp - lastTime < 100) return;
-      lastTime = timestamp;
-
-      // Draw alpha rectangle to fade older frames
-      ctx.fillStyle = clearColor;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.font = `${fontSize}px Monaco, monospace`;
-
-      for (let i = 0; i < cols; i++) {
-        // Generate a new random ASCII symbol on each tick
-        const char = String.fromCharCode(33 + Math.floor(Math.random() * 93));
-        const x = i * charWidth;
-        const y = yPositions[i] * fontSize;
-
-        // Draw character
-        ctx.fillStyle = textColor;
-        ctx.fillText(char, x, y);
-
-        // Move drop down by integer row steps
-        yPositions[i] += speeds[i];
-
-        // Reset drop to top with random delay when it reaches screen bottom
-        if (yPositions[i] * fontSize > canvas.height) {
-          yPositions[i] = Math.floor(Math.random() * -15);
-          speeds[i] = Math.random() > 0.5 ? 1 : 2;
-        }
-      }
-    };
-
-    animationFrameId = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resizeCanvas);
-    };
-  }, [isAnimating]);
+  useMatrixAnimation(canvasRef, containerRef, isAnimating);
 
   useEffect(() => {
     if (isAnimating) {
@@ -166,69 +65,13 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
     inputRef.current?.focus();
   }, []);
 
-  // Helper to format absolute path string
-  const getPathString = useCallback((folderId: string): string => {
-    if (folderId === "root") return "/";
-
-    let path = "";
-    let curr: FileSystemItem | undefined = fileSystemItems[folderId];
-    while (curr) {
-      if (curr.id === "root") {
-        break;
-      }
-      path = curr.name + (path ? "/" + path : "");
-      const parentId: string | null | undefined = curr.parentId;
-      curr = parentId ? fileSystemItems[parentId] : undefined;
-    }
-    return "/" + path;
-  }, [fileSystemItems]);
-
-  // Helper to resolve a path string to a folder item ID
-  const resolveFolderId = useCallback((path: string): string | null => {
-    const cleanPath = path.trim();
-    if (!cleanPath) return currentFolderId;
-    if (cleanPath === "/" || cleanPath === "~") return "root";
-
-    const parts = cleanPath.split("/").filter(Boolean);
-    let tempId: string | null = cleanPath.startsWith("/") ? "root" : currentFolderId;
-
-    for (const part of parts) {
-      if (!tempId) return null;
-      if (part === ".") continue;
-
-      const currentId: string = tempId;
-      if (part === "..") {
-        const item: FileSystemItem | undefined = fileSystemItems[currentId];
-        tempId = item?.parentId ?? "root";
-        continue;
-      }
-
-      const parentItem: FileSystemItem | undefined = fileSystemItems[currentId];
-      if (!parentItem || (parentItem.type !== "folder" && parentItem.type !== "system")) {
-        return null;
-      }
-
-      const match: FileSystemItem | undefined = parentItem.children
-        .map((childId: string) => fileSystemItems[childId])
-        .find((child: FileSystemItem | undefined) => child && child.name.toLowerCase() === part.toLowerCase());
-
-      if (match && (match.type === "folder" || match.type === "system")) {
-        tempId = match.id;
-      } else {
-        return null;
-      }
-    }
-
-    return tempId;
-  }, [currentFolderId, fileSystemItems]);
-
   // Command handler
   const executeCommand = useCallback((rawInput: string) => {
     const cmdText = rawInput.trim();
     if (!cmdText) return;
 
     // Add command to log
-    const promptPath = getPathString(currentFolderId);
+    const promptPath = getPathString(currentFolderId, fileSystemItems);
     setLines((prev) => [...prev, { text: `macintosh:${promptPath} > ${cmdText}`, type: "input" }]);
 
     // Update history
@@ -274,7 +117,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         break;
 
       case "pwd":
-        printOutput(getPathString(currentFolderId));
+        printOutput(getPathString(currentFolderId, fileSystemItems));
         break;
 
       case "ls": {
@@ -315,7 +158,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         }
 
         const dirName = args.join(" ");
-        const resolvedId = resolveFolderId(dirName);
+        const resolvedId = resolveFolderId(dirName, currentFolderId, fileSystemItems);
         if (resolvedId) {
           setCurrentFolderId(resolvedId);
         } else {
@@ -453,7 +296,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         printOutput(`shell: command not found: ${command}`, "error");
         break;
     }
-  }, [currentFolderId, fileSystemItems, getPathString, openWindow, resolveFolderId, haptics, markFound]);
+  }, [currentFolderId, fileSystemItems, openWindow, haptics, markFound]);
 
   // Key handlers
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -579,7 +422,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
           </div>
         ))}
         <div className={s.promptRow}>
-          <span className={s.promptLabel}>macintosh:{getPathString(currentFolderId)} &gt;</span>
+          <span className={s.promptLabel}>macintosh:{getPathString(currentFolderId, fileSystemItems)} &gt;</span>
           <div className={s.promptInputWrapper}>
             <div className={s.promptRepresentation}>
               <span>{inputValue.slice(0, selectionStart)}</span>
