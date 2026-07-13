@@ -27,6 +27,11 @@ dist-ssr
 .playwright*
 .vercel
 
+# env files
+.env
+.env.local
+.env.*.local
+
 # local docs
 EASTER_EGGS.md
 

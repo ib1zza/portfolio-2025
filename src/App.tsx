@@ -1,6 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
 import { FINE_POINTER_QUERY } from "./constants/responsive";
+import { useWindowManager } from "./store/useWindowManager";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
@@ -21,6 +22,19 @@ function App() {
   const [isContentReady, setIsContentReady] = useState(false);
   const [isLoaderVisible, setIsLoaderVisible] = useState(true);
   const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
+
+  const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
+  const focusedWindowTitle = useWindowManager((state) =>
+    focusedWindowId ? state.windows[focusedWindowId]?.title : undefined
+  );
+
+  useEffect(() => {
+    if (focusedWindowTitle) {
+      document.title = `${focusedWindowTitle} — ib1zza`;
+    } else {
+      document.title = "ib1zza";
+    }
+  }, [focusedWindowTitle]);
 
   const isTestRoute = window.location.pathname.startsWith("/test");
   const isBadgeRoute = window.location.pathname.startsWith("/badge");

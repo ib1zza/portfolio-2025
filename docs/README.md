@@ -24,6 +24,9 @@ Here is an overview of the documentation files available to help you navigate an
 - [**UI System**](./ui-system.md)
   Detailed explanation of the desktop metaphor, topbar, window system, custom cursors, scaling system, and global SCSS style token presets.
 
+- [**SPA Routing & SEO**](./routing-and-seo.md)
+  Details on the path-based routing (deep-linking), window-to-URL sync, and build-time static HTML metadata pre-rendering.
+
 - [**Apps**](./apps.md)
   Documentation on the built-in applications, including their purpose, components, state dependencies, and asset dependencies.
 
