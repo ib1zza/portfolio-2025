@@ -411,6 +411,8 @@ export const AudioPlayer = memo(function AudioPlayer({
                 value={visualizerMode}
                 options={VISUALIZER_OPTIONS}
                 onChange={setVisualizerMode}
+                stackedOnMobile
+
               />
             </div>
 

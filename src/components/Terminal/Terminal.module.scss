@@ -2,15 +2,15 @@
   position: relative;
   width: 100%;
   height: 100%;
-  padding: 12px;
+  padding: ui(4px);
   box-sizing: border-box;
-  font-family: "FindersKeepers", Arial, sans-serif;
+  font-family: "Monaco", monospace;
   font-size: ui(12px);
   line-height: 1.2;
   overflow-y: auto;
   user-select: text;
-  background-color: transparent;
-  color: #000000;
+  background-color: #000000;
+  color: #ffffff;
 
   // Hide scrollbar
   &::-webkit-scrollbar {
@@ -38,16 +38,16 @@
 }
 
 .lineSystem {
-  color: #000000;
+  color: #ffffff;
 }
 
 .lineSuccess {
-  color: #000000;
+  color: #ffffff;
   text-decoration: underline;
 }
 
 .lineError {
-  color: #000000;
+  color: #ffffff;
   font-style: italic;
 }
 
@@ -108,12 +108,12 @@
   padding-inline: ui(1px);
 
   &.focused {
-    background-color: #000000;
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
   }
 
   &:not(.focused) {
-    outline: 1px solid #000000;
+    outline: 1px solid #ffffff;
     outline-offset: -1px;
   }
 }

@@ -54,8 +54,11 @@ export const Folder = memo(function Folder({
   const focusWindow = useWindowManager((state) => state.focusWindow);
   const unfocusAll = useWindowManager((state) => state.unfocusAll);
   const isOpened = useWindowManager((state) => Boolean(state.openFileIds[id]));
+  const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
   const setActive = useFileSystem((state) => state.setActive);
-  const isActive = useFileSystem((state) => state.activeItemId === id);
+  const isActive =
+    useFileSystem((state) => state.activeItemId === id) ||
+    focusedWindowId === id;
   const moveItem = useFileSystem((state) => state.moveItem);
   const deleteSavedIconItem = useFileSystem(
     (state) => state.deleteSavedIconItem,
@@ -66,7 +69,6 @@ export const Folder = memo(function Folder({
   const didDragRef = useRef(false);
   const pointerCleanupRef = useRef<(() => void) | null>(null);
   const [draftPosition, setDraftPosition] = useState(position);
-  const isOpenedInactive = isOpened && !isActive;
   const { recordItemOpenRequest, recordTrashClick } = useEasterEggs();
 
   const { fileOpen } = useHaptics();
@@ -318,7 +320,7 @@ export const Folder = memo(function Folder({
       itemRef={folderRef}
       id={id}
       isActive={isActive}
-      isOpenedInactive={isOpenedInactive}
+      isOpened={isOpened}
       position={draftPosition}
       onDoubleClick={handleDoubleClick}
       onClick={handleClick}
@@ -328,7 +330,6 @@ export const Folder = memo(function Folder({
         <FinderIcon
           id={id}
           type={icon}
-          isOpenedInactive={isOpenedInactive}
           savedIconId={savedIconId}
         />
       </div>

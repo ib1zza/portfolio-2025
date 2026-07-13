@@ -2,9 +2,8 @@ $public-base: "/" !default;
 
 @font-face {
   font-family: "ChiKareGo2";
-  src:
-    url("#{$public-base}fonts/ChiKareGo2.woff2") format("woff2"),
-    url("#{$public-base}fonts/ChiKareGo2.ttf") format("truetype");
+  src: url("#{$public-base}fonts/chikarego2.woff2") format("woff2"),
+  url("#{$public-base}fonts/chikarego2.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -12,9 +11,17 @@ $public-base: "/" !default;
 
 @font-face {
   font-family: "FindersKeepers";
-  src:
-    url("#{$public-base}fonts/FindersKeepers.woff2") format("woff2"),
-    url("#{$public-base}fonts/FindersKeepers.ttf") format("truetype");
+  src: url("#{$public-base}fonts/finderskeepers.woff2") format("woff2"),
+  url("#{$public-base}fonts/finderskeepers.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Monaco";
+  src: url("#{$public-base}fonts/proggyclean.woff2") format("woff2"),
+  url("#{$public-base}fonts/proggyclean.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

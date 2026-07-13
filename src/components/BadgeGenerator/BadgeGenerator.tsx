@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import QRCode from "qrcode";
 
 import { portfolio } from "../../data/portfolio";
@@ -19,6 +20,7 @@ import {
   type BadgeContact,
 } from "./badgeCard";
 import s from "./BadgeGenerator.module.scss";
+import { ShareDialog } from "./ShareDialog";
 import { getAppWindowSize } from "../../constants/windowLayout";
 import { isMobilePointerMode } from "../../constants/responsive";
 import TrashSmallSvg from "../../assets/icons/trash-small.svg?react";
@@ -55,6 +57,16 @@ export const BadgeGenerator = memo(function BadgeGenerator({
   const [isImportOpen, setIsImportOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState("");
+  const [portalTarget, setPortalTarget] = useState<Element | null>(null);
+
+  useEffect(() => {
+    if (isShareOpen || isImportOpen) {
+      const target = document.querySelector(`[data-window-id="${windowId}"]`);
+      setPortalTarget(target || containerRef.current);
+    } else {
+      setPortalTarget(null);
+    }
+  }, [isShareOpen, isImportOpen, windowId]);
 
   useEffect(() => {
     const syncSavedIcons = () => {
@@ -310,65 +322,39 @@ export const BadgeGenerator = memo(function BadgeGenerator({
         </div>
 
         <div className={s.exportRow}>
-          <MacButton onClick={() => setIsShareOpen(true)}>share</MacButton>
+          <MacButton variant="default" onClick={() => setIsShareOpen(true)}>share</MacButton>
 
-          <MacButton variant="default" onClick={exportPng}>
+          <MacButton onClick={exportPng}>
             export png
           </MacButton>
         </div>
       </section>
 
-      {isShareOpen && (
+      {portalTarget && isShareOpen && createPortal(
         <ShareDialog
           onClose={() => setIsShareOpen(false)}
           onCopy={copyBadgeUrl}
           onOpen={openBadgeUrl}
           qrDataUrl={qrDataUrl}
-        />
+        />,
+        portalTarget
       )}
 
-      {isImportOpen && (
+      {portalTarget && isImportOpen && createPortal(
         <IconImportDialog
           icons={savedIcons}
           selectedIconId={dialogIconId}
           onCancel={() => setIsImportOpen(false)}
           onChoose={chooseIcon}
           onSelect={setDialogIconId}
-        />
+        />,
+        portalTarget
       )}
     </div>
   );
 });
 
-const ShareDialog = memo(function ShareDialog({
-  onClose,
-  onCopy,
-  onOpen,
-  qrDataUrl,
-}: {
-  onClose: () => void;
-  onCopy: () => void;
-  onOpen: () => void;
-  qrDataUrl: string;
-}) {
-  return (
-    <div className={s.dialogBackdrop}>
-      <div className={s.popupWindow}>
-        <div className={s.dialogTitle}>Share Badge</div>
-        <div className={s.qrFrame}>
-          {qrDataUrl ? <img src={qrDataUrl} alt="Badge QR code" /> : null}
-        </div>
-        <div className={s.dialogActions}>
-          <MacButton onClick={onClose}>close</MacButton>
-          <MacButton onClick={onOpen}>open</MacButton>
-          <MacButton variant="default" onClick={onCopy}>
-            copy link
-          </MacButton>
-        </div>
-      </div>
-    </div>
-  );
-});
+
 
 const IconImportDialog = memo(function IconImportDialog({
   icons,

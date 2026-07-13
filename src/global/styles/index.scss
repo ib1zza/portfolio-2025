@@ -1,8 +1,6 @@
 @use "reset";
 @use "vars" as *;
-@use "fonts" with (
-  $public-base: $public-base
-);
+@use "fonts" with ($public-base: $public-base);
 @use "mixins" as *;
 
 :root {
@@ -14,11 +12,9 @@
   --window-scrollbar-size: #{ui(14px)};
   --window-line-size: #{ui(1px)};
   --line-size: var(--window-line-size);
-  --mobile-window-inset: #{ui(8px)};
-  --mobile-window-top: calc(
-    var(--topbar-height) + #{ui(8px)} + env(safe-area-inset-top, 0px)
-  );
-  --mobile-window-bottom: calc(#{ui(8px)} + env(safe-area-inset-bottom, 0px));
+  --mobile-window-inset: #{ui(6px)};
+  --mobile-window-top: calc(var(--topbar-height) + #{ui(6px)} + env(safe-area-inset-top, 0px));
+  --mobile-window-bottom: calc(#{ui(6px)} + env(safe-area-inset-bottom, 0px));
   --finder-icon-size: #{ui(32px)};
   --finder-label-font-size: #{ui(16px)};
   --finder-label-line-height: #{ui(12px)};
@@ -41,14 +37,10 @@
   --section-gap: #{ui(6px)};
   --app-canvas-size: #{ui(256px)};
   --app-canvas-panel-size: #{ui(258px)};
-  --app-mobile-canvas-size: min(
-    var(--app-canvas-size),
-    calc(100vw - #{ui(26px)})
-  );
-  --app-mobile-canvas-panel-size: min(
-    var(--app-canvas-panel-size),
-    calc(100vw - #{ui(24px)})
-  );
+  --app-mobile-canvas-size: min(var(--app-canvas-size),
+    calc(100vw - #{ui(26px)}));
+  --app-mobile-canvas-panel-size: min(var(--app-canvas-panel-size),
+    calc(100vw - #{ui(24px)}));
   --icon-painter-min-width: #{ui(560px)};
   --dither-studio-min-width: #{ui(560px)};
   --badge-generator-min-width: #{ui(640px)};
@@ -76,6 +68,13 @@
   --desktop-mobile-padding-bottom: #{ui(28px)};
   --font-main-size: #{ui(16px)};
   --font-main-line-height: #{ui(24px)};
+}
+
+body {
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  font-smooth: never;
+  image-rendering: pixelated;
 }
 
 @media (min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine) {

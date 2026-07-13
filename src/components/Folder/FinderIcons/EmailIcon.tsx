@@ -1,0 +1,25 @@
+export const EmailIcon = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 32 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    shapeRendering="crispEdges"
+  >
+    <path d="M3 9H29V10H30V24H29V25H3V24H2V10H3V9Z" fill="black" />
+    <path d="M4 11H28V23H4V11Z" fill="white" />
+    <path
+      d="M5 12H7V13H8V14H9V15H10V16H11V17H12V18H13V19H14V20H18V19H19V18H20V17H21V16H22V15H23V14H24V13H25V12H27V13H26V14H25V15H24V16H23V17H22V18H21V19H20V20H19V21H13V20H12V19H11V18H10V17H9V16H8V15H7V14H6V13H5V12Z"
+      fill="black"
+    />
+    <path
+      d="M5 22H7V21H8V20H9V19H10V18H11V19H10V20H9V21H8V22H7V23H5V22Z"
+      fill="black"
+    />
+    <path
+      d="M27 22H25V21H24V20H23V19H22V18H21V19H22V20H23V21H24V22H25V23H27V22Z"
+      fill="black"
+    />
+  </svg>
+);

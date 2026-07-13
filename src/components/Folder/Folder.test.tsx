@@ -40,6 +40,7 @@ vi.mock('../../store/useWindowManager', () => ({
       focusWindow: mocks.focusWindow,
       unfocusAll: mocks.unfocusAll,
       openFileIds: {},
+      focusedWindowId: undefined,
     }),
 }));
 

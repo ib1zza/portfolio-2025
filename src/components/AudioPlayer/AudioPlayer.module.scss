@@ -75,7 +75,8 @@
   border: $border;
   background: $white;
   width: 100%;
-  aspect-ratio: 2 / 1;
+  // aspect-ratio: 2 / 1;
+  height: 100%;
   image-rendering: crisp-edges;
 }
 
@@ -86,6 +87,7 @@
 
   @include mobile-touch {
     gap: ui(4px);
+    flex: 1;
   }
 }
 

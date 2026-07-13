@@ -73,7 +73,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
       fontSize = parseFloat(computedStyle.fontSize) || 13;
       charWidth = Math.floor(fontSize * 0.75); // aspect ratio for columns
 
-      ctx.font = `${fontSize}px FindersKeepers, monospace`;
+      ctx.font = `${fontSize}px Monaco, monospace`;
 
       const newCols = Math.floor(canvas.width / charWidth) + 1;
       if (newCols !== cols) {
@@ -84,10 +84,10 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
     };
 
     // Color definitions
-    // Default classic theme is black on white
-    const textColor = "#000000";
-    const clearColor = "rgba(255, 255, 255, 0.12)"; // fading overlay
-    const bgColor = "#ffffff";
+    // Default classic theme is white on black
+    const textColor = "#ffffff";
+    const clearColor = "rgba(0, 0, 0, 0.12)"; // fading overlay
+    const bgColor = "#000000";
 
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
@@ -110,7 +110,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
       ctx.fillStyle = clearColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.font = `${fontSize}px FindersKeepers, monospace`;
+      ctx.font = `${fontSize}px Monaco, monospace`;
 
       for (let i = 0; i < cols; i++) {
         // Generate a new random ASCII symbol on each tick
@@ -289,19 +289,21 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
           break;
         }
 
-        folder.children.forEach((childId) => {
-          const item = fileSystemItems[childId];
-          if (!item) return;
+        const children = folder.children
+          .map((childId) => fileSystemItems[childId])
+          .filter(Boolean);
 
+        const maxNameLen = Math.max(...children.map((item) => item.name.length));
+        const padLen = Math.max(maxNameLen + 2, 20);
+
+        children.forEach((item) => {
           let typeLabel = "[UNK]";
           if (item.type === "folder" || item.type === "system") typeLabel = "[DIR]";
           else if (item.type === "file") typeLabel = "[TXT]";
           else if (item.type === "app") typeLabel = "[APP]";
           else if (item.type === "link") typeLabel = "[LNK]";
 
-          // Align type label nicely
-          const namePart = item.name.padEnd(28, " ");
-          printOutput(`${namePart} ${typeLabel}`);
+          printOutput(`${item.name.padEnd(padLen, " ")}${typeLabel}`);
         });
         break;
       }
@@ -527,6 +529,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
         ref={containerRef}
         className={`${s.terminalContainer} ${s.animationActive}`}
         onClick={handleTerminalClick}
+        data-scroll-container="true"
       >
         <canvas ref={canvasRef} className={s.animationCanvas} />
         <input
@@ -555,6 +558,7 @@ export const Terminal = memo(function Terminal({ windowId }: TerminalProps) {
       ref={containerRef}
       className={s.terminalContainer}
       onClick={handleTerminalClick}
+      data-scroll-container="true"
     >
       <div className={s.outputContent}>
         {lines.map((line, idx) => (

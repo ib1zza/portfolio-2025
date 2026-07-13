@@ -148,31 +148,32 @@
   align-items: center;
   gap: var(--panel-padding);
   margin-top: auto;
+
+  @include mobile-touch {
+    gap: 0px;
+    justify-content: space-between;
+  }
 }
 
 .dialogBackdrop {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 100000;
   display: grid;
   place-items: center;
-  background: rgb(255 255 255 / 65%);
+  background: transparent;
+
+  @include mobile-touch {
+    position: fixed;
+  }
 }
 
-.importDialog,
-.popupWindow {
+.importDialog {
   width: var(--dialog-width);
   border: $border;
   padding: var(--panel-padding);
   background: $white;
   box-shadow: ui(3px) ui(3px) 0 $black;
-}
-
-.popupWindow {
-  width: min(
-    var(--dialog-width),
-    calc(100vw - var(--dialog-mobile-inline-gap))
-  );
 }
 
 .dialogTitle {

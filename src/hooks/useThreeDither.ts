@@ -433,9 +433,7 @@ export function useThreeDither(
     resize();
 
     const resizeObserver = new ResizeObserver(() => resize());
-    if (canvas.parentElement) {
-      resizeObserver.observe(canvas.parentElement);
-    }
+    resizeObserver.observe(canvas);
 
     // 8. Render Loop
     const startTime = performance.now();
