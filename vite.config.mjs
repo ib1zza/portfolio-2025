@@ -4,6 +4,7 @@ import svgr from "vite-plugin-svgr";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import fs from "node:fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -62,6 +63,40 @@ export default defineConfig(({ command, mode }) => {
           ],
         },
       }),
+      {
+        name: "generate-seo-files",
+        closeBundle() {
+          const siteUrl = process.env.VITE_SITE_URL || "https://ib1zza.com";
+          const outDir = path.resolve(__dirname, "dist");
+
+          // 1. Generate sitemap.xml
+          const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${siteUrl}/</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${siteUrl}/badge</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`;
+          fs.writeFileSync(path.join(outDir, "sitemap.xml"), sitemap);
+
+          // 2. Generate robots.txt
+          const robots = `# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:
+
+Sitemap: ${siteUrl}/sitemap.xml
+`;
+          fs.writeFileSync(path.join(outDir, "robots.txt"), robots);
+        },
+      },
     ],
     css: {
       preprocessorOptions: {

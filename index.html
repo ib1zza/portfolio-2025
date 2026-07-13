@@ -18,8 +18,39 @@
   <link rel="preload" href="%BASE_URL%fonts/finderskeepers.woff2" as="font" type="font/woff2" crossorigin />
 
   <meta name="description"
-    content="Interactive 3D portfolio by Mikhail — a retro Macintosh desktop experience built with React & Three.js" />
+    content="Interactive 3D portfolio by Mikhail (ib1zza) — a retro Macintosh desktop experience built with React & Three.js" />
+  <link rel="canonical" href="%VITE_SITE_URL%/" />
   <title>ib1zza</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="%VITE_SITE_URL%/" />
+  <meta property="og:title" content="Mikhail (ib1zza) — Classic Macintosh Portfolio" />
+  <meta property="og:description" content="Interactive retro Macintosh desktop experience showcasing web applications, 3D graphics, and custom design tools." />
+  <meta property="og:image" content="%VITE_SITE_URL%/pwa-icon-512.png" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="%VITE_SITE_URL%/" />
+  <meta property="twitter:title" content="Mikhail (ib1zza) — Classic Macintosh Portfolio" />
+  <meta property="twitter:description" content="Interactive retro Macintosh desktop experience showcasing web applications, 3D graphics, and custom design tools." />
+  <meta property="twitter:image" content="%VITE_SITE_URL%/pwa-icon-512.png" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Mikhail",
+      "alternateName": "ib1zza",
+      "url": "%VITE_SITE_URL%",
+      "jobTitle": "Frontend Engineer & Creative Developer",
+      "sameAs": [
+        "https://github.com/ib1zza",
+        "https://t.me/ib1zza"
+      ]
+    }
+  </script>
 
   <style>
     *,
@@ -100,7 +131,28 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <!-- SEO fallback for crawlers & JS-disabled environments -->
+    <main style="padding: 20px; font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; display: none;">
+      <h1>Mikhail (ib1zza) — Frontend Engineer & Creative Developer Portfolio</h1>
+      <p>An interactive retro Macintosh desktop experience showcasing web applications, 3D graphics, and custom design tools built with React &amp; Three.js.</p>
+      <h2>About Me</h2>
+      <p>I build immersive, pixel-perfect web experiences with modern tech stacks: React, Vite, TypeScript, and Three.js.</p>
+      <h2>Built-in Applications</h2>
+      <ul>
+        <li><strong>Icon Painter:</strong> A retro 1-bit icon painting application.</li>
+        <li><strong>Dither Studio:</strong> An interactive dither image processing editor.</li>
+        <li><strong>Model Viewer App:</strong> A 3D model viewer inspired by classic CAD software.</li>
+        <li><strong>Badge Generator:</strong> Custom badge generator utility.</li>
+        <li><strong>Space Invaders:</strong> Classic retro game recreated with custom shields and waves.</li>
+      </ul>
+      <h2>Find Me</h2>
+      <ul>
+        <li><a href="https://github.com/ib1zza">GitHub</a></li>
+        <li><a href="https://t.me/ib1zza">Telegram</a></li>
+      </ul>
+    </main>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
