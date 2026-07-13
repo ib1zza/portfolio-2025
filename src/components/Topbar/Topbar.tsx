@@ -9,28 +9,10 @@ import { useWindowOpenAnimation } from "../WindowOpenAnimation";
 import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 import { useEasterEggProgress } from "../../features/easter-eggs/useEasterEggProgress";
 import { useMenuStore } from "../../store/useMenuStore";
-import CheckmarkSvg from "../../assets/icons/checkmark.svg?react";
 import s from "./Topbar.module.scss";
 
-interface SubmenuItemData {
-  title: string;
-  action: () => void;
-  disabled?: boolean;
-  checked?: boolean;
-}
-
-interface TabData {
-  title: React.ReactNode;
-  submenu?: Array<SubmenuItemData | null>;
-  mobileHidden?: boolean;
-  isTitleTab?: boolean;
-}
-
-interface SubmenuProps {
-  items: Array<SubmenuItemData | null>;
-  onItemClick: (action: () => void) => void;
-  setRef: (el: HTMLDivElement | null) => void;
-}
+import type { TabData } from "./types";
+import { Submenu } from "./TopbarSubmenu";
 
 const clockFormatter = new Intl.DateTimeFormat("en-US", {
   hour: "numeric",
@@ -42,38 +24,6 @@ const formatClock = () => clockFormatter.format(new Date());
 const isTouchLikePointer = (event: MouseEvent | PointerEvent) =>
   "pointerType" in event &&
   (event.pointerType === "touch" || event.pointerType === "pen");
-
-const SubmenuContent = ({
-  item,
-  onClick,
-}: {
-  item: SubmenuItemData | null;
-  onClick: (action: () => void) => void;
-}) => {
-  if (!item) return <div className={s.submenuSeparator} />;
-
-  return (
-    <div
-      className={clsx(s.submenuItem, { [s.disabled]: item.disabled })}
-      onPointerUp={() => {
-        if (!item.disabled) onClick(item.action);
-      }}
-    >
-      <span className={s.checkmark}>
-        {item.checked ? <CheckmarkSvg /> : <span className={s.checkmarkSpacer} />}
-      </span>
-      {item.title}
-    </div>
-  );
-};
-
-const Submenu = ({ items, onItemClick, setRef }: SubmenuProps) => (
-  <div className={s.submenu} ref={setRef}>
-    {items.map((item, index) => (
-      <SubmenuContent key={index} item={item} onClick={onItemClick} />
-    ))}
-  </div>
-);
 
 export function Topbar() {
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
@@ -351,11 +301,6 @@ export function Topbar() {
     (event: MouseEvent | PointerEvent) => {
       const target = event.target as Node;
       const clickedOnSubmenu = submenuRef.current?.contains(target);
-      // ⚡ Bolt: Use direct child traversal instead of DOM query in loop
-      // 💡 What: Replaced `.querySelector` inside `.some` loop with `.firstElementChild`.
-      // 🎯 Why: Repeated DOM queries inside a global event handler cause unnecessary CPU overhead.
-      // 📊 Impact: Eliminates N DOM queries per global pointerup event, improving main thread availability.
-      // 🔬 Measurement: Profile global mouse clicks; pointerup handler execution time will decrease.
       const clickedOnTabTitle = tabRefs.current.some((tab) => {
         if (!tab) return false;
         return tab.firstElementChild?.contains(target);

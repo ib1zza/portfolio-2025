@@ -7,39 +7,14 @@ import { isMobilePointerMode } from "../../constants/responsive";
 import { useThreeDither } from "../../hooks/useThreeDither";
 import s from "./VideoPlayer.module.scss";
 
-type DitherMode = "bayer" | "floyd" | "dots" | "ascii";
-
-const ACCEPTED_TYPES = ["video/mp4", "video/webm"];
-
-const formatTime = (seconds: number) => {
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-};
-
-const MODE_OPTIONS = [
-  { value: "bayer" as DitherMode, label: "Bayer" },
-  { value: "floyd" as DitherMode, label: "Floyd" },
-  { value: "dots" as DitherMode, label: "Halftone" },
-  { value: "ascii" as DitherMode, label: "ASCII" },
-];
-
-const RESOLUTION_OPTIONS = [
-  { value: "256", label: "256" },
-  { value: "320", label: "320" },
-  { value: "480", label: "480" },
-];
-
-const MATRIX_OPTIONS = [
-  { value: "2", label: "2×2" },
-  { value: "4", label: "4×4" },
-  { value: "8", label: "8×8" },
-];
-
-interface VideoPlayerProps {
-  windowId: string;
-  fileUrl?: string;
-}
+import type { DitherMode, VideoPlayerProps } from "./types";
+import {
+  ACCEPTED_TYPES,
+  MODE_OPTIONS,
+  RESOLUTION_OPTIONS,
+  MATRIX_OPTIONS,
+} from "./constants";
+import { formatTime } from "./helpers";
 
 export const VideoPlayer = memo(function VideoPlayer({
   windowId,
@@ -121,8 +96,6 @@ export const VideoPlayer = memo(function VideoPlayer({
       video.volume = volume;
       video.loop = loop;
       video.load();
-
-
 
       if (displayRef.current) {
         displayRef.current.src = url;
@@ -523,7 +496,6 @@ export const VideoPlayer = memo(function VideoPlayer({
         className={s.sourceVideo}
         playsInline
       />
-
 
       <input
         ref={inputRef}
