@@ -18,6 +18,7 @@ import { EasterEggProvider } from "../../features/easter-eggs/EasterEggProvider"
 import { useEasterEggs } from "../../features/easter-eggs/EasterEggContext";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
 import { OpenedPattern } from "../Folder/FinderIcons/OpenedPattern";
+import { getFileSystemItemIdFromPath, getItemPathFromId } from "../../utils/routing";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const preloadedWindowContainer = lazyWithPreload(() =>
@@ -219,6 +220,87 @@ function DesktopContent() {
   const { recordDesktopBackgroundClick, recordItemOpenRequest } =
     useEasterEggs();
   const desktopRef = useRef<HTMLDivElement | null>(null);
+  const initialPathRef = useRef(window.location.pathname);
+  const hasRoutedRef = useRef(false);
+
+  // 1. URL to Window (On Mount)
+  useEffect(() => {
+    const path = initialPathRef.current;
+    if (path.startsWith("/badge") || path.startsWith("/test")) {
+      hasRoutedRef.current = true;
+      return;
+    }
+
+    const itemId = getFileSystemItemIdFromPath(path);
+    if (!itemId) {
+      hasRoutedRef.current = true;
+      return;
+    }
+
+    const items = useFileSystem.getState().items;
+    const item = items[itemId];
+    if (!item) {
+      hasRoutedRef.current = true;
+      return;
+    }
+
+    const hasProjectModel =
+      item.type === "file" &&
+      Array.isArray(item.content) &&
+      item.content.some((block) => block.type === "projectModel");
+    const isCenteredNote =
+      item.type === "file" && item.documentStyle === "centered-note";
+    const isEggLog =
+      item.type === "file" && item.documentStyle === "easter-eggs-log";
+    const preferredSize =
+      item.type === "app"
+        ? getAppWindowSize(item.app as WindowAppId)
+        : isCenteredNote || isEggLog
+          ? getDocumentNoteWindowSize()
+        : hasProjectModel
+          ? getProjectModelWindowSize()
+          : undefined;
+    const windowOptions = isCenteredNote
+      ? { resizable: false, windowVariant: "note" as const }
+      : isEggLog
+        ? { resizable: true, windowVariant: "note" as const }
+        : undefined;
+
+    const timer = setTimeout(() => {
+      openWindowAnimated({
+        id: item.id,
+        title: item.name,
+        parentId: item.id,
+        sourceRect: undefined,
+        preferredSize,
+        openerWindowId: undefined,
+        windowOptions,
+      });
+      setActive(item.id);
+      hasRoutedRef.current = true;
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [openWindowAnimated, setActive]);
+
+  // 2. Window to URL (On Change)
+  useEffect(() => {
+    if (!hasRoutedRef.current) return;
+
+    const currentPath = window.location.pathname;
+    if (currentPath.startsWith("/badge") || currentPath.startsWith("/test")) return;
+
+    if (focusedWindowId) {
+      const targetPath = `/${getItemPathFromId(focusedWindowId)}`;
+      if (currentPath !== targetPath) {
+        window.history.pushState(null, "", targetPath);
+      }
+    } else {
+      if (currentPath !== "/") {
+        window.history.pushState(null, "", "/");
+      }
+    }
+  }, [focusedWindowId]);
 
   const handleBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
     if (e.target === desktopRef.current) {
