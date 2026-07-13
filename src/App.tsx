@@ -2,6 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import Loader from "./components/Loader/Loader";
 import { FINE_POINTER_QUERY } from "./constants/responsive";
 import { useWindowManager } from "./store/useWindowManager";
+import { ROUTE_METADATA, getItemPathFromId } from "./utils/routing";
 
 const LazyDesktop = lazy(() => import("./components/Desktop"));
 const LazyCursor = lazy(() => import("./components/CustomCursor"));
@@ -24,21 +25,38 @@ function App() {
   const [isCustomCursorEnabled, setIsCustomCursorEnabled] = useState(false);
 
   const focusedWindowId = useWindowManager((state) => state.focusedWindowId);
-  const focusedWindowTitle = useWindowManager((state) =>
-    focusedWindowId ? state.windows[focusedWindowId]?.title : undefined
-  );
-
-  useEffect(() => {
-    if (focusedWindowTitle) {
-      document.title = `${focusedWindowTitle} — ib1zza`;
-    } else {
-      document.title = "ib1zza";
-    }
-  }, [focusedWindowTitle]);
 
   const isTestRoute = window.location.pathname.startsWith("/test");
   const isBadgeRoute = window.location.pathname.startsWith("/badge");
   const isStandaloneRoute = isBadgeRoute || isTestRoute;
+
+  useEffect(() => {
+    if (isStandaloneRoute) return;
+
+    const path = focusedWindowId ? getItemPathFromId(focusedWindowId) : "";
+    const meta = ROUTE_METADATA[path] || ROUTE_METADATA[""];
+    const siteUrl = import.meta.env.VITE_SITE_URL || "https://ib1zza.com";
+    const routePath = path ? `${path}/` : "";
+
+    // 1. Title
+    document.title = meta.title;
+
+    // 2. Meta description
+    document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+
+    // 3. Canonical link
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", `${siteUrl}/${routePath}`);
+
+    // 4. Open Graph Meta Tags
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", `${siteUrl}/${routePath}`);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", meta.ogTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", meta.description);
+
+    // 5. Twitter Meta Tags
+    document.querySelector('meta[property="twitter:url"]')?.setAttribute("content", `${siteUrl}/${routePath}`);
+    document.querySelector('meta[property="twitter:title"]')?.setAttribute("content", meta.ogTitle);
+    document.querySelector('meta[property="twitter:description"]')?.setAttribute("content", meta.description);
+  }, [focusedWindowId, isStandaloneRoute]);
 
   useEffect(() => {
     document.body.classList.toggle("native-cursor", isStandaloneRoute);
