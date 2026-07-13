@@ -30,6 +30,7 @@ function PopupSelectComponent<T extends string>({
 }: PopupSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement | null>(null);
+  const documentPointerUpRef = useRef<((event: PointerEvent) => void) | null>(null);
   const selectedOption = options.find((option) => option.value === value);
   const controlStyle = useMemo(
     () =>
@@ -64,6 +65,14 @@ function PopupSelectComponent<T extends string>({
       document.removeEventListener("pointerdown", closeMenu);
     };
   }, [closeMenu, isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (documentPointerUpRef.current) {
+        document.removeEventListener("pointerup", documentPointerUpRef.current);
+      }
+    };
+  }, []);
 
   const chooseOption = useCallback(
     (nextValue: T) => {
@@ -101,6 +110,32 @@ function PopupSelectComponent<T extends string>({
           onPointerDown={(event) => {
             event.preventDefault();
             setIsOpen((current) => !current);
+
+            if (event.pointerType === "mouse") {
+              const target = event.currentTarget;
+              if (typeof target.releasePointerCapture === "function") {
+                target.releasePointerCapture(event.pointerId);
+              }
+
+              if (documentPointerUpRef.current) {
+                document.removeEventListener("pointerup", documentPointerUpRef.current);
+              }
+
+              const handleDocumentPointerUp = (upEvent: PointerEvent) => {
+                document.removeEventListener("pointerup", handleDocumentPointerUp);
+                documentPointerUpRef.current = null;
+
+                const upTarget = upEvent.target;
+                if (upTarget instanceof Node) {
+                  if (!popupRef.current?.contains(upTarget)) {
+                    setIsOpen(false);
+                  }
+                }
+              };
+
+              documentPointerUpRef.current = handleDocumentPointerUp;
+              document.addEventListener("pointerup", handleDocumentPointerUp);
+            }
           }}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
@@ -128,7 +163,15 @@ function PopupSelectComponent<T extends string>({
                 aria-selected={option.value === value}
                 onPointerDown={(event) => {
                   event.preventDefault();
-                  chooseOption(option.value);
+                  if (event.pointerType !== "mouse") {
+                    chooseOption(option.value);
+                  }
+                }}
+                onPointerUp={(event) => {
+                  if (event.pointerType === "mouse") {
+                    event.preventDefault();
+                    chooseOption(option.value);
+                  }
                 }}
                 onClick={() => {
                   chooseOption(option.value);

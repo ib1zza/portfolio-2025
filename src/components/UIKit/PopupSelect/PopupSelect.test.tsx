@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { PopupSelect } from './PopupSelect';
@@ -133,5 +133,26 @@ describe('PopupSelect', () => {
     await userEvent.click(screen.getByTestId('other'));
 
     expect(screen.queryByText('Option B')).not.toBeInTheDocument();
+  });
+
+  it('selects option on drag-and-release (pointerdown on trigger, pointerup on option)', async () => {
+    const handleChange = vi.fn();
+    render(<PopupSelect label="Theme" value="a" options={options} onChange={handleChange} />);
+
+    const button = screen.getByRole('button', { name: /option a/i });
+    
+    // Simulate pointerdown with mouse on trigger
+    fireEvent.pointerDown(button, { pointerType: 'mouse', pointerId: 1 });
+    
+    // The menu should open
+    expect(screen.getByText('Option B')).toBeInTheDocument();
+    
+    const optionB = screen.getByText('Option B');
+    
+    // Simulate pointerup with mouse on option B
+    fireEvent.pointerUp(optionB, { pointerType: 'mouse', pointerId: 1 });
+    
+    // Should have called onChange
+    expect(handleChange).toHaveBeenCalledWith('b');
   });
 });
