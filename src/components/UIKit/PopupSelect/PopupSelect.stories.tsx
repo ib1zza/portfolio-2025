@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, userEvent, within } from '@storybook/test';
 import { PopupSelect } from './PopupSelect';
 import { useState } from 'react';
 
@@ -39,5 +40,19 @@ export const Default: Story = {
     options: options,
     value: 'option1',
     onChange: () => {},
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const selectButton = canvas.getByRole('button', { name: /First Option/i });
+    
+    // Open select dropdown
+    await userEvent.click(selectButton);
+    
+    // Find dropdown menu options
+    const option2 = canvas.getByRole('option', { name: /Second Option/i });
+    await userEvent.click(option2);
+    
+    // Verify value changed on trigger
+    await expect(canvas.getByRole('button')).toHaveTextContent('Second Option');
   },
 };

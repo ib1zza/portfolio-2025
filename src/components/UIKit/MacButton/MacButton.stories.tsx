@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, fn, userEvent, within } from '@storybook/test';
 import { MacButton } from './MacButton';
 
 const meta = {
@@ -17,6 +18,9 @@ const meta = {
       control: 'boolean',
     },
   },
+  args: {
+    onClick: fn(),
+  },
 } satisfies Meta<typeof MacButton>;
 
 export default meta;
@@ -26,6 +30,12 @@ export const Regular: Story = {
   args: {
     children: 'Button',
     variant: 'regular',
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const button = canvas.getByRole('button', { name: /button/i });
+    await userEvent.click(button);
+    await expect(args.onClick).toHaveBeenCalled();
   },
 };
 
