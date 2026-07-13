@@ -223,6 +223,10 @@ function DesktopContent() {
   const initialPathRef = useRef(window.location.pathname);
   const hasRoutedRef = useRef(false);
 
+  // SPA URL Deep-Linking & History Sync
+  // Note: When adding new routes, remember to configure their metadata and sitemap path
+  // inside `ROUTE_METADATA` in `vite.config.mjs`, and map their IDs in `src/utils/routing.ts`.
+
   // 1. URL to Window (On Mount)
   useEffect(() => {
     const path = initialPathRef.current;

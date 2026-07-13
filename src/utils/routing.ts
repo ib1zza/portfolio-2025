@@ -1,3 +1,8 @@
+// src/utils/routing.ts
+// IMPORTANT: When adding a new route/app here, you must also add it to the 
+// ROUTE_METADATA mapping inside `vite.config.mjs` so it receives correct 
+// SEO metadata pre-rendering and gets included in `sitemap.xml`!
+
 import { useFileSystem } from "../store/useFileSystem";
 
 const PATH_TO_ITEM_ID: Record<string, string> = {
