@@ -63,7 +63,7 @@
         },
         {
           "key": "Link",
-          "value": "</fonts/ChiKareGo2.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </fonts/FindersKeepers.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, <https://va.vercel-scripts.com/>; rel=preconnect"
+          "value": "</fonts/chikarego2.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </fonts/finderskeepers.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, <https://va.vercel-scripts.com/>; rel=preconnect"
         },
         {
           "key": "X-Frame-Options",
@@ -92,7 +92,7 @@
         },
         {
           "key": "Link",
-          "value": "</fonts/ChiKareGo2.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </fonts/FindersKeepers.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, <https://va.vercel-scripts.com/>; rel=preconnect"
+          "value": "</fonts/chikarego2.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, </fonts/finderskeepers.woff2>; rel=preload; as=font; type=font/woff2; crossorigin, <https://va.vercel-scripts.com/>; rel=preconnect"
         },
         {
           "key": "X-Frame-Options",
