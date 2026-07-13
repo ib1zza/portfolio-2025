@@ -67,19 +67,19 @@ export interface LinkItem extends BaseItem {
 export interface AppItem extends BaseItem {
   type: "app";
   app:
-    | "icon-painter"
-    | "dither-studio"
-    | "model-viewer"
-    | "badge-generator"
-    | "audio-player"
-    | "video-player"
-    | "space-invaders"
-    | "portfolio-assistant"
-    | "hypercard-stack"
-    | "image-viewer"
-    | "video-viewer"
-    | "terminal"
-    | "dither-camera";
+  | "icon-painter"
+  | "dither-studio"
+  | "model-viewer"
+  | "badge-generator"
+  | "audio-player"
+  | "video-player"
+  | "space-invaders"
+  | "portfolio-assistant"
+  | "hypercard-stack"
+  | "image-viewer"
+  | "video-viewer"
+  | "terminal"
+  | "dither-camera";
   savedIconId?: string;
 }
 
@@ -117,73 +117,73 @@ const formatProject = (project: PortfolioProject) =>
       : []),
     ...(project.availability
       ? [
-          {
-            type: "meta" as const,
-            label: "Availability",
-            value: project.availability,
-          },
-        ]
+        {
+          type: "meta" as const,
+          label: "Availability",
+          value: project.availability,
+        },
+      ]
       : []),
     { type: "meta", label: "Stack", value: project.stack.join(", ") },
     { type: "paragraph", text: project.summary },
     ...(project.caseStudy
       ? [
-          { type: "heading" as const, text: "Case Study" },
-          {
-            type: "meta" as const,
-            label: "Problem",
-            value: project.caseStudy.problem,
-          },
-          {
-            type: "meta" as const,
-            label: "Solution",
-            value: project.caseStudy.solution,
-          },
-          ...(project.caseStudy.result
-            ? [
-                {
-                  type: "meta" as const,
-                  label: "Result",
-                  value: project.caseStudy.result,
-                },
-              ]
-            : []),
-        ]
+        { type: "heading" as const, text: "Case Study" },
+        {
+          type: "meta" as const,
+          label: "Problem",
+          value: project.caseStudy.problem,
+        },
+        {
+          type: "meta" as const,
+          label: "Solution",
+          value: project.caseStudy.solution,
+        },
+        ...(project.caseStudy.result
+          ? [
+            {
+              type: "meta" as const,
+              label: "Result",
+              value: project.caseStudy.result,
+            },
+          ]
+          : []),
+      ]
       : []),
     ...(project.responsibilities?.length
       ? [
-          { type: "heading" as const, text: "Responsibilities" },
-          { type: "list" as const, items: project.responsibilities },
-        ]
+        { type: "heading" as const, text: "Responsibilities" },
+        { type: "list" as const, items: project.responsibilities },
+      ]
       : []),
     ...(project.features?.length
       ? [
-          { type: "heading" as const, text: "Features" },
-          { type: "list" as const, items: project.features },
-        ]
+        { type: "heading" as const, text: "Features" },
+        { type: "list" as const, items: project.features },
+      ]
       : []),
     { type: "heading", text: "Highlights" },
     { type: "list", items: project.highlights },
     ...(project.metrics?.length
       ? [
-          { type: "heading" as const, text: "Metrics" },
-          {
-            type: "list" as const,
-            items: project.metrics.map((metric) =>
-              [metric.label, metric.value, metric.note]
-                .filter(Boolean)
-                .join(" - "),
-            ),
-          },
-        ]
+        { type: "heading" as const, text: "Metrics" },
+        {
+          type: "list" as const,
+          items: project.metrics.map((metric) =>
+            [metric.label, metric.value, metric.note]
+              .filter(Boolean)
+              .join(" - "),
+          ),
+        },
+      ]
       : []),
     ...(project.model
       ? [
-          {
-            type: "projectModel" as const,
-            model: project.model,
-          },
-        ]
+        {
+          type: "projectModel" as const,
+          model: project.model,
+        },
+      ]
       : []),
     ...(project.accessNote
       ? [{ type: "paragraph" as const, text: project.accessNote }]
@@ -194,9 +194,9 @@ const formatProject = (project: PortfolioProject) =>
     })),
     ...(project.links.length
       ? [
-          { type: "heading" as const, text: "Links" },
-          { type: "links" as const, items: project.links },
-        ]
+        { type: "heading" as const, text: "Links" },
+        { type: "links" as const, items: project.links },
+      ]
       : []),
   ] satisfies DocumentBlock[];
 
@@ -626,8 +626,8 @@ const getMobileAppPosition = (index: number) => {
 
   return getMobileRowPosition(
     1 +
-      MOBILE_APP_ROW_COUNTS.length +
-      Math.floor(remainingIndex / MOBILE_GRID.columns),
+    MOBILE_APP_ROW_COUNTS.length +
+    Math.floor(remainingIndex / MOBILE_GRID.columns),
     remainingIndex % MOBILE_GRID.columns,
   );
 };
@@ -640,20 +640,12 @@ const getAppPosition = (index: number) =>
 const getGeneratedFilePosition = (index: number) =>
   getViewportMetrics().isMobile
     ? getMobileRowPosition(
-        MOBILE_GENERATED_START_ROW + Math.floor(index / MOBILE_GRID.columns),
-        index % MOBILE_GRID.columns,
-      )
+      MOBILE_GENERATED_START_ROW + Math.floor(index / MOBILE_GRID.columns),
+      index % MOBILE_GRID.columns,
+    )
     : getDesktopGridPosition(
-        ROOT_FOLDER_ITEM_IDS.length + ROOT_APP_ITEM_IDS.length + index,
-      );
-
-const getSavedIconPosition = (index: number) => getGeneratedFilePosition(index);
-
-const getCreditsPosition = (generatedFileCount: number) =>
-  getGeneratedFilePosition(generatedFileCount);
-
-const getMediaDiskPosition = (generatedFileCount: number) =>
-  getGeneratedFilePosition(generatedFileCount + 2);
+      ROOT_FOLDER_ITEM_IDS.length + ROOT_APP_ITEM_IDS.length + index,
+    );
 
 const getTrashPosition = () => {
   const { width, height, isMobile } = getViewportMetrics();
@@ -673,14 +665,14 @@ const getRootChildren = (
   generatedFileIds: string[] = [],
   extraItemIds: string[] = [],
 ) => [
-  ...ROOT_FOLDER_ITEM_IDS,
-  ...ROOT_APP_ITEM_IDS,
-  ...generatedFileIds,
-  ...ROOT_FILE_ITEM_IDS,
-  ...ROOT_SYSTEM_ITEM_IDS,
-  ...extraItemIds,
-  "trash",
-];
+    ...ROOT_FOLDER_ITEM_IDS,
+    ...ROOT_APP_ITEM_IDS,
+    ...ROOT_FILE_ITEM_IDS,
+    ...ROOT_SYSTEM_ITEM_IDS,
+    ...extraItemIds,
+    ...generatedFileIds,
+    "trash",
+  ];
 
 /**
  * Base grid position that accounts for all layout categories.
@@ -702,84 +694,55 @@ const getCleanRootPosition = (
 ) => {
   if (item.id === "trash") return getTrashPosition();
 
-  if (item.id === "mediaHd") {
-    return getMediaDiskPosition(
-      siblings.filter((sibling) => isGeneratedFileItemId(sibling.id)).length,
-    );
-  }
-
   const folderIndex = ROOT_FOLDER_ITEM_IDS.indexOf(item.id);
   if (folderIndex >= 0) return getFolderPosition(folderIndex);
 
   const appIndex = ROOT_APP_ITEM_IDS.indexOf(item.id);
   if (appIndex >= 0) return getAppPosition(appIndex);
 
-  const generatedFiles = siblings.filter((sibling) =>
-    isGeneratedFileItemId(sibling.id),
+  // Other items (credits, mediaHd, extra items, saved icons)
+  const otherSiblings = siblings.filter(
+    (s) =>
+      s.id !== "trash" &&
+      !ROOT_FOLDER_ITEM_IDS.includes(s.id) &&
+      !ROOT_APP_ITEM_IDS.includes(s.id),
   );
+  const otherIndex = otherSiblings.findIndex((s) => s.id === item.id);
 
-  if (isGeneratedFileItemId(item.id)) {
-    return getSavedIconPosition(
-      Math.max(
-        0,
-        generatedFiles.findIndex(
-          (generatedFile) => generatedFile.id === item.id,
-        ),
-      ),
-    );
+  if (otherIndex >= 0) {
+    return getGeneratedFilePosition(otherIndex);
   }
 
-  if (item.id === "credits") {
-    return getCreditsPosition(generatedFiles.length);
-  }
-
-  // Extra items placed after the last layout grid index (mediaHd at 14+G)
-  const generatedCount = siblings.filter((s) =>
-    isGeneratedFileItemId(s.id),
-  ).length;
-  const extras = siblings.filter(
-    (s) => !ROOT_LAYOUT_ITEM_IDS.has(s.id) && !isGeneratedFileItemId(s.id) && s.id !== "trash",
-  );
-  const extraIndex = extras.findIndex((s) => s.id === item.id);
-
-  // Grid index of the last standard item + the +2 offset mediaHd uses + extraIndex
-  const gridIndex =
-    ROOT_FOLDER_ITEM_IDS.length +
-    ROOT_APP_ITEM_IDS.length +
-    generatedCount +
-    ROOT_FILE_ITEM_IDS.length +
-    2 +
-    Math.max(0, extraIndex);
-
-  return getGridPosition(gridIndex);
-};
-
-/**
- * Computes position for a NEW extra item using nextExtraIds (which includes the item),
- * since the item isn't in root.children yet and sibling-based index would be wrong.
- */
-const getExtraRootItemPosition = (
-  item: FileSystemItem,
-  siblings: FileSystemItem[],
-  nextExtraIds: string[],
-): Position => {
-  const generatedCount = siblings.filter((s) =>
-    isGeneratedFileItemId(s.id),
-  ).length;
-  const extraIndex = nextExtraIds.indexOf(item.id);
-  const gridIndex =
-    ROOT_FOLDER_ITEM_IDS.length +
-    ROOT_APP_ITEM_IDS.length +
-    generatedCount +
-    ROOT_FILE_ITEM_IDS.length +
-    2 +
-    Math.max(0, extraIndex);
-
-  return getGridPosition(gridIndex);
+  return getGridPosition(0);
 };
 
 const isAutoLayoutRootItemId = (id: string) =>
   ROOT_LAYOUT_ITEM_IDS.has(id) || isGeneratedFileItemId(id);
+
+const recalculateRootPositions = (
+  items: Record<string, FileSystemItem>,
+  itemPositions: Record<string, Position>,
+) => {
+  const root = items.root;
+  if (!root || root.type !== "folder") return items;
+
+  const siblings = getChildItems(items, "root");
+  const nextItems = { ...items };
+
+  for (const child of siblings) {
+    if (child.parentId === "root") {
+      const isAutoLayout = isAutoLayoutRootItemId(child.id);
+      const position = getCleanRootPosition(child, siblings);
+
+      nextItems[child.id] = {
+        ...child,
+        position: isAutoLayout ? position : (itemPositions[child.id] ?? position),
+      };
+    }
+  }
+
+  return nextItems;
+};
 
 const sanitizeStoredPositions = (
   itemPositions: Record<string, Position> = {},
@@ -814,7 +777,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
   const savedIcons = readSavedIcons();
   const savedIconIds = savedIcons.map((icon) => savedIconItemId(icon.id));
   const savedIconItems = savedIcons.reduce<Record<string, FileSystemItem>>(
-    (items, icon, index) => {
+    (items, icon) => {
       const itemId = savedIconItemId(icon.id);
 
       items[itemId] = {
@@ -822,7 +785,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
         name: icon.name,
         type: "app",
         parentId: "root",
-        position: getSavedIconPosition(index),
+        position: { x: 0, y: 0 },
         app: "icon-painter",
         savedIconId: icon.id,
       };
@@ -844,7 +807,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Projects",
       type: "folder",
       parentId: "root",
-      position: getFolderPosition(1),
+      position: { x: 0, y: 0 },
       children: portfolio.projectSections.map(
         (section) => `project-section-${section.id}`,
       ),
@@ -854,7 +817,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "About Me",
       type: "folder",
       parentId: "root",
-      position: getFolderPosition(0),
+      position: { x: 0, y: 0 },
       children: ["aboutReadme"],
     },
     aboutReadme: {
@@ -869,7 +832,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Education",
       type: "folder",
       parentId: "root",
-      position: getFolderPosition(2),
+      position: { x: 0, y: 0 },
       children: ["educationReadme"],
     },
     educationReadme: {
@@ -884,7 +847,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Contact",
       type: "folder",
       parentId: "root",
-      position: getFolderPosition(3),
+      position: { x: 0, y: 0 },
       children: [
         "contact-telegram",
         "contact-vk",
@@ -905,7 +868,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Icon Painter",
       type: "app",
       parentId: "root",
-      position: getAppPosition(0),
+      position: { x: 0, y: 0 },
       app: "icon-painter",
     },
     ditherStudio: {
@@ -913,7 +876,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Dither Studio",
       type: "app",
       parentId: "root",
-      position: getAppPosition(1),
+      position: { x: 0, y: 0 },
       app: "dither-studio",
     },
     modelViewer: {
@@ -921,7 +884,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Model Viewer",
       type: "app",
       parentId: "root",
-      position: getAppPosition(2),
+      position: { x: 0, y: 0 },
       app: "model-viewer",
     },
     badgeGenerator: {
@@ -929,7 +892,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Badge Generator",
       type: "app",
       parentId: "root",
-      position: getAppPosition(3),
+      position: { x: 0, y: 0 },
       app: "badge-generator",
     },
     audioPlayer: {
@@ -937,7 +900,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Audio Player",
       type: "app",
       parentId: "root",
-      position: getAppPosition(4),
+      position: { x: 0, y: 0 },
       app: "audio-player",
     },
     videoPlayer: {
@@ -945,7 +908,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Video Player",
       type: "app",
       parentId: "root",
-      position: getAppPosition(5),
+      position: { x: 0, y: 0 },
       app: "video-player",
     },
     spaceInvaders: {
@@ -953,7 +916,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Space Invaders",
       type: "app",
       parentId: "root",
-      position: getAppPosition(6),
+      position: { x: 0, y: 0 },
       app: "space-invaders",
     },
     portfolioAssistant: {
@@ -961,7 +924,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Assistant",
       type: "app",
       parentId: "root",
-      position: getAppPosition(7),
+      position: { x: 0, y: 0 },
       app: "portfolio-assistant",
     },
     terminal: {
@@ -969,7 +932,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Terminal",
       type: "app",
       parentId: "root",
-      position: getAppPosition(8),
+      position: { x: 0, y: 0 },
       app: "terminal",
     },
     ditherCamera: {
@@ -977,7 +940,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Dither Camera",
       type: "app",
       parentId: "root",
-      position: getAppPosition(9),
+      position: { x: 0, y: 0 },
       app: "dither-camera",
     },
     credits: {
@@ -985,7 +948,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Credits",
       type: "file",
       parentId: "root",
-      position: getCreditsPosition(savedIconIds.length),
+      position: { x: 0, y: 0 },
       content: creditsContent,
     },
     ["easterEggLog"]: {
@@ -1040,7 +1003,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
       name: "Media",
       type: "system",
       parentId: "root",
-      position: getMediaDiskPosition(savedIconIds.length),
+      position: { x: 0, y: 0 },
       systemType: "disk",
       children: ["mediaPhoto", "mediaVideo", "mediaMusic"],
     },
@@ -1132,18 +1095,7 @@ const createInitialItems = (itemPositions: Record<string, Position> = {}) => {
     ...projectItems,
   };
 
-  return Object.fromEntries(
-    Object.entries(items).map(([id, item]) => [
-      id,
-      {
-        ...item,
-        position:
-          item.parentId === "root" && isAutoLayoutRootItemId(id)
-            ? item.position
-            : (itemPositions[id] ?? item.position),
-      },
-    ]),
-  ) as Record<string, FileSystemItem>;
+  return recalculateRootPositions(items, itemPositions);
 };
 
 const getCleanPosition = (
@@ -1155,14 +1107,14 @@ const getCleanPosition = (
   parentId === "root"
     ? getCleanRootPosition(item, siblings)
     : {
-        x:
-          scaleUiValue(WINDOW_GRID.startX) +
-          (index % WINDOW_GRID.columns) * scaleUiValue(WINDOW_GRID.stepX),
-        y:
-          scaleUiValue(WINDOW_GRID.startY) +
-          Math.floor(index / WINDOW_GRID.columns) *
-            scaleUiValue(WINDOW_GRID.stepY),
-      };
+      x:
+        scaleUiValue(WINDOW_GRID.startX) +
+        (index % WINDOW_GRID.columns) * scaleUiValue(WINDOW_GRID.stepX),
+      y:
+        scaleUiValue(WINDOW_GRID.startY) +
+        Math.floor(index / WINDOW_GRID.columns) *
+        scaleUiValue(WINDOW_GRID.stepY),
+    };
 
 interface FileSystemStore {
   items: Record<string, FileSystemItem>;
@@ -1231,9 +1183,9 @@ export const useFileSystem = create<FileSystemStore>()(
             },
             itemPositions: shouldPersistPosition
               ? {
-                  ...state.itemPositions,
-                  [id]: position,
-                }
+                ...state.itemPositions,
+                [id]: position,
+              }
               : positionsWithoutItem,
           };
         });
@@ -1247,18 +1199,9 @@ export const useFileSystem = create<FileSystemStore>()(
           const currentGeneratedFileIds = root.children.filter((childId) =>
             isGeneratedFileItemId(childId),
           );
-          const generatedFileIndex = currentGeneratedFileIds.indexOf(itemId);
-          const isIncluded = generatedFileIndex !== -1;
-          const generatedFileIds = isIncluded
+          const generatedFileIds = currentGeneratedFileIds.includes(itemId)
             ? currentGeneratedFileIds
             : [...currentGeneratedFileIds, itemId];
-          const finalGeneratedFileIndex = isIncluded ? generatedFileIndex : generatedFileIds.length - 1;
-          const existingItem = state.items[itemId];
-          const position =
-            existingItem?.position ??
-            state.itemPositions[itemId] ??
-            getSavedIconPosition(finalGeneratedFileIndex);
-          const credits = state.items.credits;
 
           const baseItems: Record<string, FileSystemItem> = {
             ...state.items,
@@ -1269,41 +1212,20 @@ export const useFileSystem = create<FileSystemStore>()(
                 getExtraRootItemIds(root.children),
               ),
             },
-            ...(credits
-              ? {
-                  credits: {
-                    ...credits,
-                    position: getCreditsPosition(generatedFileIds.length),
-                  },
-                }
-              : {}),
             [itemId]: {
               id: itemId,
               name: icon.name,
               type: "app",
               parentId: "root",
-              position,
+              position: { x: 0, y: 0 },
               app: "icon-painter",
               savedIconId: icon.id,
             },
           };
 
-          // Recalculate extra item positions so they shift after new generated files
-          const extraIds = getExtraRootItemIds((baseItems.root as FolderItem).children);
-          if (extraIds.length > 0) {
-            const newSiblings = getChildItems(baseItems, "root");
-            for (const extraId of extraIds) {
-              const extraItem = baseItems[extraId];
-              if (extraItem) {
-                baseItems[extraId] = {
-                  ...extraItem,
-                  position: getCleanRootPosition(extraItem, newSiblings),
-                };
-              }
-            }
-          }
+          const updatedItems = recalculateRootPositions(baseItems, state.itemPositions);
 
-          return { items: baseItems };
+          return { items: updatedItems };
         });
       },
       deleteSavedIconItem: (id) => {
@@ -1328,7 +1250,6 @@ export const useFileSystem = create<FileSystemStore>()(
           const generatedFileIds = root.children.filter(
             (childId) => isGeneratedFileItemId(childId) && childId !== id,
           );
-          const credits = nextItems.credits;
 
           const baseItems: Record<string, FileSystemItem> = {
             ...nextItems,
@@ -1339,33 +1260,12 @@ export const useFileSystem = create<FileSystemStore>()(
                 getExtraRootItemIds(root.children),
               ),
             },
-            ...(credits
-              ? {
-                  credits: {
-                    ...credits,
-                    position: getCreditsPosition(generatedFileIds.length),
-                  },
-                }
-              : {}),
           };
 
-          // Recalculate extra item positions so they shift after generated files shrink
-          const extraIds = getExtraRootItemIds((baseItems.root as FolderItem).children);
-          if (extraIds.length > 0) {
-            const newSiblings = getChildItems(baseItems, "root");
-            for (const extraId of extraIds) {
-              const extraItem = baseItems[extraId];
-              if (extraItem) {
-                baseItems[extraId] = {
-                  ...extraItem,
-                  position: getCleanRootPosition(extraItem, newSiblings),
-                };
-              }
-            }
-          }
+          const updatedItems = recalculateRootPositions(baseItems, nextPositions);
 
           return {
-            items: baseItems,
+            items: updatedItems,
             itemPositions: nextPositions,
             activeItemId: state.activeItemId === id ? null : state.activeItemId,
           };
@@ -1384,34 +1284,26 @@ export const useFileSystem = create<FileSystemStore>()(
             ? extraItemIds
             : [...extraItemIds, itemId];
           const item = state.items[itemId];
-          const siblings = getChildItems(state.items, "root");
-          const credits = state.items.credits;
 
-          return {
-            items: {
-              ...state.items,
-              ...(item
-                ? {
-                    [itemId]: {
-                      ...item,
-                      position: getExtraRootItemPosition(item, siblings, nextExtraIds),
-                    },
-                  }
-                : {}),
-              ...(credits
-                ? {
-                    credits: {
-                      ...credits,
-                      position: getCreditsPosition(generatedFileIds.length),
-                    },
-                  }
-                : {}),
-              root: {
-                ...root,
-                children: getRootChildren(generatedFileIds, nextExtraIds),
-              },
+          const baseItems: Record<string, FileSystemItem> = {
+            ...state.items,
+            ...(item
+              ? {
+                [itemId]: {
+                  ...item,
+                  position: { x: 0, y: 0 },
+                },
+              }
+              : {}),
+            root: {
+              ...root,
+              children: getRootChildren(generatedFileIds, nextExtraIds),
             },
           };
+
+          const updatedItems = recalculateRootPositions(baseItems, state.itemPositions);
+
+          return { items: updatedItems };
         });
       },
       cleanUpChildren: (parentId) => {
