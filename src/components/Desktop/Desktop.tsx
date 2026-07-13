@@ -89,6 +89,9 @@ const getSpatialScore = (
   candidate: SpatialItem,
   direction: NavigationDirection,
 ) => {
+  const currentRect = current.rect;
+  const candidateRect = candidate.rect;
+
   const dx = candidate.centerX - current.centerX;
   const dy = candidate.centerY - current.centerY;
 
@@ -99,10 +102,39 @@ const getSpatialScore = (
 
   const primaryDistance =
     direction === "left" || direction === "right" ? Math.abs(dx) : Math.abs(dy);
-  const crossDistance =
-    direction === "left" || direction === "right" ? Math.abs(dy) : Math.abs(dx);
 
-  return primaryDistance * 4 + crossDistance;
+  let orthogonalDistance = 0;
+  if (direction === "left" || direction === "right") {
+    // Orthogonal axis is Y. Check for vertical overlap.
+    const overlap = Math.max(
+      0,
+      Math.min(currentRect.bottom, candidateRect.bottom) -
+        Math.max(currentRect.top, candidateRect.top),
+    );
+    if (overlap === 0) {
+      orthogonalDistance =
+        candidateRect.bottom < currentRect.top
+          ? currentRect.top - candidateRect.bottom
+          : candidateRect.top - currentRect.bottom;
+    }
+  } else {
+    // Orthogonal axis is X. Check for horizontal overlap.
+    const overlap = Math.max(
+      0,
+      Math.min(currentRect.right, candidateRect.right) -
+        Math.max(currentRect.left, candidateRect.left),
+    );
+    if (overlap === 0) {
+      orthogonalDistance =
+        candidateRect.right < currentRect.left
+          ? currentRect.left - candidateRect.right
+          : candidateRect.left - currentRect.right;
+    }
+  }
+
+  // Multiply orthogonal distance by a heavy penalty factor (e.g. 20)
+  // to prioritize staying in the same row/column.
+  return primaryDistance + orthogonalDistance * 20;
 };
 
 const getNextSpatialItem = (

@@ -20,8 +20,8 @@ $public-base: "/" !default;
 
 @font-face {
   font-family: "Monaco";
-  src: url("#{$public-base}fonts/proggyclean.woff2") format("woff2"),
-  url("#{$public-base}fonts/proggyclean.ttf") format("truetype");
+  src: url("#{$public-base}fonts/proggy.woff2") format("woff2"),
+  url("#{$public-base}fonts/proggy.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
