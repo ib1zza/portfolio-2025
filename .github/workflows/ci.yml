@@ -26,11 +26,11 @@ jobs:
       - name: Run lint checks
         run: yarn lint
 
-      - name: Run unit & integration tests
-        run: npx vitest run
-
       - name: Install Playwright browsers and system dependencies
         run: npx playwright install chromium --with-deps
+
+      - name: Run unit & integration tests
+        run: npx vitest run
 
       - name: Run Storybook Vitest tests
         run: npx vitest --project storybook --run
