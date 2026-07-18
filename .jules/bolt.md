@@ -31,3 +31,9 @@
 ## 2026-07-10 - DOM Query in Global Event Handler Optimization
 **Learning:** Repeated DOM queries like `.querySelector` inside global event handlers (like `pointerup` or `mousemove`) trigger unnecessary CPU overhead, specially if executing on every interaction.
 **Action:** Traverse the DOM directly via properties like `.firstElementChild` or cache elements in a Map or ref instead of running generic CSS selector queries in hot paths.
+## 2026-07-28 - Optimize array .includes() in .filter()
+**Learning:** Checking against an array using  inside  operations can create an implicit O(N*M) loop performance overhead.
+**Action:** Always pre-compute a `Set` outside the loop and use  inside  blocks to change complexity to O(1).
+## 2026-07-28 - Optimize array .includes() in .filter()
+**Learning:** Checking against an array using `.includes()` inside `.filter()` operations can create an implicit O(N*M) loop performance overhead.
+**Action:** Always pre-compute a `Set` outside the loop and use `.has()` inside `.filter()` blocks to change complexity to O(1).

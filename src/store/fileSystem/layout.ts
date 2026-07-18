@@ -82,6 +82,12 @@ export const ROOT_LAYOUT_ITEM_IDS = new Set<string>([
   "trash",
 ]);
 
+const ROOT_DYNAMIC_LAYOUT_EXCLUDED_IDS = new Set<string>([
+  ...ROOT_FOLDER_ITEM_IDS,
+  ...ROOT_APP_ITEM_IDS,
+  "trash",
+]);
+
 // ─── Viewport ─────────────────────────────────────────────────────────────────
 
 export const getViewportMetrics = () => {
@@ -227,10 +233,7 @@ export const getCleanRootPosition = (
 
   // credits, mediaHd, extra items, saved icons
   const otherSiblings = siblings.filter(
-    (s) =>
-      s.id !== "trash" &&
-      !ROOT_FOLDER_ITEM_IDS.includes(s.id) &&
-      !ROOT_APP_ITEM_IDS.includes(s.id),
+    (s) => !ROOT_DYNAMIC_LAYOUT_EXCLUDED_IDS.has(s.id),
   );
   const otherIndex = otherSiblings.findIndex((s) => s.id === item.id);
 

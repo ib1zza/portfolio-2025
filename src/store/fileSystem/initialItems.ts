@@ -6,6 +6,7 @@ import {
 import type { FileSystemItem } from "./types";
 import type { Position } from "./types";
 import {
+  ROOT_LAYOUT_ITEM_IDS,
   ROOT_FOLDER_ITEM_IDS,
   ROOT_APP_ITEM_IDS,
   ROOT_FILE_ITEM_IDS,
@@ -41,12 +42,7 @@ export const isGeneratedFileItemId = (id: string) =>
 export const getExtraRootItemIds = (children: string[]) =>
   children.filter(
     (childId) =>
-      !ROOT_FOLDER_ITEM_IDS.includes(childId) &&
-      !ROOT_APP_ITEM_IDS.includes(childId) &&
-      !ROOT_FILE_ITEM_IDS.includes(childId) &&
-      !ROOT_SYSTEM_ITEM_IDS.includes(childId) &&
-      childId !== "trash" &&
-      !isGeneratedFileItemId(childId),
+      !ROOT_LAYOUT_ITEM_IDS.has(childId) && !isGeneratedFileItemId(childId),
   );
 
 export const getRootChildren = (
