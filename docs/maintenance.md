@@ -28,7 +28,8 @@ The project uses aggressive manual chunking in Vite to keep initial load times f
 2. **Lazy Loading:** Ensure new built-in apps or large visual components (like custom cursors) are wrapped in `React.lazy()` so they don't bloat the main desktop entry chunk.
 3. **3D Asset Size:** Keep `.glb` models compressed. Large models should ideally use Draco compression.
 4. **Execution Bottlenecks:** Be mindful of instantiating expensive objects inside loops or frequent intervals. For example, always cache `Intl.DateTimeFormat` instances outside of React components or `setInterval` calls, as creating them on every tick causes significant CPU overhead.
-5. **DOM Queries:** Avoid repeated DOM queries (e.g., `document.querySelector`) inside loops or global event handlers (like pointer events). Instead, fetch elements in a single batch using `document.querySelectorAll` and cache them in a `Map`, or traverse the DOM directly via properties like `.firstElementChild` to prevent performance bottlenecks.
+5. **Array Lookups:** To optimize nested array lookups, replace `.includes()` or `.some()` inside `.reduce()` or `.filter()` methods with `.has()` lookups on `Set`s or `Map`s to change O(N*M) complexity to O(1).
+6. **DOM Queries:** Avoid repeated DOM queries (e.g., `document.querySelector`) inside loops or global event handlers (like pointer events). Instead, fetch elements in a single batch using `document.querySelectorAll` and cache them in a `Map`, or traverse the DOM directly via properties like `.firstElementChild` to prevent performance bottlenecks.
 
 ## Dead Code and Asset Cleanup
 
