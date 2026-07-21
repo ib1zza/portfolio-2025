@@ -70,7 +70,7 @@ export function Topbar() {
   const editMenuOverrides = useMenuStore((state) => state.editMenuOverrides);
 
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let timeoutId: number | undefined;
 
     const syncClock = () => {
       setClock(formatClock());
