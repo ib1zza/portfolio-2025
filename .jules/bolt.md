@@ -37,3 +37,7 @@
 ## 2026-07-28 - Optimize array .includes() in .filter()
 **Learning:** Checking against an array using `.includes()` inside `.filter()` operations can create an implicit O(N*M) loop performance overhead.
 **Action:** Always pre-compute a `Set` outside the loop and use `.has()` inside `.filter()` blocks to change complexity to O(1).
+
+## 2025-02-24 - Timer Drift and Synchronization
+**Learning:** Clocks that rely on a long (e.g., 60-second) `setInterval` can drift significantly due to browser throttling in background tabs or computer sleep. This causes the UI clock to be out-of-sync with the real time.
+**Action:** Instead of `setInterval`, use a recursive `setTimeout` that dynamically recalculates the exact drift/time until the next update on every tick. Add a `visibilitychange` event listener to force a resync when the tab is re-focused.

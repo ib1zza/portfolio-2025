@@ -70,9 +70,36 @@ export function Topbar() {
   const editMenuOverrides = useMenuStore((state) => state.editMenuOverrides);
 
   useEffect(() => {
-    const timerId = window.setInterval(() => setClock(formatClock()), 1000);
+    let timeoutId: number | undefined;
 
-    return () => window.clearInterval(timerId);
+    const syncClock = () => {
+      setClock(formatClock());
+      const now = new Date();
+      // 💡 What: Calculates exact milliseconds until the next minute starts
+      const msUntilNextMinute =
+        60000 - (now.getSeconds() * 1000 + now.getMilliseconds());
+
+      // 💡 What: Use recursive setTimeout instead of setInterval to recalculate drift on every tick.
+      // 🎯 Why: The clock only displays minutes. Updating every second wakes the main thread and triggers state updates unnecessarily 60 times a minute. Browsers throttle timers in background tabs or sleep, causing desyncs, which is fixed by recursive setTimeout recalculating the drift.
+      // 📊 Impact: Reduces timer callbacks and potential re-renders by 98.3% (from 60/min to 1/min) safely.
+      timeoutId = window.setTimeout(syncClock, msUntilNextMinute);
+    };
+
+    syncClock();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        if (timeoutId) clearTimeout(timeoutId);
+        syncClock();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const openPortfolioWindow = useCallback(
