@@ -30,6 +30,7 @@ The project uses aggressive manual chunking in Vite to keep initial load times f
 4. **Execution Bottlenecks:** Be mindful of instantiating expensive objects inside loops or frequent intervals. For example, always cache `Intl.DateTimeFormat` instances outside of React components or `setInterval` calls, as creating them on every tick causes significant CPU overhead.
 5. **Array Lookups:** To optimize nested array lookups, replace `.includes()` or `.some()` inside `.reduce()` or `.filter()` methods with `.has()` lookups on `Set`s or `Map`s to change O(N*M) complexity to O(1).
 6. **DOM Queries:** Avoid repeated DOM queries (e.g., `document.querySelector`) inside loops or global event handlers (like pointer events). Instead, fetch elements in a single batch using `document.querySelectorAll` and cache them in a `Map`, or traverse the DOM directly via properties like `.firstElementChild` to prevent performance bottlenecks.
+7. **Timer Drift and CPU Overhead:** Clocks relying on long `setInterval`s (e.g., 60s) can drift due to browser throttling in background tabs. Furthermore, ticking every second for a clock that only displays minutes causes unnecessary React re-renders. Use a recursive `setTimeout` that calculates the exact time remaining until the next minute boundary, reducing main thread wakeups and preventing drift.
 
 ## Dead Code and Asset Cleanup
 
